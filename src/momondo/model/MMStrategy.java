@@ -86,7 +86,7 @@ public class MMStrategy implements Strategy
 
         //System.out.println(html_content);
         //Document document = Jsoup.connect(String.format(URL_FORMAT, toStart, dateStart, fromEnd, dateEnd)).userAgent(userAgent).referrer(referrer).timeout(40000).get();
-        driver.close();
+        driver.quit();
         Document document;
         document=Jsoup.parse(html_content);
         //System.out.println(String.format(URL_FORMAT, toStart, dateStart, fromEnd, dateEnd));

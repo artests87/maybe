@@ -21,5 +21,8 @@ public class Aggregator
 
         view.setController(controller);
         view.userCitySelectEmulationMethod();
+
+        //System.out.println("kalsdasdasdasdasdsadas");
+
     }
 }

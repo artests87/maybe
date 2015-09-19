@@ -28,11 +28,11 @@ public class Model
     }
 
     public void selectCityToAndDateToFrom(String toStart, String dateStart, String fromEnd, String dateEnd){
-        List<Flight> vacancies = new ArrayList<>();
+        List<Flight> flights = new ArrayList<>();
 
         for (Provider provider : providers)
-            vacancies.addAll(provider.getFlights(toStart, dateStart, fromEnd, dateEnd));
+            flights.addAll(provider.getFlights(toStart, dateStart, fromEnd, dateEnd));
 
-        view.update(vacancies);
+        view.update(flights);
     }
 }

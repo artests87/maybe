@@ -36,8 +36,9 @@ public class HtmlView implements View
 
     public void userCitySelectEmulationMethod(){
         controller.onCitySelect("IST","15-11-2015","IST","25-11-2015");
-
     }
+
+    //public void
 
     private String getUpdatedFileContent(List<Flight> list) throws IOException
     {
@@ -46,7 +47,7 @@ public class HtmlView implements View
         Element elementCopy=element.clone();
         elementCopy.removeAttr("style");
         elementCopy.removeClass("template");
-        document.select("tr[class=vacancy]").remove();
+        //document.select("tr[class=vacancy]").remove();
         updateFile(document.html());
 
         for(Flight x:list){
