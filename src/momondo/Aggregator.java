@@ -22,15 +22,11 @@ public class Aggregator
         Model model=new Model(view,providers);
         Controller controller=new Controller(model);
         Calendar presentDate=Calendar.getInstance();
-
-        System.out.println(presentDate.get(presentDate.YEAR));
-        Calendar innerCalendar= (Calendar) presentDate.clone();
-        presentDate.add(Calendar.DATE, 2);
-        System.out.println(presentDate.getTime());
-        System.out.println(innerCalendar.getTime());
+        presentDate.add(Calendar.DATE,30);
+        System.out.println(presentDate.get(Calendar.MONTH));
 
         view.setController(controller);
-        //view.userCitySelectEmulationMethod();
+        view.userDateSelectEmulationMethod();
 
         //System.out.println("kalsdasdasdasdasdsadas");
 

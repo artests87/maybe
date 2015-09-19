@@ -49,7 +49,20 @@ public class MMStrategy implements Strategy
                         //System.out.println(x.outerHtml());
                         Flight flight = new Flight();
                         vacancies.add(flight);
-                        if (x.getElementsByAttributeValue("class", "segment segment0").size()==0) {
+                        if (x.getElementsByAttributeValue("class", "segment segment0").size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment1").size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "departure ").size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "airlines _1").size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "airlines _1").get(0).getElementsByAttributeValue("class", "names").size()==0 ||
+                                x.getElementsByAttributeValue("class", "price  long").size()==0 ||
+                                x.getElementsByAttributeValue("class", "price  long").get(0).getElementsByAttributeValue("class", "value").size()==0
+
+                                ) {
                             continue;
                         }
                             flight.setFromStart(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").get(0).text());

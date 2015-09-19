@@ -35,12 +35,24 @@ public class HtmlView implements View
         this.controller=controller;
     }
 
-    public void userCitySelectEmulationMethod(){
-        controller.onCitySelect("IST", "15-11-2015", "IST", "25-11-2015");
+    public void userDateSelectEmulationMethod(){
+        //controller.onCitySelect("IST", "15-11-2015", "IST", "25-11-2015");
+
+        LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar=generateDate(6);
+        System.out.println(mapCalendar.size());
+        for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
+            Calendar calendar=pair.getKey();
+            System.out.println(pair.getKey().getTime());
+            String dateDepartureTo=calendar.get(Calendar.DATE)+"-"+((calendar.get(Calendar.MONTH))+1)+"-"+calendar.get(Calendar.YEAR);
+            for (Calendar x:pair.getValue()){
+                String dateDepartureFrom=x.get(Calendar.DATE)+"-"+((x.get(Calendar.MONTH))+1)+"-"+x.get(Calendar.YEAR);
+                controller.onCitySelect("IST", dateDepartureTo, "IST", dateDepartureFrom);
+            }
+        }
     }
 
     //Метод создания Map дат (вылета, в виде ключей и прилета в виде Set-ов значений ключей)
-    public Map<Calendar,Set<Calendar>> generateDate(int missingDays){
+    public LinkedHashMap<Calendar,LinkedHashSet<Calendar>> generateDate(int missingDays){
         //Минимальное количество дней Там
         int amountMin=6;
         //Максимальное количество дней Там
@@ -50,14 +62,15 @@ public class HtmlView implements View
         //Максимальное число вылета Обратно
         int dateMax=31;
         //На сколько дней вперед искать
-        int theEndDate=100;
+        int theEndDate=30;
 
         //Общая карта для хранения дат. Ключ - дата вылета. Значение - Сет с датами обратного пути
-        Map<Calendar,Set<Calendar>> mapCalendar= new TreeMap<>();
+        LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar= new LinkedHashMap <>();
         //Текущая дата
-        Calendar dateStart=Calendar.getInstance();
+        Calendar dateStart=Calendar.getInstance(new Locale("ru"));
         //Дата выхода из цикла дат вылета
         Calendar theEndDateCalendar = (Calendar) dateStart.clone();
+        theEndDateCalendar.add(Calendar.DATE,theEndDate);
         //Условие выхода из цикла поиска дат вылета
         boolean outerCycle=true;
         //Условие выхода из цикла поиска дат возвращения
@@ -75,39 +88,56 @@ public class HtmlView implements View
             //Проверка, что число вылета не меньше минимального числа вылета
             if (dateStart.get(Calendar.DATE)<amountMin){
                 //Прибавляем один день и запускаем цикл дат вылета заново
-                dateStart.add(1,Calendar.DATE);
+                dateStart.add(Calendar.DATE,1);
                 continue;
             }
             //Делаем копию даты вылета
             Calendar innerCalendar= (Calendar) dateStart.clone();
             //Прибавляем минимальное количество дней Там
-            innerCalendar.add(dateMin,Calendar.DATE);
+            innerCalendar.add(Calendar.DATE,dateMin);
             //Проверка, что число прилета не меньше минимального числа вылета
             if (innerCalendar.get(Calendar.DATE)<dateMin){
                 //Прибавляем один день и запускаем цикл дат вылета заново
-                dateStart.add(1,Calendar.DATE);
+                dateStart.add(Calendar.DATE,1);
+                continue;
+            }
+            //Проверяем, что мы возвращаемся в том же месяце
+            Calendar calendarTestReturn= (Calendar) dateStart.clone();
+            calendarTestReturn.add(Calendar.DATE,dateMin);
+            if (calendarTestReturn.get(Calendar.MONTH)!=dateStart.get(Calendar.MONTH)){
+                dateStart.add(Calendar.DATE,1);
                 continue;
             }
 
             //Создаем новый сет - значение Map
-            Set<Calendar> setInnerCycle=new TreeSet<Calendar>();
+            LinkedHashSet<Calendar> setInnerCycle=new LinkedHashSet<Calendar>();
             //Кладем в мапу сет и дату вылета
-            mapCalendar.put(dateStart,setInnerCycle);
+            mapCalendar.put((Calendar) dateStart.clone(), setInnerCycle);
+            System.out.println(dateStart.getTime());
+
+            //Выход из поиска дат обратно, по условию максимального количества дней dateMax
+            Calendar calendarExitInner= (Calendar) dateStart.clone();
+            calendarExitInner.add(Calendar.DATE, amountMax);
 
             //Цикл поиска дат возвращения
             while (innerCycle){
                 //Проверка, что число прилета не меньше минимального числа вылета
-                if (innerCalendar.get(Calendar.DATE)<dateMin){
+                if (innerCalendar.after(calendarExitInner)||innerCalendar.get(Calendar.DATE)<dateMin){
                     innerCycle=false;
                     continue;
                 }
-                //Добавляем дату в Сет возвращения
-                setInnerCycle.add(innerCalendar);
+                //Добавляем дату в Set возвращения
+                setInnerCycle.add((Calendar) innerCalendar.clone());
+                System.out.println("-----------------" + innerCalendar.getTime());
                 //Увеличиваем число вылета на 1
-                innerCalendar.add(1,Calendar.DATE);
+                innerCalendar.add(Calendar.DATE, 1);
             }
+            dateStart.add(Calendar.DATE,1);
+            innerCycle=true;
         }
+
         return mapCalendar;
+
     }
 
     private String getUpdatedFileContent(List<Flight> list) throws IOException
@@ -117,7 +147,7 @@ public class HtmlView implements View
         Element elementCopy=element.clone();
         elementCopy.removeAttr("style");
         elementCopy.removeClass("template");
-        document.select("tr[class=vacancy]").remove();
+        //document.select("tr[class=vacancy]").remove();
         updateFile(document.html());
 
         for(Flight x:list){
