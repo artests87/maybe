@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class MMStrategy implements Strategy
 {
-    private static final String URL_FORMAT = "http://www.momondo.ru/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=LED&SD0=%s&SDP0=%s&SO1=%s&SD1=LED&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=2&SegNo=2&SO0=LED&SD0=IST&SDP0=15-11-2015&SO1=IST&SD1=LED&SDP1=25-11-2015&AD=2&TK=ECO&DO=false&NA=false";
+    private static final String URL_FORMAT = "http://www.momondo.ru/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=LED&SD0=%s&SDP0=%s&SO1=%s&SD1=LED&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=2&SegNo=2&SO0=LED&SD0=%s&SDP0=%s&SO1=%s&SD1=LED&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false";
     private static final String userAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36";
     private static final String referrer = "http://google.ru";
 
@@ -77,7 +77,7 @@ public class MMStrategy implements Strategy
     protected Document getDocument(String toStart, String dateStart, String fromEnd, String dateEnd) throws IOException, InterruptedException {
         System.setProperty("webdriver.chrome.driver","C:\\JAVA\\maybe\\dll\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
-        driver.get(String.format(URL_FORMAT, toStart, dateStart, fromEnd, dateEnd));
+        driver.get(String.format(URL_FORMAT, toStart, dateStart, fromEnd, dateEnd, toStart, dateStart, fromEnd, dateEnd));
         //System.out.println(driver.findElement(By.id("searchProgressText")).getText());
         (new WebDriverWait(driver,20)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
         (new WebDriverWait(driver,30)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
