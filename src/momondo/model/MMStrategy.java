@@ -92,8 +92,12 @@ public class MMStrategy implements Strategy
         WebDriver driver = new ChromeDriver();
         driver.get(String.format(URL_FORMAT, toStart, dateStart, fromEnd, dateEnd, toStart, dateStart, fromEnd, dateEnd));
         //System.out.println(driver.findElement(By.id("searchProgressText")).getText());
-        (new WebDriverWait(driver,20)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
-        (new WebDriverWait(driver,30)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
+        try {
+            (new WebDriverWait(driver,120)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
+            (new WebDriverWait(driver,130)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         String html_content = driver.getPageSource();
 

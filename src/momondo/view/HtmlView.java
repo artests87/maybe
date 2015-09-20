@@ -51,85 +51,80 @@ public class HtmlView implements View
         }
     }
 
-    //Метод создания Map дат (вылета, в виде ключей и прилета в виде Set-ов значений ключей)
+    //Method creates Map with key which contains dates DepartureTo and Set which contains dates DepartureFrom)
     public LinkedHashMap<Calendar,LinkedHashSet<Calendar>> generateDate(int missingDays){
-        //Минимальное количество дней Там
+        //Integer is for minimum amount days between DepartureTo and DepartureFrom
         int amountMin=6;
-        //Максимальное количество дней Там
+        //Integer is for maximum amount days between DepartureTo and DepartureFrom
         int amountMax=16;
-        //Минимальное число вылета Туда
+        //Integer is for minimum date from DepartureTo
         int dateMin=6;
-        //Максимальное число вылета Обратно
-        int dateMax=31;
-        //На сколько дней вперед искать
-        int theEndDate=30;
+        //Integer is for maximums days for search
+        int theEndDate=130;
 
-        //Общая карта для хранения дат. Ключ - дата вылета. Значение - Сет с датами обратного пути
+        //Create Map
         LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar= new LinkedHashMap <>();
-        //Текущая дата
+        //Calendar - present day
         Calendar dateStart=Calendar.getInstance(new Locale("ru"));
-        //Дата выхода из цикла дат вылета
+        //Calendar - last day for search
         Calendar theEndDateCalendar = (Calendar) dateStart.clone();
         theEndDateCalendar.add(Calendar.DATE,theEndDate);
-        //Условие выхода из цикла поиска дат вылета
+        //Boolean is for search DepartureTo
         boolean outerCycle=true;
-        //Условие выхода из цикла поиска дат возвращения
+        //Boolean is for search DepartureFrom
         boolean innerCycle=true;
-        //Параметр передает количество дней, которое мы прибавляем к текущей дате (если 0 - ищет с сегодняшней даты)
+        //Add to present day count days for start search
         dateStart.add(Calendar.DATE, missingDays);
 
-        //Цикла поиска дат вылета
+        //Search DepartureTo
         while (outerCycle){
-            //Проверка условия выхода из создания Map для дат - крайняя дата.
+            //Check for dateStart is not after lastDay
             if (dateStart.after(theEndDateCalendar)){
                 outerCycle=false;
                 continue;
             }
-            //Проверка, что число вылета не меньше минимального числа вылета
-            if (dateStart.get(Calendar.DATE)<amountMin){
-                //Прибавляем один день и запускаем цикл дат вылета заново
+            //Check for dateStart is not before dateMin
+            if (dateStart.get(Calendar.DATE)<dateMin){
                 dateStart.add(Calendar.DATE,1);
                 continue;
             }
-            //Делаем копию даты вылета
+            //Clone dateStart - create date for search DateDepartureFrom
             Calendar innerCalendar= (Calendar) dateStart.clone();
-            //Прибавляем минимальное количество дней Там
-            innerCalendar.add(Calendar.DATE,dateMin);
-            //Проверка, что число прилета не меньше минимального числа вылета
+            //Add amountMin for count days there
+            innerCalendar.add(Calendar.DATE,amountMin);
+            //If innerCalendare before dateMin - continue
             if (innerCalendar.get(Calendar.DATE)<dateMin){
-                //Прибавляем один день и запускаем цикл дат вылета заново
                 dateStart.add(Calendar.DATE,1);
                 continue;
             }
-            //Проверяем, что мы возвращаемся в том же месяце
+            //Check for DepartureTo and Departure from have equal months
             Calendar calendarTestReturn= (Calendar) dateStart.clone();
-            calendarTestReturn.add(Calendar.DATE,dateMin);
+            calendarTestReturn.add(Calendar.DATE,amountMin);
             if (calendarTestReturn.get(Calendar.MONTH)!=dateStart.get(Calendar.MONTH)){
                 dateStart.add(Calendar.DATE,1);
                 continue;
             }
 
-            //Создаем новый сет - значение Map
+            //Create inner Set - value
             LinkedHashSet<Calendar> setInnerCycle=new LinkedHashSet<Calendar>();
-            //Кладем в мапу сет и дату вылета
+            //Put in the Map Calendar (DepartureTo) and the Set
             mapCalendar.put((Calendar) dateStart.clone(), setInnerCycle);
             System.out.println(dateStart.getTime());
 
-            //Выход из поиска дат обратно, по условию максимального количества дней dateMax
+            //Create Calendare for check amountMax
             Calendar calendarExitInner= (Calendar) dateStart.clone();
             calendarExitInner.add(Calendar.DATE, amountMax);
 
-            //Цикл поиска дат возвращения
+            //Search for dates DepartureFrom
             while (innerCycle){
-                //Проверка, что число прилета не меньше минимального числа вылета
+                //Check. If Calendar after exit or Calendar's Date before dateMin - continue
                 if (innerCalendar.after(calendarExitInner)||innerCalendar.get(Calendar.DATE)<dateMin){
                     innerCycle=false;
                     continue;
                 }
-                //Добавляем дату в Set возвращения
+                //Add Calendar to SET
                 setInnerCycle.add((Calendar) innerCalendar.clone());
                 System.out.println("-----------------" + innerCalendar.getTime());
-                //Увеличиваем число вылета на 1
                 innerCalendar.add(Calendar.DATE, 1);
             }
             dateStart.add(Calendar.DATE,1);
@@ -154,7 +149,6 @@ public class HtmlView implements View
             if (x.getFromStart()==null){
                 continue;
             }
-            //System.out.println("-------------------------");
             Element elementCopyTemp=elementCopy.clone();
             elementCopyTemp.getElementsByClass("FromStart").first().text(x.getFromStart());
             elementCopyTemp.getElementsByClass("ToStart").first().text(x.getToStart());
