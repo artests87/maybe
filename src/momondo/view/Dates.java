@@ -27,7 +27,7 @@ public class Dates {
         //Integer is for minimum date from DepartureTo
         int dateMin=6;
         //Integer is for maximums days for search
-        int theEndDate=130;
+        int theEndDate=30;
 
         //Create Map
         LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar= new LinkedHashMap <>();

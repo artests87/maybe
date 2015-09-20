@@ -19,6 +19,7 @@ public class HtmlView implements View,Runnable{
     private String fromEnd;
     private LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar;
     private String filePath;
+    private String filePathStart=System.getProperty("user.dir")+"/res/outHTML/flightsAll.html";
 
     public HtmlView(LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart) {
         this.toStart = toStart;
@@ -35,7 +36,7 @@ public class HtmlView implements View,Runnable{
             String dateDepartureTo=calendar.get(Calendar.DATE)+"-"+((calendar.get(Calendar.MONTH))+1)+"-"+calendar.get(Calendar.YEAR);
             for (Calendar x:pair.getValue()){
                 String dateDepartureFrom=x.get(Calendar.DATE)+"-"+((x.get(Calendar.MONTH))+1)+"-"+x.get(Calendar.YEAR);
-                update(new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom),filePath);
+                update(new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom), filePath);
             }
         }
     }
@@ -86,7 +87,7 @@ public class HtmlView implements View,Runnable{
     }
 
     protected Document getDocument() throws IOException{
-        File input = new File(filePath);
+        File input = new File(filePathStart);
         Document document = Jsoup.parse(input, "UTF-8");
         return document;
     }
