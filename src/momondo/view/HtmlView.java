@@ -1,5 +1,6 @@
 package momondo.view;
 
+import momondo.Aggregator;
 import momondo.model.MMStrategy;
 
 import momondo.vo.Flight;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
  * Created by Cats on 20.09.2015.
  */
 public class HtmlView implements View,Runnable{
-    private static Logger log = Logger.getLogger(HtmlView.class.getName());
+    private static Logger log = Logger.getLogger(Aggregator.class.getName());
     private String toStart;
     private String fromEnd;
     private LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar;
@@ -40,7 +41,7 @@ public class HtmlView implements View,Runnable{
                 String dateDepartureFrom=x.get(Calendar.DATE)+"-"+((x.get(Calendar.MONTH))+1)+"-"+x.get(Calendar.YEAR);
                 linkedHashSetFlights=new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom);
                 if (linkedHashSetFlights!=null) {
-                    System.out.println("Thread -------- "+toStart+"---"+dateDepartureTo+"------"+dateDepartureFrom+". Size--"+linkedHashSetFlights.size());
+                    log.info("Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--" + linkedHashSetFlights.size());
                     update((linkedHashSetFlights), filePath);
                 }
             }
@@ -51,7 +52,7 @@ public class HtmlView implements View,Runnable{
         try {
             updateFile(getUpdatedFileContent(flights));
         } catch (Exception e) {
-            System.out.println("Some exception occurred");
+            log.info("Some exception occurred");
             e.printStackTrace();
         }
     }

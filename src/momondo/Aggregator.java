@@ -24,9 +24,11 @@ public class Aggregator
         } catch (IOException e) {
             System.err.println("Could not setup logger configuration: " + e.toString());
         }
+
         Calendar start=Calendar.getInstance();
+        log.info("Start program--"+start.getTime().toString());
         ExecutorThread executorThread=new ExecutorThread();
-        //executorThread.userDateSelectEmulationMethod();
+        executorThread.userDateSelectEmulationMethod();
 
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());

@@ -17,7 +17,7 @@ public class ExecutorThread
 
     public void userDateSelectEmulationMethod(){
         //controller.onCitySelect("IST", "15-11-2015", "IST", "25-11-2015");
-        ExecutorService service = Executors.newFixedThreadPool(10);
+        ExecutorService service = Executors.newFixedThreadPool(5);
         LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar= Dates.getMapCalendarStatic();
         List<String> airports= Airports.getAirports();
         for (String x:airports) {
