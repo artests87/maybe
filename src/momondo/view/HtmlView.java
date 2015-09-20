@@ -9,12 +9,13 @@ import org.jsoup.nodes.Element;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by Cats on 20.09.2015.
  */
 public class HtmlView implements View,Runnable{
-
+    private static Logger log = Logger.getLogger(HtmlView.class.getName());
     private String toStart;
     private String fromEnd;
     private LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar;
@@ -34,11 +35,14 @@ public class HtmlView implements View,Runnable{
     public void run() {
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
             Calendar calendar=pair.getKey();
-            System.out.println(pair.getKey().getTime());
             String dateDepartureTo=calendar.get(Calendar.DATE)+"-"+((calendar.get(Calendar.MONTH))+1)+"-"+calendar.get(Calendar.YEAR);
             for (Calendar x:pair.getValue()){
                 String dateDepartureFrom=x.get(Calendar.DATE)+"-"+((x.get(Calendar.MONTH))+1)+"-"+x.get(Calendar.YEAR);
-                update(new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom), filePath);
+                linkedHashSetFlights=new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom);
+                if (linkedHashSetFlights!=null) {
+                    System.out.println("Thread -------- "+toStart+"---"+dateDepartureTo+"------"+dateDepartureFrom+". Size--"+linkedHashSetFlights.size());
+                    update((linkedHashSetFlights), filePath);
+                }
             }
         }
     }
@@ -50,8 +54,6 @@ public class HtmlView implements View,Runnable{
             System.out.println("Some exception occurred");
             e.printStackTrace();
         }
-        System.out.print(flights.size()+"___________");
-        System.out.println(toStart);
     }
     private String getUpdatedFileContent(LinkedHashSet<Flight> list) throws IOException
     {

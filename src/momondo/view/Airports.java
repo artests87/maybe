@@ -21,6 +21,9 @@ public class Airports {
             while (bufferedReader.ready()) {
                 airports.add(bufferedReader.readLine());
             }
+            for (String x:airports){
+                System.out.println(x);
+            }
             bufferedReader.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();

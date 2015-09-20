@@ -12,15 +12,16 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.logging.Logger;
+
 
 /**
  * Created by artests on 13.08.2015.
  */
 public class MMStrategy implements Strategy
 {
+    private static Logger log = Logger.getLogger(MMStrategy.class.getName());
     private static final String URL_FORMAT = "http://www.momondo.ru/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=LED&SD0=%s&SDP0=%s&SO1=%s&SD1=LED&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=2&SegNo=2&SO0=LED&SD0=%s&SDP0=%s&SO1=%s&SD1=LED&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false";
     //private static final String userAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36";
     //private static final String referrer = "http://google.ru";
@@ -34,21 +35,20 @@ public class MMStrategy implements Strategy
             try
             {
                 document = getDocument(toStart, dateStart, fromEnd, dateEnd);
+                if (document==null){
+                    return null;
+                }
                 Elements elements = document.getElementsByClass("result-box-inner");
-                System.out.println(toStart);
+                log.info("Start -------- "+toStart+"---"+dateStart+"------"+dateEnd);
                 if (elements.isEmpty())
                 {
-                    //System.out.println("0-----------------------------------");
+                    //log.info("0-----------------------------------");
 
                 }
                 else
                 {
-                    //System.out.println("1-----------------------------------");
                     for (Element x : elements)
                     {
-                        /*if (toStart.equals("BLQ")) {
-                            System.out.println(x.outerHtml());
-                        }*/
                         Flight flight = new Flight();
                         String attrAirlinesTitle="airlines _1";
                         if (x.getElementsByAttributeValue("class", "segment segment0").size()==0 ||
@@ -63,7 +63,7 @@ public class MMStrategy implements Strategy
                                 x.getElementsByAttributeValue("class", "price  long").get(0).getElementsByAttributeValue("class", "value").size()==0
 
                                 ) {
-                            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                            log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                             continue;
                         }
                         vacancies.add(flight);
@@ -100,22 +100,22 @@ public class MMStrategy implements Strategy
         WebDriver driver = new ChromeDriver();
         driver.get(String.format(URL_FORMAT, toStart, dateStart, fromEnd, dateEnd, toStart, dateStart, fromEnd, dateEnd));
         //System.out.println(driver.findElement(By.id("searchProgressText")).getText());
+        String html_content;
+        Document document=null;
         try {
-            (new WebDriverWait(driver,120)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
-            (new WebDriverWait(driver,130)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
+            (new WebDriverWait(driver,600)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
+            (new WebDriverWait(driver,600)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
+            html_content = driver.getPageSource();
+            document=Jsoup.parse(html_content);
         } catch (Exception e) {
-            System.out.println("Momondo has problems");
+            log.info("Momondo has problems--------" +toStart+"--"+dateStart+"--"+dateEnd);
+            System.out.println(e.getLocalizedMessage());
             e.printStackTrace();
         }
+        finally {
+            driver.quit();
+        }
 
-        String html_content = driver.getPageSource();
-
-        //System.out.println(html_content);
-        //Document document = Jsoup.connect(String.format(URL_FORMAT, toStart, dateStart, fromEnd, dateEnd)).userAgent(userAgent).referrer(referrer).timeout(40000).get();
-        driver.quit();
-        Document document;
-        document=Jsoup.parse(html_content);
-        //System.out.println(String.format(URL_FORMAT, toStart, dateStart, fromEnd, dateEnd));
         return document;
     }
 
