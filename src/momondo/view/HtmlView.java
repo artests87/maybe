@@ -1,7 +1,7 @@
 package momondo.view;
 
 import momondo.model.MMStrategy;
-import momondo.view.View;
+
 import momondo.vo.Flight;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,6 +20,8 @@ public class HtmlView implements View,Runnable{
     private LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar;
     private String filePath;
     private String filePathStart=System.getProperty("user.dir")+"/res/outHTML/flightsAll.html";
+    private LinkedHashSet<Flight> linkedHashSetFlights=new LinkedHashSet<>();
+    boolean isDocumentExist=false;
 
     public HtmlView(LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart) {
         this.toStart = toStart;
@@ -40,7 +42,7 @@ public class HtmlView implements View,Runnable{
             }
         }
     }
-    public void update(List<Flight> flights, String filePath)
+    public void update(LinkedHashSet<Flight> flights, String filePath)
     {
         try {
             updateFile(getUpdatedFileContent(flights));
@@ -48,9 +50,10 @@ public class HtmlView implements View,Runnable{
             System.out.println("Some exception occurred");
             e.printStackTrace();
         }
-        System.out.println(flights.size());
+        System.out.print(flights.size()+"___________");
+        System.out.println(toStart);
     }
-    private String getUpdatedFileContent(List<Flight> list) throws IOException
+    private String getUpdatedFileContent(LinkedHashSet<Flight> list) throws IOException
     {
         Document document=getDocument();
         Element element=document.getElementsByClass("template").first();
@@ -86,8 +89,12 @@ public class HtmlView implements View,Runnable{
 
     }
 
-    protected Document getDocument() throws IOException{
-        File input = new File(filePathStart);
+    protected Document getDocument() throws IOException {
+        File input=new File(filePath);
+        if (!isDocumentExist) {
+            input = new File(filePathStart);
+            isDocumentExist=true;
+        }
         Document document = Jsoup.parse(input, "UTF-8");
         return document;
     }

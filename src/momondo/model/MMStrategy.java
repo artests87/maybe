@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -26,29 +27,30 @@ public class MMStrategy implements Strategy
 
 
     @Override
-    public List<Flight> getFlights(String toStart, String dateStart, String fromEnd, String dateEnd) {
+    public LinkedHashSet<Flight> getFlights(String toStart, String dateStart, String fromEnd, String dateEnd) {
         Document document=null;
-        List<Flight> vacancies=new ArrayList<>();
-        while (true)
-        {
+        LinkedHashSet<Flight> vacancies=new LinkedHashSet<>();
+
             try
             {
                 document = getDocument(toStart, dateStart, fromEnd, dateEnd);
                 Elements elements = document.getElementsByClass("result-box-inner");
-                //System.out.println(elements.outerHtml());
+                System.out.println(toStart);
                 if (elements.isEmpty())
                 {
                     //System.out.println("0-----------------------------------");
-                    break;
+
                 }
                 else
                 {
                     //System.out.println("1-----------------------------------");
                     for (Element x : elements)
                     {
-                        //System.out.println(x.outerHtml());
+                        /*if (toStart.equals("BLQ")) {
+                            System.out.println(x.outerHtml());
+                        }*/
                         Flight flight = new Flight();
-                        vacancies.add(flight);
+                        String attrAirlinesTitle="airlines _1";
                         if (x.getElementsByAttributeValue("class", "segment segment0").size()==0 ||
                                 x.getElementsByAttributeValue("class", "segment segment1").size()==0 ||
                                 x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").size()==0 ||
@@ -57,13 +59,18 @@ public class MMStrategy implements Strategy
                                 x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "departure ").size()==0 ||
                                 x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").size()==0 ||
                                 x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").size()==0 ||
-                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "airlines _1").size()==0 ||
-                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "airlines _1").get(0).getElementsByAttributeValue("class", "names").size()==0 ||
                                 x.getElementsByAttributeValue("class", "price  long").size()==0 ||
                                 x.getElementsByAttributeValue("class", "price  long").get(0).getElementsByAttributeValue("class", "value").size()==0
 
                                 ) {
+                            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                             continue;
+                        }
+                        vacancies.add(flight);
+                        if (x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", attrAirlinesTitle).size()==0 ||
+                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", attrAirlinesTitle).get(0).getElementsByAttributeValue("class", "names").size()==0
+                                ){
+                            attrAirlinesTitle="airlines _2";
                         }
                             flight.setFromStart(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
                             flight.setToStart(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
@@ -71,20 +78,21 @@ public class MMStrategy implements Strategy
                             flight.setToEnd(x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
                             flight.setDateStart(dateStart);
                             flight.setDateEnd(dateEnd);
-                            flight.setTitle(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "airlines _1").get(0).getElementsByAttributeValue("class", "names").get(0).text());
+                            flight.setTitle(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", attrAirlinesTitle).get(0).getElementsByAttributeValue("class", "names").get(0).text());
                             flight.setCoast(x.getElementsByAttributeValue("class", "price  long").get(0).getElementsByAttributeValue("class", "value").get(0).text());
 
                     }
                 }
-                break;
             }
             catch (IOException e)
             {
+                System.out.println(e.getLocalizedMessage());
                 e.printStackTrace();
             } catch (InterruptedException e) {
+                System.out.println(e.getLocalizedMessage());
                 e.printStackTrace();
             }
-        }
+
         return vacancies;
     }
     protected Document getDocument(String toStart, String dateStart, String fromEnd, String dateEnd) throws IOException, InterruptedException {
