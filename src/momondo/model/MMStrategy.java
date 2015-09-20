@@ -21,8 +21,8 @@ import java.util.List;
 public class MMStrategy implements Strategy
 {
     private static final String URL_FORMAT = "http://www.momondo.ru/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=LED&SD0=%s&SDP0=%s&SO1=%s&SD1=LED&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=2&SegNo=2&SO0=LED&SD0=%s&SDP0=%s&SO1=%s&SD1=LED&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false";
-    private static final String userAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36";
-    private static final String referrer = "http://google.ru";
+    //private static final String userAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36";
+    //private static final String referrer = "http://google.ru";
 
 
     @Override
@@ -96,6 +96,7 @@ public class MMStrategy implements Strategy
             (new WebDriverWait(driver,120)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
             (new WebDriverWait(driver,130)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
         } catch (Exception e) {
+            System.out.println("Momondo has problems");
             e.printStackTrace();
         }
 

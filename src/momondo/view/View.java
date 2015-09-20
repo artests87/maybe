@@ -1,7 +1,6 @@
 package momondo.view;
 
 
-import momondo.Controller;
 import momondo.vo.Flight;
 
 import java.util.List;
@@ -11,6 +10,6 @@ import java.util.List;
  */
 public interface View
 {
-    void update(List<Flight> vacancies);
-    void setController(Controller controller);
+    //void update(List<Flight> vacancies);
+    //void setController(Controller controller);
 }
