@@ -10,12 +10,13 @@ import org.jsoup.nodes.Element;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 /**
  * Created by Cats on 20.09.2015.
  */
-public class HtmlView implements View,Runnable{
+public class HtmlView implements View,Callable<Boolean>{
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
     private String toStart;
     private String fromEnd;
@@ -33,19 +34,26 @@ public class HtmlView implements View,Runnable{
     }
 
     @Override
-    public void run() {
+    public Boolean call() throws Exception{
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
             Calendar calendar=pair.getKey();
             String dateDepartureTo=calendar.get(Calendar.DATE)+"-"+((calendar.get(Calendar.MONTH))+1)+"-"+calendar.get(Calendar.YEAR);
             for (Calendar x:pair.getValue()){
                 String dateDepartureFrom=x.get(Calendar.DATE)+"-"+((x.get(Calendar.MONTH))+1)+"-"+x.get(Calendar.YEAR);
                 linkedHashSetFlights=new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom);
-                if (linkedHashSetFlights!=null) {
-                    log.info("Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--" + linkedHashSetFlights.size());
+                //linkedHashSetFlights=new MMStrategy().getFlights("BGY", "06-10-2015", "BGY", "19-10-2015");
+
+                if (linkedHashSetFlights!=null && linkedHashSetFlights.size()>0) {
+                    log.info(Thread.currentThread().getName() + "--Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--" + linkedHashSetFlights.size());
                     update((linkedHashSetFlights), filePath);
                 }
+                else{
+                    log.info("The size if 0...Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--");
+                }
+
             }
         }
+        return true;
     }
     public void update(LinkedHashSet<Flight> flights, String filePath)
     {
@@ -101,4 +109,6 @@ public class HtmlView implements View,Runnable{
         Document document = Jsoup.parse(input, "UTF-8");
         return document;
     }
+
+
 }

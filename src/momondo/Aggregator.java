@@ -26,13 +26,14 @@ public class Aggregator
         }
 
         Calendar start=Calendar.getInstance();
-        log.info("Start program--"+start.getTime().toString());
+        log.info("Start program--" + start.getTime().toString());
         ExecutorThread executorThread=new ExecutorThread();
         executorThread.userDateSelectEmulationMethod();
 
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());
+        System.out.println("143242");
 
     }
 }
