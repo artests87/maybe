@@ -33,7 +33,6 @@ public class Aggregator
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());
-        System.out.println("143242");
 
     }
 }

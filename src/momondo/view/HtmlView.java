@@ -20,13 +20,13 @@ public class HtmlView implements View,Callable<Boolean>{
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
     private String toStart;
     private String fromEnd;
-    private LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar;
+    private Map<Calendar,LinkedHashSet<Calendar>> mapCalendar;
     private String filePath;
     private String filePathStart=System.getProperty("user.dir")+"/res/outHTML/flightsAll.html";
     private LinkedHashSet<Flight> linkedHashSetFlights=new LinkedHashSet<>();
     boolean isDocumentExist=false;
 
-    public HtmlView(LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart) {
+    public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart) {
         this.toStart = toStart;
         this.fromEnd = toStart;
         this.mapCalendar = mapCalendar;
@@ -48,7 +48,7 @@ public class HtmlView implements View,Callable<Boolean>{
                     update((linkedHashSetFlights), filePath);
                 }
                 else{
-                    log.info("The size if 0...Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--");
+                    log.warning("The size if 0...Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom);
                 }
 
             }
@@ -60,7 +60,7 @@ public class HtmlView implements View,Callable<Boolean>{
         try {
             updateFile(getUpdatedFileContent(flights));
         } catch (Exception e) {
-            log.info("Some exception occurred");
+            log.warning("Some exception occurred");
             e.printStackTrace();
         }
     }

@@ -40,7 +40,7 @@ public class MMStrategy implements Strategy
             Elements elements;
             elements = document.getElementsByClass("result-box-inner");
             if (elements.isEmpty()) {
-                log.info("Nothing to find -------- " + toStart + "---" + dateStart + "------" + dateEnd);
+                log.warning("Nothing to find -------- " + toStart + "---" + dateStart + "------" + dateEnd);
 
             } else {
                 log.info("Start -------- " + toStart + "---" + dateStart + "------" + dateEnd);
@@ -62,7 +62,7 @@ public class MMStrategy implements Strategy
                                 x.getElementsByAttributeValue("class", "price  long").get(0).getElementsByAttributeValue("class", "value").size() == 0
 
                                 ) {
-                            log.info("Some problems in -------- " + toStart + "---" + dateStart + "------" + dateEnd);
+                            log.warning("Some problems in -------- " + toStart + "---" + dateStart + "------" + dateEnd);
                             continue;
                         }
                         vacancies.add(flight);
@@ -88,14 +88,14 @@ public class MMStrategy implements Strategy
 
                     }
                     catch (Exception e){
-                        log.info("Some problems with parsing element in-------- " + toStart + "---" + dateStart + "------" + dateEnd);
+                        log.warning("Some problems with parsing element in-------- " + toStart + "---" + dateStart + "------" + dateEnd);
                     }
                 }
             }
         }
         catch (IOException | InterruptedException e)
         {
-            log.info("Some problems with parsing in-------- " + toStart + "---" + dateStart + "------" + dateEnd);
+            log.warning("Some problems with parsing in-------- " + toStart + "---" + dateStart + "------" + dateEnd);
         }
         return vacancies;
     }
@@ -116,12 +116,12 @@ public class MMStrategy implements Strategy
             document=Jsoup.parse(html_content);
             Elements elements = document.getElementsByAttributeValue("title", "Ой! Ни один из результатов не совпадает с вашим запросом");
             if (elements.size() !=0){
-                log.info("Nothing to find1 -------- " + toStart + "---" + dateStart + "------" + dateEnd);
+                log.warning("Nothing to find1 -------- " + toStart + "---" + dateStart + "------" + dateEnd);
                 return null;
             }
 
         } catch (Exception e) {
-            log.info("Momondo has problems--------" + toStart + "--" + dateStart + "--" + dateEnd);
+            log.warning("Momondo has problems--------" + toStart + "--" + dateStart + "--" + dateEnd);
             System.out.println(e.getLocalizedMessage());
             e.printStackTrace();
         }
