@@ -36,21 +36,29 @@ public class HtmlView implements View,Callable<Boolean>{
     @Override
     public Boolean call() throws Exception{
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
-            Calendar calendar=pair.getKey();
-            String dateDepartureTo=calendar.get(Calendar.DATE)+"-"+((calendar.get(Calendar.MONTH))+1)+"-"+calendar.get(Calendar.YEAR);
-            for (Calendar x:pair.getValue()){
-                String dateDepartureFrom=x.get(Calendar.DATE)+"-"+((x.get(Calendar.MONTH))+1)+"-"+x.get(Calendar.YEAR);
-                linkedHashSetFlights=new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom);
-                //linkedHashSetFlights=new MMStrategy().getFlights("BGY", "06-10-2015", "BGY", "19-10-2015");
+            try {
+                Calendar calendar = pair.getKey();
+                String dateDepartureTo = calendar.get(Calendar.DATE) + "-" + ((calendar.get(Calendar.MONTH)) + 1) + "-" + calendar.get(Calendar.YEAR);
+                for (Calendar x : pair.getValue()) {
+                    try {
+                        String dateDepartureFrom = x.get(Calendar.DATE) + "-" + ((x.get(Calendar.MONTH)) + 1) + "-" + x.get(Calendar.YEAR);
+                        linkedHashSetFlights = new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom);
+                        //linkedHashSetFlights=new MMStrategy().getFlights("BGY", "06-10-2015", "BGY", "19-10-2015");
 
-                if (linkedHashSetFlights!=null && linkedHashSetFlights.size()>0) {
-                    log.info(Thread.currentThread().getName() + "--Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--" + linkedHashSetFlights.size());
-                    update((linkedHashSetFlights), filePath);
-                }
-                else{
-                    log.warning("The size if 0...Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom);
-                }
+                        if (linkedHashSetFlights != null && linkedHashSetFlights.size() > 0) {
+                            log.info(Thread.currentThread().getName() + "--Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--" + linkedHashSetFlights.size());
+                            update((linkedHashSetFlights), filePath);
+                        } else {
+                            log.warning("The size if 0...Thread -------- " + toStart + "---" + dateDepartureTo + "------" + dateDepartureFrom);
+                        }
+                    } catch (Exception e) {
+                        log.warning("Something wrong inner...Thread -------- " + toStart + "---" + dateDepartureTo + "------"+x+"--------"+e.getLocalizedMessage());
+                    }
 
+                }
+            }
+            catch (Exception e){
+                log.warning("Something wrong outer...Thread -------- " + toStart + "---" +pair.getKey()+"------"+e.getLocalizedMessage());
             }
         }
         return true;
