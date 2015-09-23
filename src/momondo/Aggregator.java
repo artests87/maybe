@@ -27,8 +27,9 @@ public class Aggregator
 
         Calendar start=Calendar.getInstance();
         log.info("Start program--" + start.getTime().toString());
-        ExecutorThread executorThread=new ExecutorThread();
-        executorThread.userDateSelectEmulationMethod();
+        //ExecutorThread executorThread=new ExecutorThread(ExecutorThread.TOANDFROM,"LED");
+        ExecutorThread executorThread=new ExecutorThread(ExecutorThread.TO,"LED");
+        //executorThread.userDateSelectEmulationMethod();
 
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());

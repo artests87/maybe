@@ -11,5 +11,5 @@ import java.util.Set;
  */
 public interface Strategy
 {
-    Set<Flight> getFlights(String toStart, String dateStart, String fromEnd, String dateEnd);
+    Set<Flight> getFlights(String toStart, String dateStart, String fromEnd, String dateEnd, String fromStart);
 }
