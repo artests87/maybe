@@ -2,6 +2,8 @@ package momondo;
 
 
 import momondo.model.ExecutorThread;
+import momondo.model.SingltonAliveAndSleep;
+import momondo.model.SleepThread;
 
 
 import java.io.IOException;
@@ -27,13 +29,14 @@ public class Aggregator
 
         Calendar start=Calendar.getInstance();
         log.info("Start program--" + start.getTime().toString());
-        //ExecutorThread executorThread=new ExecutorThread(ExecutorThread.TOANDFROM,"LED");
-        ExecutorThread executorThread=new ExecutorThread(ExecutorThread.TO,"LED");
-        //executorThread.userDateSelectEmulationMethod();
-
+        SleepThread sleepCall=new SleepThread();
+        Thread sleepCallThread=new Thread(sleepCall);
+        sleepCallThread.start();
+        ExecutorThread executorThread=new ExecutorThread(ExecutorThread.TOANDFROM,"LED");
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());
+        sleepCall.shutdownThread();
 
     }
 }

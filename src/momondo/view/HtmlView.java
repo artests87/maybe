@@ -3,6 +3,7 @@ package momondo.view;
 import momondo.Aggregator;
 import momondo.model.MMStrategy;
 
+import momondo.model.SingltonAliveAndSleep;
 import momondo.vo.Flight;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,7 +26,8 @@ public class HtmlView implements View,Callable<Boolean>{
     private String filePath;
     private String filePathStart=System.getProperty("user.dir")+"/res/outHTML/flightsAll.html";
     private LinkedHashSet<Flight> linkedHashSetFlights=new LinkedHashSet<>();
-    boolean isDocumentExist=false;
+
+    private boolean isDocumentExist=false;
 
     public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart,String fromStart) {
         this.toStart = toStart;
@@ -43,6 +45,9 @@ public class HtmlView implements View,Callable<Boolean>{
                 String dateDepartureTo = calendar.get(Calendar.DATE) + "-" + ((calendar.get(Calendar.MONTH)) + 1) + "-" + calendar.get(Calendar.YEAR);
                 for (Calendar x : pair.getValue()) {
                     try {
+                        while (SingltonAliveAndSleep.getInstance().isSleep()){
+                            Thread.currentThread().wait(10000);
+                        }
                         String dateDepartureFrom = x.get(Calendar.DATE) + "-" + ((x.get(Calendar.MONTH)) + 1) + "-" + x.get(Calendar.YEAR);
                         linkedHashSetFlights = new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom, fromStart);
                         //linkedHashSetFlights=new MMStrategy().getFlights("BGY", "06-10-2015", "BGY", "19-10-2015");

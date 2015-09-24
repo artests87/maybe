@@ -22,10 +22,8 @@ public class Airports {
                 airports.add(bufferedReader.readLine());
             }
             bufferedReader.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+
         }
     }
 
