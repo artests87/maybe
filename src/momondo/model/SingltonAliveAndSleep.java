@@ -6,11 +6,15 @@ package momondo.model;
 public class SingltonAliveAndSleep {
     private static SingltonAliveAndSleep ourInstance = new SingltonAliveAndSleep();
     private static Boolean isSleepAllThread=false;
+    private static Boolean isAlive=true;
     public static SingltonAliveAndSleep getInstance() {
         return ourInstance;
     }
 
     private SingltonAliveAndSleep() {
+    }
+    public void offAlive(){
+        isAlive=false;
     }
     public void offIsSleepAllThread(){
         isSleepAllThread=false;
@@ -20,6 +24,9 @@ public class SingltonAliveAndSleep {
     }
     public boolean isSleep(){
         return isSleepAllThread;
+    }
+    public boolean isAlive(){
+        return isAlive;
     }
 
 }

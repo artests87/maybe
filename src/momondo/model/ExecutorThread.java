@@ -20,13 +20,12 @@ public class ExecutorThread
     public static final int TOANDFROMTOGETHER=2;
 
     //Boolean for sleep
-
     private int amountDates=0;
     private int amountRoutes=0;
     private int amountFinishedRoutes=0;
     private int amountFinishedDates=0;
     private int amountQuery=0;
-    private final static int threads=4;
+    private final static int threads=1;
     private String fromStart;
     private static Logger log = Logger.getLogger(ExecutorThread.class.getName());
     private Map<Calendar,LinkedHashSet<Calendar>> mapCalendar;
@@ -82,19 +81,14 @@ public class ExecutorThread
 
             Collection<Future<?>> futures = new LinkedList<Future<?>>();
             for (String x : airports) {
-                while (SingltonAliveAndSleep.getInstance().isSleep()){
-                    try {
-                        Thread.currentThread().wait(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
                 futures.add(service.submit(new HtmlView(mapCalendar, x, fromStart)));
             }
             for (Future<?> x : futures) {
                 try {
-                    while (SingltonAliveAndSleep.getInstance().isSleep()){
-                        Thread.currentThread().wait(1000);
+                    synchronized (Thread.currentThread()){
+                        while (SingltonAliveAndSleep.getInstance().isSleep()) {
+                            Thread.currentThread().wait(1000);
+                        }
                     }
                     x.get();
                     amountFinishedRoutes++;
@@ -102,12 +96,19 @@ public class ExecutorThread
 
                     System.out.println("Left routes - " + (amountRoutes - amountFinishedRoutes));
                     System.out.println("Left query - " + (amountQuery - amountFinishedDates));
-                } catch (NullPointerException | InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
+                    if (!SingltonAliveAndSleep.getInstance().isAlive()){
+                        //service.shutdown();
+                        service.shutdownNow();
+                        System.out.println("Exit begin...");
+                        service.awaitTermination(10,TimeUnit.SECONDS);
+                        break;
+                    }
+                } catch (Exception e) {
+                    log.warning("Something wrong with the Main Thread---"+e.getLocalizedMessage());
                 }
             }
-
-        service.shutdown();
+        System.out.println("Exit end!");
+        //service.shutdown();
     }
 
     public void userDateSelectEmulationMethodTo(int threads){

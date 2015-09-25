@@ -37,6 +37,6 @@ public class Aggregator
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());
         sleepCall.shutdownThread();
-
+        System.out.println("Exit MainThread");
     }
 }

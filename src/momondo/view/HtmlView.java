@@ -39,14 +39,19 @@ public class HtmlView implements View,Callable<Boolean>{
 
     @Override
     public Boolean call() throws Exception{
+        if (!SingltonAliveAndSleep.getInstance().isAlive()){
+            return false;
+        }
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
             try {
                 Calendar calendar = pair.getKey();
                 String dateDepartureTo = calendar.get(Calendar.DATE) + "-" + ((calendar.get(Calendar.MONTH)) + 1) + "-" + calendar.get(Calendar.YEAR);
                 for (Calendar x : pair.getValue()) {
                     try {
-                        while (SingltonAliveAndSleep.getInstance().isSleep()){
-                            Thread.currentThread().wait(10000);
+                        synchronized (Thread.currentThread()) {
+                            while (SingltonAliveAndSleep.getInstance().isSleep()) {
+                                Thread.currentThread().wait(10000);
+                            }
                         }
                         String dateDepartureFrom = x.get(Calendar.DATE) + "-" + ((x.get(Calendar.MONTH)) + 1) + "-" + x.get(Calendar.YEAR);
                         linkedHashSetFlights = new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom, fromStart);

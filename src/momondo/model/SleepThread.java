@@ -8,8 +8,7 @@ import java.util.concurrent.Callable;
  * Created by Cats on 24.09.2015.
  */
 public class SleepThread implements Runnable {
-    private Boolean isAlive=true;
-    BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(System.in));
+    private BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(System.in));
 
 
     public void onIsSleepAllThread(){
@@ -19,23 +18,23 @@ public class SleepThread implements Runnable {
         SingltonAliveAndSleep.getInstance().offIsSleepAllThread();
     }
     public void shutdownThread(){
-        isAlive=false;
+        SingltonAliveAndSleep.getInstance().offAlive();
     }
 
     @Override
     public void run() {
         try {
-            while (isAlive) {
+            while (SingltonAliveAndSleep.getInstance().isAlive()) {
                 String readLine=bufferedReader.readLine().toLowerCase();
-                if (SingltonAliveAndSleep.getInstance().isSleep()) {
-                    if (readLine.equals("go")) {
+                if (readLine.equals("go")) {
                         offIsSleepAllThread();
                         System.out.println("Resume");
-                    }
+                    continue;
                 }
                 if (readLine.equals("p")) {
                     onIsSleepAllThread();
                     System.out.println("Pause");
+                    continue;
                 }
                 if (readLine.equals("exit")){
                     shutdownThread();
@@ -45,6 +44,9 @@ public class SleepThread implements Runnable {
         }
         catch (Exception e){
 
+        }
+        finally {
+            System.out.println("Exit SleepThread");
         }
     }
 }
