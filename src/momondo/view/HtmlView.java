@@ -39,8 +39,7 @@ public class HtmlView implements View,Callable<Boolean>{
 
     @Override
     public Boolean call() throws Exception{
-        if (!SingltonAliveAndSleep.getInstance().isAlive()){
-            return false;
+        if (!SingltonAliveAndSleep.getInstance().isAlive()){ return false;
         }
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
             try {
