@@ -28,28 +28,34 @@ public class ReaderFilesInFolder {
         }
 
         FileInputStream fileInputStream;
-        FileOutputStream fileOutputStream;
+        FileOutputStream fileOutputStream=null;
+        try {
+            fileOutputStream=new FileOutputStream(pathFolder+pathFileTo);
+        } catch (FileNotFoundException e) {
+            log.warning("Bad openOUT in createOneHTML---" + e.getLocalizedMessage());
+        }
         for (String x:listFiles) {
             try {
-                fileInputStream = new FileInputStream(pathFolder+pathFileTo);
-
-                byte[] bytesFileToSave=new byte[fileInputStream.available()];
-                fileInputStream.read(bytesFileToSave);
-                fileInputStream.close();
-
-                fileOutputStream=new FileOutputStream(pathFolder+pathFileTo);
                 fileInputStream = new FileInputStream(pathFolder+x);
                 System.out.println(pathFolder+x);
 
                 byte[] bytesFileNew=new byte[fileInputStream.available()];
                 fileInputStream.read(bytesFileNew);
                 fileInputStream.close();
-                fileOutputStream.write(bytesFileToSave);
-                fileOutputStream.write(bytesFileNew);
-                fileOutputStream.close();
+                if (fileOutputStream != null) {
+                    fileOutputStream.write(bytesFileNew);
+                }
+
             } catch (IOException e) {
                 log.warning("Bad createOneHTML---" + e.getLocalizedMessage());
             }
+        }
+        try {
+            if (fileOutputStream != null) {
+                fileOutputStream.close();
+            }
+        } catch (IOException e) {
+            log.warning("Bad closeOUT in createOneHTML---" + e.getLocalizedMessage());
         }
     }
 

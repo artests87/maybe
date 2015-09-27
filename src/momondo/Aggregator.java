@@ -28,10 +28,9 @@ public class Aggregator
             System.err.println("Could not setup logger configuration: " + e.toString());
         }
 
-        ReaderFilesInFolder readerFilesInFolder=new ReaderFilesInFolder("C:\\JAVA\\maybe\\res\\outHTML\\Temp\\ToAndFromEUR27092015\\","results.html");
+        ReaderFilesInFolder readerFilesInFolder=new ReaderFilesInFolder("C:\\JAVA\\maybe\\res\\outHTML\\Temp\\ToAndFromEUR27092015\\","results1.html");
         readerFilesInFolder.create();
-        /*
-        Calendar start=Calendar.getInstance();
+        /*Calendar start=Calendar.getInstance();
         log.info("Start program--" + start.getTime().toString());
         SleepThread sleepCall=new SleepThread();
         Thread sleepCallThread=new Thread(sleepCall);
