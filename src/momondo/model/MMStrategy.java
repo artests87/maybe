@@ -111,7 +111,7 @@ public class MMStrategy implements Strategy
         Document document=null;
         try {
             (new WebDriverWait(driver,30)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
-            (new WebDriverWait(driver,800)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
+            (new WebDriverWait(driver,100)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
             html_content = driver.getPageSource();
             document=Jsoup.parse(html_content);
             Elements elements = document.getElementsByAttributeValue("title", "Ой! Ни один из результатов не совпадает с вашим запросом");

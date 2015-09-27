@@ -134,12 +134,24 @@ public class ExecutorThread
         }
         for (Future<?> x:futures){
             try {
+                synchronized (Thread.currentThread()){
+                    while (SingltonAliveAndSleep.getInstance().isSleep()) {
+                        Thread.currentThread().wait(1000);
+                    }
+                }
                 x.get();
                 amountFinishedRoutes++;
                 amountFinishedDates+=amountDates;
 
                 System.out.println("SINGLE Left routes - "+(amountRoutes-amountFinishedRoutes));
                 System.out.println("SINGLE Left query - "+(amountQuery-amountFinishedDates));
+                if (!SingltonAliveAndSleep.getInstance().isAlive()){
+                    //service.shutdown();
+                    service.shutdownNow();
+                    System.out.println("Exit begin...");
+                    service.awaitTermination(10,TimeUnit.SECONDS);
+                    break;
+                }
             }
             catch (NullPointerException | InterruptedException | ExecutionException e) {
                 e.printStackTrace();

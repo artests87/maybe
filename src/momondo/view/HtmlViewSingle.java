@@ -3,6 +3,7 @@ package momondo.view;
 import momondo.Aggregator;
 import momondo.model.MMStrategy;
 import momondo.model.MMStrategySingle;
+import momondo.model.SingltonAliveAndSleep;
 import momondo.vo.Flight;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,6 +38,8 @@ public class HtmlViewSingle implements View,Callable<Boolean>{
 
     @Override
     public Boolean call() throws Exception{
+        if (!SingltonAliveAndSleep.getInstance().isAlive()){ return false;
+        }
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
             try {
                 Calendar calendar = pair.getKey();
@@ -50,6 +53,11 @@ public class HtmlViewSingle implements View,Callable<Boolean>{
                 }
                 for (Calendar x : pair.getValue()) {
                     try {
+                        synchronized (Thread.currentThread()) {
+                            while (SingltonAliveAndSleep.getInstance().isSleep()) {
+                                Thread.currentThread().wait(10000);
+                            }
+                        }
                         dateDepartureTo=x.get(Calendar.DATE) + "-" + ((x.get(Calendar.MONTH)) + 1) + "-" + x.get(Calendar.YEAR);
                         linkedHashSetFlights = new MMStrategySingle().getFlights(fromStart, dateDepartureTo,null, null,toStart);
                         if (linkedHashSetFlights != null && linkedHashSetFlights.size() > 0) {

@@ -38,7 +38,8 @@ public class SleepThread implements Runnable {
                 }
                 if (readLine.equals("exit")){
                     shutdownThread();
-                    System.out.println("Exit");
+                    offIsSleepAllThread();
+                    System.out.println("Resume and Exit");
                 }
             }
         }

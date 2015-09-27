@@ -2,6 +2,7 @@ package momondo;
 
 
 import momondo.model.ExecutorThread;
+import momondo.model.ReaderFilesInFolder;
 import momondo.model.SingltonAliveAndSleep;
 import momondo.model.SleepThread;
 
@@ -27,6 +28,9 @@ public class Aggregator
             System.err.println("Could not setup logger configuration: " + e.toString());
         }
 
+        ReaderFilesInFolder readerFilesInFolder=new ReaderFilesInFolder("C:\\JAVA\\maybe\\res\\outHTML\\Temp\\ToAndFromEUR27092015\\","results.html");
+        readerFilesInFolder.create();
+        /*
         Calendar start=Calendar.getInstance();
         log.info("Start program--" + start.getTime().toString());
         SleepThread sleepCall=new SleepThread();
@@ -37,6 +41,6 @@ public class Aggregator
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());
         sleepCall.shutdownThread();
-        System.out.println("Exit MainThread");
+        System.out.println("Exit MainThread");*/
     }
 }
