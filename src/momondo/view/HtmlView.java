@@ -1,6 +1,7 @@
 package momondo.view;
 
 import momondo.Aggregator;
+import momondo.model.ExecutorThread;
 import momondo.model.MMStrategy;
 
 import momondo.model.SingltonAliveAndSleep;
@@ -26,21 +27,40 @@ public class HtmlView implements View,Callable<Boolean>{
     private String filePath;
     private String filePathStart=System.getProperty("user.dir")+"/res/outHTML/flightsAll.html";
     private LinkedHashSet<Flight> linkedHashSetFlights=new LinkedHashSet<>();
+    private int methodSearch;
 
     private boolean isDocumentExist=false;
 
-    public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart,String fromStart) {
+    public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart,String fromStart,int methodSearch) {
         this.toStart = toStart;
         this.fromEnd = toStart;
         this.fromStart=fromStart;
         this.mapCalendar = mapCalendar;
-        filePath=System.getProperty("user.dir")+"/res/outHTML" + "/flights"+toStart+".html";
+        this.methodSearch=methodSearch;
+        if (methodSearch==ExecutorThread.TOANDFROM) {
+            filePath = System.getProperty("user.dir") + "/res/outHTML" + "/flights" + toStart + ".html";
+        }
+        else{
+            filePath = System.getProperty("user.dir") + "/res/outHTML" + "/singleFlights" + toStart + ".html";
+        }
     }
 
     @Override
     public Boolean call() throws Exception{
-        if (!SingltonAliveAndSleep.getInstance().isAlive()){ return false;
+        if (!SingltonAliveAndSleep.getInstance().isAlive()){ return false;}
+        switch (methodSearch){
+            case (ExecutorThread.TO):
+                searchSingle();
+                break;
+            case (ExecutorThread.TOANDFROM):
+                searchDouble();
+                break;
+            default:
+                searchDouble();
         }
+        return true;
+    }
+    private void searchDouble(){
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
             try {
                 Calendar calendar = pair.getKey();
@@ -53,9 +73,8 @@ public class HtmlView implements View,Callable<Boolean>{
                             }
                         }
                         String dateDepartureFrom = x.get(Calendar.DATE) + "-" + ((x.get(Calendar.MONTH)) + 1) + "-" + x.get(Calendar.YEAR);
-                        linkedHashSetFlights = new MMStrategy().getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom, fromStart);
+                        linkedHashSetFlights = new MMStrategy(methodSearch).getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom, fromStart);
                         //linkedHashSetFlights=new MMStrategy().getFlights("BGY", "06-10-2015", "BGY", "19-10-2015");
-
                         if (linkedHashSetFlights != null && linkedHashSetFlights.size() > 0) {
                             log.info(Thread.currentThread().getName() + "--Thread -------- " + fromStart +"----"+ toStart+"---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--" + linkedHashSetFlights.size());
                             update((linkedHashSetFlights), filePath);
@@ -65,25 +84,58 @@ public class HtmlView implements View,Callable<Boolean>{
                     } catch (Exception e) {
                         log.warning("Something wrong inner...Thread -------- " + fromStart +"----"+ toStart + "---" + dateDepartureTo + "------"+x+"--------"+e.getLocalizedMessage());
                     }
-
                 }
             }
             catch (Exception e){
                 log.warning("Something wrong outer...Thread -------- " + fromStart +"----"+ toStart + "---" +pair.getKey()+"------"+e.getLocalizedMessage());
             }
         }
-        return true;
     }
-    public void update(LinkedHashSet<Flight> flights, String filePath)
-    {
+    private void searchSingle(){
+        for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
+            try {
+                Calendar calendar = pair.getKey();
+                String dateDepartureTo = calendar.get(Calendar.DATE) + "-" + ((calendar.get(Calendar.MONTH)) + 1) + "-" + calendar.get(Calendar.YEAR);
+                linkedHashSetFlights = new MMStrategy(methodSearch).getFlights(toStart, dateDepartureTo,null, null,fromStart);
+                if (linkedHashSetFlights != null && linkedHashSetFlights.size() > 0) {
+                    log.info(Thread.currentThread().getName() + "--Thread -------- " + toStart + fromStart +"----"+ "---" + dateDepartureTo + "------" + ". Size--" + linkedHashSetFlights.size());
+                    update((linkedHashSetFlights), filePath);
+                } else {
+                    log.warning("SINGLE - The size if 0...Outer Thread -------- " + toStart + fromStart +"----"+ "---" + dateDepartureTo + "------");
+                }
+                for (Calendar x : pair.getValue()) {
+                    try {
+                        synchronized (Thread.currentThread()) {
+                            while (SingltonAliveAndSleep.getInstance().isSleep()) {
+                                Thread.currentThread().wait(10000);
+                            }
+                        }
+                        dateDepartureTo=x.get(Calendar.DATE) + "-" + ((x.get(Calendar.MONTH)) + 1) + "-" + x.get(Calendar.YEAR);
+                        linkedHashSetFlights = new MMStrategy(methodSearch).getFlights(fromStart, dateDepartureTo,null, null,toStart);
+                        if (linkedHashSetFlights != null && linkedHashSetFlights.size() > 0) {
+                            log.info(Thread.currentThread().getName() + "--Thread -------- " + toStart + fromStart +"----"+ "---" + dateDepartureTo + "------" + ". Size--" + linkedHashSetFlights.size());
+                            update((linkedHashSetFlights), filePath);
+                        } else {
+                            log.warning("SINGLE - The size if 0... Inner Thread -------- " + toStart + fromStart +"----"+ "---" + dateDepartureTo + "------");
+                        }
+                    } catch (Exception e) {
+                        log.warning("SINGLE - Something wrong inner...Thread -------- " + toStart + fromStart +"----"+ "---" + dateDepartureTo + "------"+x+"--------"+e.getLocalizedMessage());
+                    }
+                }
+            }
+            catch (Exception e){
+                log.warning("SINGLE - Something wrong outer...Thread -------- " + fromStart +"----"+ toStart + "---" +pair.getKey()+"------"+e.getLocalizedMessage());
+            }
+        }
+    }
+    public void update(LinkedHashSet<Flight> flights, String filePath){
         try {
             updateFile(getUpdatedFileContent(flights));
         } catch (Exception e) {
             log.warning("Some exception occurred---" + e.getLocalizedMessage());
         }
     }
-    private String getUpdatedFileContent(LinkedHashSet<Flight> list) throws IOException
-    {
+    private String getUpdatedFileContent(LinkedHashSet<Flight> list) throws IOException{
         Document document=getDocument();
         Element element=document.getElementsByClass("template").first();
         Element elementCopy=element.clone();
@@ -100,18 +152,21 @@ public class HtmlView implements View,Callable<Boolean>{
             elementCopyTemp.getElementsByClass("FromStart").first().text(x.getFromStart());
             elementCopyTemp.getElementsByClass("ToStart").first().text(x.getToStart());
             elementCopyTemp.getElementsByClass("DateStart").first().text(x.getDateStart());
-            elementCopyTemp.getElementsByClass("FromEnd").first().text(x.getFromEnd());
-            elementCopyTemp.getElementsByClass("ToEnd").first().text(x.getToEnd());
-            elementCopyTemp.getElementsByClass("DateEnd").first().text(x.getDateEnd());
+            if (methodSearch==ExecutorThread.TOANDFROM) {
+                elementCopyTemp.getElementsByClass("FromEnd").first().text(x.getFromEnd());
+                elementCopyTemp.getElementsByClass("ToEnd").first().text(x.getToEnd());
+                elementCopyTemp.getElementsByClass("DateEnd").first().text(x.getDateEnd());
+            }
             elementCopyTemp.getElementsByClass("Coast").first().text(x.getCoast());
             elementCopyTemp.getElementsByClass("title").first().text(x.getTitle());
+            elementCopyTemp.getElementsByClass("hrefa").first().attr("href", x.getHREF());
+            elementCopyTemp.getElementsByClass("hrefa").first().text(x.getFromCode()+"--"+x.getToCode());
 
             element.before(elementCopyTemp.outerHtml());
         }
         return document.html();
     }
-    private void updateFile(String string)
-    {
+    private void updateFile(String string){
         PrintWriter pw = null;
         try {
             pw = new PrintWriter( new OutputStreamWriter( new FileOutputStream(filePath), "UTF-8"));
@@ -123,7 +178,6 @@ public class HtmlView implements View,Callable<Boolean>{
 
 
     }
-
     protected Document getDocument(){
         File input=new File(filePath);
         if (!isDocumentExist) {
@@ -138,6 +192,4 @@ public class HtmlView implements View,Callable<Boolean>{
         }
         return document;
     }
-
-
 }

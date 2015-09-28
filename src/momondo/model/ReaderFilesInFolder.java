@@ -12,10 +12,12 @@ public class ReaderFilesInFolder {
     private List<String> listFiles=new LinkedList<>();
     private String pathFolder;
     private String pathFileTo;
+    private String prefix;
 
-    public ReaderFilesInFolder(String pathFolder, String pathFileTo) {
+    public ReaderFilesInFolder(String pathFolder, String pathFileTo, String prefix) {
         this.pathFolder = pathFolder;
         this.pathFileTo = pathFileTo;
+        this.prefix = prefix;
     }
 
     private void createOneHTMLFromMany(){
@@ -69,7 +71,7 @@ public class ReaderFilesInFolder {
         {
             //Нужны только папки в место isFile() пишим isDirectory()
             if(fList[i].isFile()){
-                if (fList[i].getName().startsWith("flights")) {
+                if (fList[i].getName().startsWith(prefix)) {
                     listFiles.add(fList[i].getName());
                 }
             }

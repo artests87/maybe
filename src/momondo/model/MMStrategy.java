@@ -24,8 +24,14 @@ import java.util.logging.Logger;
 public class MMStrategy implements Strategy
 {
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
-    private static final String URL_FORMAT = "http://www.momondo.ru/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=%s&SD0=%s&SDP0=%s&SO1=%s&SD1=%s&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=2&SegNo=2&SO0=%s&SD0=%s&SDP0=%s&SO1=%s&SD1=%s&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false";
+    private static final String URL_FORMAT_DOUBLE = "http://www.momondo.ru/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=%s&SD0=%s&SDP0=%s&SO1=%s&SD1=%s&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=2&SegNo=2&SO0=%s&SD0=%s&SDP0=%s&SO1=%s&SD1=%s&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false";
+    private static final String URL_FORMAT_SINGLE = "http://www.momondo.ru/flightsearch/?Search=true&TripType=1&SegNo=1&SO0=%s&SD0=%s&SDP0=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=1&SegNo=1&SO0=%s&SD0=%s&SDP0=%s&AD=2&TK=ECO&DO=false&NA=false";
+    private String tempHREF;
+    private int methodSearch;
 
+    public MMStrategy(int methodSearch) {
+        this.methodSearch = methodSearch;
+    }
 
     @Override
     public LinkedHashSet<Flight> getFlights(String toStart, String dateStart, String fromEnd, String dateEnd, String fromStart) {
@@ -48,7 +54,7 @@ public class MMStrategy implements Strategy
                     try {
                         Flight flight = new Flight();
                         String attrAirlinesTitle = "airlines _1";
-                        if (x.getElementsByAttributeValue("class", "segment segment0").size() == 0 ||
+                        /*if (x.getElementsByAttributeValue("class", "segment segment0").size() == 0 ||
                                 x.getElementsByAttributeValue("class", "segment segment1").size() == 0 ||
                                 x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").size() == 0 ||
                                 x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").size() == 0 ||
@@ -64,7 +70,7 @@ public class MMStrategy implements Strategy
                                 ) {
                             log.warning("Some problems in -------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd);
                             continue;
-                        }
+                        }*/
                         vacancies.add(flight);
                         if (x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", attrAirlinesTitle).size() == 0 ||
                                 x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", attrAirlinesTitle).get(0).getElementsByAttributeValue("class", "names").size() == 0
@@ -79,13 +85,18 @@ public class MMStrategy implements Strategy
 
                         flight.setFromStart(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
                         flight.setToStart(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
-                        flight.setFromEnd(x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
-                        flight.setToEnd(x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
                         flight.setDateStart(dateStart);
-                        flight.setDateEnd(dateEnd);
                         flight.setTitle(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", attrAirlinesTitle).get(0).getElementsByAttributeValue("class", "names").get(0).text());
                         flight.setCoast(x.getElementsByAttributeValue("class", "price  long").get(0).getElementsByAttributeValue("class", "value").get(0).text());
+                        if (methodSearch==ExecutorThread.TOANDFROM){
+                            flight.setFromEnd(x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
+                            flight.setToEnd(x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
+                            flight.setDateEnd(dateEnd);
 
+                        }
+                        flight.setHREF(tempHREF);
+                        flight.setToCode(toStart);
+                        flight.setFromCode(fromStart);
                     }
                     catch (Exception e){
                         log.warning("Some problems with parsing element in-------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd);
@@ -100,32 +111,42 @@ public class MMStrategy implements Strategy
         return vacancies;
     }
     protected Document getDocument(String toStart, String dateStart, String fromEnd, String dateEnd,String fromStart) throws IOException, InterruptedException {
-        //System.setProperty("webdriver.chrome.driver","C:\\JAVA\\maybe\\dll\\chromedriver.exe");
-        //WebDriver driver = new ChromeDriver();
-        //System.out.println(driver.findElement(By.id("searchProgressText")).getText());
         File file = new File("C:/Program Files/phantomjs-2.0.0-windows/bin/phantomjs.exe");
         System.setProperty("phantomjs.binary.path", file.getAbsolutePath());
         WebDriver driver = new PhantomJSDriver();
-        driver.get(String.format(URL_FORMAT, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd));
+        switch (methodSearch){
+            case ExecutorThread.TO:
+                driver.get(String.format(URL_FORMAT_SINGLE,fromStart, toStart, dateStart, fromStart, toStart, dateStart));
+                tempHREF=String.format(URL_FORMAT_SINGLE,fromStart, toStart, dateStart, fromStart, toStart, dateStart);
+                break;
+            case ExecutorThread.TOANDFROM:
+                driver.get(String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd));
+                tempHREF=String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd);
+                break;
+            default:
+                driver.get(String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd));
+                tempHREF=String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd);
+        }
+        System.out.println(tempHREF);
         String html_content;
         Document document=null;
+        boolean boolError=true;
         try {
-            (new WebDriverWait(driver,30)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
-            (new WebDriverWait(driver,100)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
-            html_content = driver.getPageSource();
-            document=Jsoup.parse(html_content);
-            Elements elements = document.getElementsByAttributeValue("title", "Ой! Ни один из результатов не совпадает с вашим запросом");
-            if (elements.size() !=0){
-                log.warning("Nothing to find1 -------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd);
-                return null;
+                (new WebDriverWait(driver, 30)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
+                (new WebDriverWait(driver, 100)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
+                html_content = driver.getPageSource();
+                document = Jsoup.parse(html_content);
+                Elements elements = document.getElementsByAttributeValue("title", "Ой! Ни один из результатов не совпадает с вашим запросом");
+                if (elements.size() != 0) {
+                    log.warning("Nothing to find1 -------- " + fromStart + "--" + toStart + "---" + dateStart + "------" + dateEnd);
+                    return null;
+                }
+                boolError=false;
+            } catch (Exception e) {
+                log.warning("Momondo has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd);
+            } finally {
+                driver.quit();
             }
-
-        } catch (Exception e) {
-            log.warning("Momondo has problems--------"+fromStart+"--"+toStart + "--" + dateStart + "--" + dateEnd);
-        }
-        finally {
-            driver.quit();
-        }
 
         return document;
     }

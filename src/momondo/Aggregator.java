@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class Aggregator
 {
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
-
+    private static int threadsCount=4;
     public static void main(String[] args){
         try {
             LogManager.getLogManager().readConfiguration(
@@ -35,7 +35,7 @@ public class Aggregator
         SleepThread sleepCall=new SleepThread();
         Thread sleepCallThread=new Thread(sleepCall);
         sleepCallThread.start();
-        ExecutorThread executorThread=new ExecutorThread(ExecutorThread.TOANDFROM,"LED");
+        ExecutorThread executorThread=new ExecutorThread("LED",ExecutorThread.TO,threadsCount);
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());

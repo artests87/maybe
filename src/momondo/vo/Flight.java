@@ -13,6 +13,9 @@ public class Flight
     private String toEnd;
     private String dateEnd;
     private String coast;
+    private String HREF;
+    private String toCode;
+    private String fromCode;
 
     public void setTitle(String title)
     {
@@ -21,6 +24,18 @@ public class Flight
 
     public String getTitle() {
         return title;
+    }
+
+    public String getHREF() {
+        return HREF;
+    }
+
+    public String getToCode() {
+        return toCode;
+    }
+
+    public String getFromCode() {
+        return fromCode;
     }
 
     public String getFromStart() {
@@ -79,11 +94,22 @@ public class Flight
         this.dateEnd = dateEnd;
     }
 
+    public void setHREF(String HREF) {
+        this.HREF = HREF;
+    }
+
+    public void setToCode(String toCode) {
+        this.toCode = toCode;
+    }
+
+    public void setFromCode(String fromCode) {
+        this.fromCode = fromCode;
+    }
+
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Flight)) return false;
 
         Flight flight = (Flight) o;
 
@@ -92,19 +118,28 @@ public class Flight
         if (toStart != null ? !toStart.equals(flight.toStart) : flight.toStart != null) return false;
         if (dateStart != null ? !dateStart.equals(flight.dateStart) : flight.dateStart != null) return false;
         if (fromEnd != null ? !fromEnd.equals(flight.fromEnd) : flight.fromEnd != null) return false;
-        return !(toEnd != null ? !toEnd.equals(flight.toEnd) : flight.toEnd != null);
+        if (toEnd != null ? !toEnd.equals(flight.toEnd) : flight.toEnd != null) return false;
+        if (dateEnd != null ? !dateEnd.equals(flight.dateEnd) : flight.dateEnd != null) return false;
+        if (coast != null ? !coast.equals(flight.coast) : flight.coast != null) return false;
+        if (HREF != null ? !HREF.equals(flight.HREF) : flight.HREF != null) return false;
+        if (toCode != null ? !toCode.equals(flight.toCode) : flight.toCode != null) return false;
+        return !(fromCode != null ? !fromCode.equals(flight.fromCode) : flight.fromCode != null);
 
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = title != null ? title.hashCode() : 0;
         result = 31 * result + (fromStart != null ? fromStart.hashCode() : 0);
         result = 31 * result + (toStart != null ? toStart.hashCode() : 0);
         result = 31 * result + (dateStart != null ? dateStart.hashCode() : 0);
         result = 31 * result + (fromEnd != null ? fromEnd.hashCode() : 0);
         result = 31 * result + (toEnd != null ? toEnd.hashCode() : 0);
+        result = 31 * result + (dateEnd != null ? dateEnd.hashCode() : 0);
+        result = 31 * result + (coast != null ? coast.hashCode() : 0);
+        result = 31 * result + (HREF != null ? HREF.hashCode() : 0);
+        result = 31 * result + (toCode != null ? toCode.hashCode() : 0);
+        result = 31 * result + (fromCode != null ? fromCode.hashCode() : 0);
         return result;
     }
 }
