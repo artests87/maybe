@@ -156,11 +156,17 @@ public class HtmlView implements View,Callable<Boolean>{
                 elementCopyTemp.getElementsByClass("FromEnd").first().text(x.getFromEnd());
                 elementCopyTemp.getElementsByClass("ToEnd").first().text(x.getToEnd());
                 elementCopyTemp.getElementsByClass("DateEnd").first().text(x.getDateEnd());
+                elementCopyTemp.getElementsByClass("fromTimeDeparture").first().text(x.getFromTimeDepartment());
+                elementCopyTemp.getElementsByClass("fromTimeArrival").first().text(x.getFromTimeArrival());
+                elementCopyTemp.getElementsByClass("fromDuration").first().text(x.getFromDuration());
             }
             elementCopyTemp.getElementsByClass("Coast").first().text(x.getCoast());
             elementCopyTemp.getElementsByClass("title").first().text(x.getTitle());
             elementCopyTemp.getElementsByClass("hrefa").first().attr("href", x.getHREF());
             elementCopyTemp.getElementsByClass("hrefa").first().text(x.getFromCode()+"--"+x.getToCode());
+            elementCopyTemp.getElementsByClass("toTimeDeparture").first().text(x.getToTimeDepartment());
+            elementCopyTemp.getElementsByClass("toTimeArrival").first().text(x.getToTimeArrival());
+            elementCopyTemp.getElementsByClass("toDuration").first().text(x.getToDuration());
 
             element.before(elementCopyTemp.outerHtml());
         }

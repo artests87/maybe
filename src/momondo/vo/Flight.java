@@ -16,6 +16,12 @@ public class Flight
     private String HREF;
     private String toCode;
     private String fromCode;
+    private String toTimeArrival;
+    private String toTimeDepartment;
+    private String toDuration;
+    private String fromTimeArrival;
+    private String fromTimeDepartment;
+    private String fromDuration;
 
     public void setTitle(String title)
     {
@@ -28,6 +34,14 @@ public class Flight
 
     public String getHREF() {
         return HREF;
+    }
+
+    public String getToDuration() {
+        return toDuration;
+    }
+
+    public String getFromDuration() {
+        return fromDuration;
     }
 
     public String getToCode() {
@@ -64,6 +78,22 @@ public class Flight
 
     public String getCoast() {
         return coast;
+    }
+
+    public String getToTimeArrival() {
+        return toTimeArrival;
+    }
+
+    public String getToTimeDepartment() {
+        return toTimeDepartment;
+    }
+
+    public String getFromTimeArrival() {
+        return fromTimeArrival;
+    }
+
+    public String getFromTimeDepartment() {
+        return fromTimeDepartment;
     }
 
     public void setCoast(String coast) {
@@ -104,6 +134,30 @@ public class Flight
 
     public void setFromCode(String fromCode) {
         this.fromCode = fromCode;
+    }
+
+    public void setToTimeArrival(String toTimeArrival) {
+        this.toTimeArrival = toTimeArrival;
+    }
+
+    public void setToTimeDepartment(String toTimeDepartment) {
+        this.toTimeDepartment = toTimeDepartment;
+    }
+
+    public void setFromTimeArrival(String fromTimeArrival) {
+        this.fromTimeArrival = fromTimeArrival;
+    }
+
+    public void setFromTimeDepartment(String fromTimeDepartment) {
+        this.fromTimeDepartment = fromTimeDepartment;
+    }
+
+    public void setToDuration(String toDuration) {
+        this.toDuration = toDuration;
+    }
+
+    public void setFromDuration(String fromDuration) {
+        this.fromDuration = fromDuration;
     }
 
     @Override

@@ -13,7 +13,7 @@ public class Dates {
 
     public static LinkedHashMap<Calendar, LinkedHashSet<Calendar>> getMapCalendarStatic() {
         if (mapCalendarStatic==null){
-            mapCalendarStatic=generateDate(6);
+            mapCalendarStatic=generateDate(30);
         }
         return mapCalendarStatic;
     }
@@ -27,7 +27,7 @@ public class Dates {
         //Integer is for minimum date from DepartureTo
         int dateMin=6;
         //Integer is for maximums days for search
-        int theEndDate=7;
+        int theEndDate=60;
 
         //Create Map
         LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar= new LinkedHashMap <>();

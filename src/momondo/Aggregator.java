@@ -35,7 +35,8 @@ public class Aggregator
         SleepThread sleepCall=new SleepThread();
         Thread sleepCallThread=new Thread(sleepCall);
         sleepCallThread.start();
-        ExecutorThread executorThread=new ExecutorThread("LED",ExecutorThread.TO,threadsCount);
+        //ExecutorThread executorThread=new ExecutorThread("LED",ExecutorThread.TO,threadsCount);
+        ExecutorThread executorThread=new ExecutorThread("LED",ExecutorThread.TOANDFROM,threadsCount);
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());

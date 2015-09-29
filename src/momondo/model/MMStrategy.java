@@ -54,23 +54,6 @@ public class MMStrategy implements Strategy
                     try {
                         Flight flight = new Flight();
                         String attrAirlinesTitle = "airlines _1";
-                        /*if (x.getElementsByAttributeValue("class", "segment segment0").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "segment segment1").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "destination ").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "departure ").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "destination ").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "price  long").size() == 0 ||
-                                x.getElementsByAttributeValue("class", "price  long").get(0).getElementsByAttributeValue("class", "value").size() == 0
-
-                                ) {
-                            log.warning("Some problems in -------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd);
-                            continue;
-                        }*/
                         vacancies.add(flight);
                         if (x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", attrAirlinesTitle).size() == 0 ||
                                 x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", attrAirlinesTitle).get(0).getElementsByAttributeValue("class", "names").size() == 0
@@ -88,11 +71,17 @@ public class MMStrategy implements Strategy
                         flight.setDateStart(dateStart);
                         flight.setTitle(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", attrAirlinesTitle).get(0).getElementsByAttributeValue("class", "names").get(0).text());
                         flight.setCoast(x.getElementsByAttributeValue("class", "price  long").get(0).getElementsByAttributeValue("class", "value").get(0).text());
+                        flight.setToTimeDepartment(x.getElementsByAttributeValue("class","segment segment0").get(0).getElementsByAttributeValue("class","departure ").get(0).getElementsByAttributeValue("class","time").get(0).text());
+                        flight.setToTimeArrival(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "time").get(0).text());
+                        flight.setToDuration(x.getElementsByAttributeValue("class", "segment segment0").get(0).getElementsByAttributeValue("class", "duration").get(0).getElementsByAttributeValue("class", "travel-time").get(0).text());
+
                         if (methodSearch==ExecutorThread.TOANDFROM){
                             flight.setFromEnd(x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "departure ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
                             flight.setToEnd(x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "city").get(0).text());
                             flight.setDateEnd(dateEnd);
-
+                            flight.setFromTimeDepartment(x.getElementsByAttributeValue("class","segment segment1").get(0).getElementsByAttributeValue("class","departure ").get(0).getElementsByAttributeValue("class","time").get(0).text());
+                            flight.setFromTimeArrival(x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "destination ").get(0).getElementsByAttributeValue("class", "time").get(0).text());
+                            flight.setFromDuration(x.getElementsByAttributeValue("class", "segment segment1").get(0).getElementsByAttributeValue("class", "duration").get(0).getElementsByAttributeValue("class", "travel-time").get(0).text());
                         }
                         flight.setHREF(tempHREF);
                         flight.setToCode(toStart);
