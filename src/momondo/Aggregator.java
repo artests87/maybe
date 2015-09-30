@@ -20,6 +20,20 @@ public class Aggregator
 {
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
     private static int threadsCount=4;
+    private static String folder =System.getProperty("user.dir")+"/res/";
+    private static String airportsTo ="airportsITA";
+    private static String airportsFrom ="airports";
+    //Integer is for minimum amount days between DepartureTo and DepartureFrom
+    private static int amountMin=6;
+    //Integer is for maximum amount days between DepartureTo and DepartureFrom
+    private static int amountMax=16;
+    //Integer is for minimum date from DepartureTo
+    private static int dateMin=6;
+    //Integer is for maximums days for search
+    private static int theEndDate=60;
+    //Integer is start day (count from now)
+    private static int missingDays=30;
+
     public static void main(String[] args){
         try {
             LogManager.getLogManager().readConfiguration(
@@ -35,8 +49,7 @@ public class Aggregator
         SleepThread sleepCall=new SleepThread();
         Thread sleepCallThread=new Thread(sleepCall);
         sleepCallThread.start();
-        //ExecutorThread executorThread=new ExecutorThread("LED",ExecutorThread.TO,threadsCount);
-        ExecutorThread executorThread=new ExecutorThread("LED",ExecutorThread.TOANDFROM,threadsCount);
+        ExecutorThread executorThread=new ExecutorThread(ExecutorThread.TOANDFROM,threadsCount,folder+airportsTo,folder+airportsFrom,folder,amountMin,amountMax,dateMin,theEndDate,missingDays);
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());

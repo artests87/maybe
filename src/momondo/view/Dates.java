@@ -10,25 +10,33 @@ import java.util.Locale;
  */
 public class Dates {
     private static LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendarStatic;
+    //Integer is for minimum amount days between DepartureTo and DepartureFrom
+    private int amountMin;
+    //Integer is for maximum amount days between DepartureTo and DepartureFrom
+    private int amountMax;
+    //Integer is for minimum date from DepartureTo
+    private int dateMin;
+    //Integer is for maximums days for search
+    private int theEndDate;
+    private int missingDays;
 
-    public static LinkedHashMap<Calendar, LinkedHashSet<Calendar>> getMapCalendarStatic() {
+    public Dates(int amountMin, int amountMax, int dateMin, int theEndDate, int missingDays) {
+        this.amountMin = amountMin;
+        this.amountMax = amountMax;
+        this.dateMin = dateMin;
+        this.theEndDate = theEndDate;
+        this.missingDays = missingDays;
+    }
+
+    public LinkedHashMap<Calendar, LinkedHashSet<Calendar>> getMapCalendarStatic() {
         if (mapCalendarStatic==null){
-            mapCalendarStatic=generateDate(30);
+            mapCalendarStatic=generateDate();
         }
         return mapCalendarStatic;
     }
 
     //Method creates Map with key which contains dates DepartureTo and Set which contains dates DepartureFrom)
-    public static LinkedHashMap<Calendar,LinkedHashSet<Calendar>> generateDate(int missingDays){
-        //Integer is for minimum amount days between DepartureTo and DepartureFrom
-        int amountMin=6;
-        //Integer is for maximum amount days between DepartureTo and DepartureFrom
-        int amountMax=16;
-        //Integer is for minimum date from DepartureTo
-        int dateMin=6;
-        //Integer is for maximums days for search
-        int theEndDate=60;
-
+    public LinkedHashMap<Calendar,LinkedHashSet<Calendar>> generateDate(){
         //Create Map
         LinkedHashMap<Calendar,LinkedHashSet<Calendar>> mapCalendar= new LinkedHashMap <>();
         //Calendar - present day

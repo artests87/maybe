@@ -2,20 +2,19 @@ package momondo.view;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Cats on 20.09.2015.
  */
 public class Airports {
-    static private List<String> airports=new ArrayList<>();
+    static private Set<String> airports=new LinkedHashSet<>();
 
-    public static void readFileAirports(String txt){
+    public static void readFileAirports(String fileName){
         BufferedReader bufferedReader= null;
-        String txtPath=System.getProperty("user.dir")+"\\res\\airports.txt";
-        if (txt!=null){
-            txtPath=txt;
-        }
+        String txtPath=fileName+".txt";
         try {
             bufferedReader = new BufferedReader(new FileReader(txtPath));
             while (bufferedReader.ready()) {
@@ -27,9 +26,9 @@ public class Airports {
         }
     }
 
-    public static List<String> getAirports() {
+    public static Set<String> getAirports(String fileName) {
         if (airports.size()==0){
-            readFileAirports(null);
+            readFileAirports(fileName);
         }
         return airports;
     }

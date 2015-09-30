@@ -18,30 +18,34 @@ public class ExecutorThread
     public static final int TO=1;
 
     //Boolean for sleep
+    private String folder;
     private int amountDates=0;
     private int amountRoutes=0;
+    private int amountRoutesFrom=0;
     private int amountFinishedRoutes=0;
     private int amountFinishedDates=0;
     private int amountQuery=0;
     private int threadsCount;
-    private String fromStart;
     private static Logger log = Logger.getLogger(ExecutorThread.class.getName());
     private Map<Calendar,LinkedHashSet<Calendar>> mapCalendar;
-    private List<String> airports;
+    private Set<String> airports;
+    private Set<String> airportsFrom;
     private int methodSearch;
 
 
-    public ExecutorThread(String fromStart,int methodSearch,int threadsCount) {
-        this.fromStart=fromStart;
+    public ExecutorThread(int methodSearch,int threadsCount, String fileName, String fileNameFrom, String folder,
+                          int amountMin, int amountMax,int dateMin,int theEndDate,int missingDays) {
         this.methodSearch=methodSearch;
         this.threadsCount=threadsCount;
-        mapCalendar= Dates.getMapCalendarStatic();
-        airports= Airports.getAirports();
-        if (airports.size()>0 && mapCalendar.size()>0) {
-            userDateSelectEmulationMethod(threadsCount);
+        this.folder=folder;
+        mapCalendar=new Dates(amountMin,amountMax,dateMin,theEndDate,missingDays).getMapCalendarStatic();
+        airports= Airports.getAirports(fileName);
+        airportsFrom= Airports.getAirports(fileNameFrom);
+        if (airports.size()>0 && mapCalendar.size()>0 && airportsFrom.size()>0) {
+            userDateSelectEmulationMethod();
         }
         else{
-            if (airports.size()==0){
+            if (airports.size()==0 || airportsFrom.size()==0){
                 System.out.println("Size airports is 0");
             }
 
@@ -50,26 +54,33 @@ public class ExecutorThread
             }
         }
     }
-
-    public void userDateSelectEmulationMethod(int threads){
-        ExecutorService service = Executors.newFixedThreadPool(threads);
+    public void userDateSelectEmulationMethod(){
+        ExecutorService service = Executors.newFixedThreadPool(threadsCount);
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>>  pair:mapCalendar.entrySet()){
             amountDates+=pair.getValue().size();
         }
         amountRoutes=airports.size();
+        amountRoutesFrom=airportsFrom.size();
 
         amountQuery = amountRoutes * amountDates;
 
         System.out.println("Total dates-" + amountDates);
-        System.out.println("Total routes-" + amountRoutes);
-        System.out.println("Total search-" + amountRoutes * amountDates);
+        System.out.println("Total routes-" + amountRoutes*amountRoutesFrom);
+        System.out.println("Total search-" + amountRoutes * amountDates*amountRoutesFrom);
         log.info("Total dates-" + amountDates);
-        log.info("Total routes-" + amountRoutes);
+        log.info("Total routes-" + amountRoutes*amountRoutesFrom);
         log.info("Total search-" + amountQuery);
 
         Collection<Future<?>> futures = new LinkedList<Future<?>>();
-        for (String x : airports) {
-            futures.add(service.submit(new HtmlView(mapCalendar, x, fromStart,methodSearch)));
+        for (String y:airportsFrom) {
+            for (String x : airports) {
+                if (y.equals(x)){
+                    amountFinishedRoutes++;
+                    amountFinishedDates += amountDates;
+                    continue;
+                }
+                futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder)));
+            }
         }
         for (Future<?> x : futures) {
             try {
@@ -95,53 +106,5 @@ public class ExecutorThread
         }
         System.out.println("Exit end!");
     }
-/*
-    public void userDateSelectEmulationMethodTo(int threads){
-        ExecutorService service = Executors.newFixedThreadPool(threads);
-        Map<Calendar,LinkedHashSet<Calendar>> mapCalendar= Dates.getMapCalendarStatic();
-        List<String> airports= Airports.getAirports();
-        for (Map.Entry<Calendar,LinkedHashSet<Calendar>>  pair:mapCalendar.entrySet()){
-            amountDates+=pair.getValue().size();
-        }
-        amountRoutes=airports.size();
-        amountQuery=amountRoutes*amountDates;
 
-        System.out.println("SINGLE Total dates-"+amountDates);
-        System.out.println("SINGLE Total routes-" + amountRoutes);
-        System.out.println("SINGLE Total search-" + amountRoutes * amountDates);
-        log.info("SINGLE Total dates-" + amountDates);
-        log.info("SINGLE Total routes-" + amountRoutes);
-        log.info("SINGLE Total search-"+amountQuery);
-
-        Collection<Future<?>> futures=new LinkedList<Future<?>>();
-        for (String x:airports) {
-            futures.add(service.submit(new HtmlViewSingle(mapCalendar,x,fromStart)));
-        }
-        for (Future<?> x:futures){
-            try {
-                synchronized (Thread.currentThread()){
-                    while (SingltonAliveAndSleep.getInstance().isSleep()) {
-                        Thread.currentThread().wait(1000);
-                    }
-                }
-                x.get();
-                amountFinishedRoutes++;
-                amountFinishedDates+=amountDates;
-
-                System.out.println("SINGLE Left routes - "+(amountRoutes-amountFinishedRoutes));
-                System.out.println("SINGLE Left query - "+(amountQuery-amountFinishedDates));
-                if (!SingltonAliveAndSleep.getInstance().isAlive()){
-                    //service.shutdown();
-                    service.shutdownNow();
-                    System.out.println("Exit begin...");
-                    service.awaitTermination(10,TimeUnit.SECONDS);
-                    break;
-                }
-            }
-            catch (NullPointerException | InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-        service.shutdown();
-    }*/
 }

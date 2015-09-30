@@ -25,23 +25,26 @@ public class HtmlView implements View,Callable<Boolean>{
     private String fromEnd;
     private Map<Calendar,LinkedHashSet<Calendar>> mapCalendar;
     private String filePath;
-    private String filePathStart=System.getProperty("user.dir")+"/res/outHTML/flightsAll.html";
+    private String folder;
+    private String filePathStart;
     private LinkedHashSet<Flight> linkedHashSetFlights=new LinkedHashSet<>();
     private int methodSearch;
 
     private boolean isDocumentExist=false;
 
-    public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart,String fromStart,int methodSearch) {
+    public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart,String fromStart,int methodSearch,String folder) {
+        this.folder = folder;
+        this.filePathStart=folder+"outHTML/flightsAll.html";
         this.toStart = toStart;
         this.fromEnd = toStart;
         this.fromStart=fromStart;
         this.mapCalendar = mapCalendar;
         this.methodSearch=methodSearch;
         if (methodSearch==ExecutorThread.TOANDFROM) {
-            filePath = System.getProperty("user.dir") + "/res/outHTML" + "/flights" + toStart + ".html";
+            filePath = folder+"outHTML" + "/flights" +fromStart+toStart + ".html";
         }
         else{
-            filePath = System.getProperty("user.dir") + "/res/outHTML" + "/singleFlights" + toStart + ".html";
+            filePath = folder+"outHTML" + "/singleFlights" +fromStart+toStart + ".html";
         }
     }
 
