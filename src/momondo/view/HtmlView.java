@@ -69,6 +69,7 @@ public class HtmlView implements View,Callable<Boolean>{
                 Calendar calendar = pair.getKey();
                 String dateDepartureTo = calendar.get(Calendar.DATE) + "-" + ((calendar.get(Calendar.MONTH)) + 1) + "-" + calendar.get(Calendar.YEAR);
                 for (Calendar x : pair.getValue()) {
+                    Calendar start=Calendar.getInstance();
                     try {
                         synchronized (Thread.currentThread()) {
                             while (SingltonAliveAndSleep.getInstance().isSleep()) {
@@ -77,7 +78,6 @@ public class HtmlView implements View,Callable<Boolean>{
                         }
                         String dateDepartureFrom = x.get(Calendar.DATE) + "-" + ((x.get(Calendar.MONTH)) + 1) + "-" + x.get(Calendar.YEAR);
                         linkedHashSetFlights = new MMStrategy(methodSearch).getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom, fromStart);
-                        //linkedHashSetFlights=new MMStrategy().getFlights("BGY", "06-10-2015", "BGY", "19-10-2015");
                         if (linkedHashSetFlights != null && linkedHashSetFlights.size() > 0) {
                             log.info(Thread.currentThread().getName() + "--Thread -------- " + fromStart +"----"+ toStart+"---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--" + linkedHashSetFlights.size());
                             update((linkedHashSetFlights), filePath);
@@ -87,12 +87,28 @@ public class HtmlView implements View,Callable<Boolean>{
                     } catch (Exception e) {
                         log.warning("Something wrong inner...Thread -------- " + fromStart +"----"+ toStart + "---" + dateDepartureTo + "------"+x+"--------"+e.getLocalizedMessage());
                     }
+                   timeToEnd(start);
                 }
             }
             catch (Exception e){
                 log.warning("Something wrong outer...Thread -------- " + fromStart +"----"+ toStart + "---" +pair.getKey()+"------"+e.getLocalizedMessage());
             }
         }
+    }
+    private void timeToEnd(Calendar start){
+        Calendar end=Calendar.getInstance();
+        long diff=end.getTimeInMillis()-start.getTimeInMillis();
+        SingltonAliveAndSleep.getInstance().decrementAmountQuery();
+        long secToEnd=SingltonAliveAndSleep.getInstance().getAmountQuery()*(diff/1000)/SingltonAliveAndSleep.getInstance().getCountThread();
+        System.out.println("Left query-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
+        System.out.println("Left time (at moment)-" + secToEnd/60+"min "+secToEnd%60+"sec.");
+        System.out.println("Left time (at average)-" + timeToEndAverage(diff/1000)*SingltonAliveAndSleep.getInstance().getAmountQuery()/60/
+                SingltonAliveAndSleep.getInstance().getCountThread()+"min");
+    }
+    private long timeToEndAverage(long sec){
+        SingltonAliveAndSleep.getInstance().setSummCountQueries(SingltonAliveAndSleep.getInstance().getSummCountQueries()+1);
+        SingltonAliveAndSleep.getInstance().setSummSecondWork(SingltonAliveAndSleep.getInstance().getSummSecondWork()+sec);
+        return SingltonAliveAndSleep.getInstance().getSummSecondWork()/SingltonAliveAndSleep.getInstance().getSummCountQueries();
     }
     private void searchSingle(){
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>> pair:mapCalendar.entrySet()){
@@ -107,6 +123,7 @@ public class HtmlView implements View,Callable<Boolean>{
                     log.warning("SINGLE - The size if 0...Outer Thread -------- " + toStart + fromStart +"----"+ "---" + dateDepartureTo + "------");
                 }
                 for (Calendar x : pair.getValue()) {
+                    Calendar start=Calendar.getInstance();
                     try {
                         synchronized (Thread.currentThread()) {
                             while (SingltonAliveAndSleep.getInstance().isSleep()) {
@@ -124,6 +141,7 @@ public class HtmlView implements View,Callable<Boolean>{
                     } catch (Exception e) {
                         log.warning("SINGLE - Something wrong inner...Thread -------- " + toStart + fromStart +"----"+ "---" + dateDepartureTo + "------"+x+"--------"+e.getLocalizedMessage());
                     }
+                    timeToEnd(start);
                 }
             }
             catch (Exception e){

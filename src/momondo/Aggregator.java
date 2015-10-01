@@ -8,6 +8,7 @@ import momondo.model.SleepThread;
 
 
 import java.io.IOException;
+import java.time.Period;
 import java.util.Calendar;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -45,6 +46,7 @@ public class Aggregator
         //ReaderFilesInFolder readerFilesInFolder=new ReaderFilesInFolder("C:\\JAVA\\maybe\\res\\outHTML\\Temp\\ToAndFromEUR27092015\\","results1.html","singleFlight");
         //readerFilesInFolder.create();
         Calendar start=Calendar.getInstance();
+        SingltonAliveAndSleep.getInstance().setCountThread(threadsCount);
         log.info("Start program--" + start.getTime().toString());
         SleepThread sleepCall=new SleepThread();
         Thread sleepCallThread=new Thread(sleepCall);
@@ -53,6 +55,9 @@ public class Aggregator
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());
+        long diff=start.getTimeInMillis()-end.getTimeInMillis();
+        System.out.println("Program was working for - "+diff/1000+"sec.");
+        log.info("Program was working for - " + diff / 1000 + "sec.");
         sleepCall.shutdownThread();
         System.out.println("Exit MainThread");
     }

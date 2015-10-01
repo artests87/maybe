@@ -10,9 +10,9 @@ import java.util.Set;
  * Created by Cats on 20.09.2015.
  */
 public class Airports {
-    static private Set<String> airports=new LinkedHashSet<>();
+    private Set<String> airports=new LinkedHashSet<>();
 
-    public static void readFileAirports(String fileName){
+    public void readFileAirports(String fileName){
         BufferedReader bufferedReader= null;
         String txtPath=fileName+".txt";
         try {
@@ -26,7 +26,7 @@ public class Airports {
         }
     }
 
-    public static Set<String> getAirports(String fileName) {
+    public Set<String> getAirports(String fileName) {
         if (airports.size()==0){
             readFileAirports(fileName);
         }

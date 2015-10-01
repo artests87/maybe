@@ -24,7 +24,6 @@ public class ExecutorThread
     private int amountRoutesFrom=0;
     private int amountFinishedRoutes=0;
     private int amountFinishedDates=0;
-    private int amountQuery=0;
     private int threadsCount;
     private static Logger log = Logger.getLogger(ExecutorThread.class.getName());
     private Map<Calendar,LinkedHashSet<Calendar>> mapCalendar;
@@ -39,8 +38,8 @@ public class ExecutorThread
         this.threadsCount=threadsCount;
         this.folder=folder;
         mapCalendar=new Dates(amountMin,amountMax,dateMin,theEndDate,missingDays).getMapCalendarStatic();
-        airports= Airports.getAirports(fileName);
-        airportsFrom= Airports.getAirports(fileNameFrom);
+        airports= new Airports().getAirports(fileName);
+        airportsFrom=new Airports().getAirports(fileNameFrom);
         if (airports.size()>0 && mapCalendar.size()>0 && airportsFrom.size()>0) {
             userDateSelectEmulationMethod();
         }
@@ -62,21 +61,23 @@ public class ExecutorThread
         amountRoutes=airports.size();
         amountRoutesFrom=airportsFrom.size();
 
-        amountQuery = amountRoutes * amountDates;
+        SingltonAliveAndSleep.getInstance().setAmountQuery(amountRoutesFrom*amountRoutes*amountDates);
 
         System.out.println("Total dates-" + amountDates);
         System.out.println("Total routes-" + amountRoutes*amountRoutesFrom);
-        System.out.println("Total search-" + amountRoutes * amountDates*amountRoutesFrom);
+        System.out.println("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
         log.info("Total dates-" + amountDates);
         log.info("Total routes-" + amountRoutes*amountRoutesFrom);
-        log.info("Total search-" + amountQuery);
+        log.info("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
 
         Collection<Future<?>> futures = new LinkedList<Future<?>>();
         for (String y:airportsFrom) {
             for (String x : airports) {
                 if (y.equals(x)){
-                    amountFinishedRoutes++;
+                    SingltonAliveAndSleep.getInstance().setAmountQuery(
+                            SingltonAliveAndSleep.getInstance().getAmountQuery()-amountDates);
                     amountFinishedDates += amountDates;
+                    amountFinishedRoutes++;
                     continue;
                 }
                 futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder)));
@@ -93,7 +94,7 @@ public class ExecutorThread
                 amountFinishedRoutes++;
                 amountFinishedDates += amountDates;
                 System.out.println("Left routes - " + (amountRoutes - amountFinishedRoutes));
-                System.out.println("Left query - " + (amountQuery - amountFinishedDates));
+                System.out.println("Left query - " + (SingltonAliveAndSleep.getInstance().getAmountQuery()));
                 if (!SingltonAliveAndSleep.getInstance().isAlive()){
                     service.shutdownNow();
                     System.out.println("Exit begin...");

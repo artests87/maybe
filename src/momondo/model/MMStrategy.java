@@ -88,14 +88,14 @@ public class MMStrategy implements Strategy
                         flight.setFromCode(fromStart);
                     }
                     catch (Exception e){
-                        log.warning("Some problems with parsing element in-------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd+e.getLocalizedMessage());
+                        log.warning("Some problems with parsing element in-------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd+"--"+e.getLocalizedMessage());
                     }
                 }
             }
         }
         catch (IOException | InterruptedException e)
         {
-            log.warning("Some problems with parsing in-------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd);
+            log.warning("Some problems with parsing in-------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd+"--"+e.getLocalizedMessage());
         }
         return vacancies;
     }
@@ -119,7 +119,6 @@ public class MMStrategy implements Strategy
         System.out.println(tempHREF);
         String html_content;
         Document document=null;
-        boolean boolError=true;
         try {
                 (new WebDriverWait(driver, 30)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
                 (new WebDriverWait(driver, 100)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
@@ -130,9 +129,8 @@ public class MMStrategy implements Strategy
                     log.warning("Nothing to find1 -------- " + fromStart + "--" + toStart + "---" + dateStart + "------" + dateEnd);
                     return null;
                 }
-                boolError=false;
             } catch (Exception e) {
-                log.warning("Momondo has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd);
+                log.warning("Momondo has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd+"--"+e.getLocalizedMessage());
             } finally {
                 driver.quit();
             }
