@@ -21,9 +21,13 @@ public class Aggregator
 {
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
     private static int threadsCount=4;
-    private static String folder =System.getProperty("user.dir")+"/res/";
-    private static String airportsTo ="airportsITA";
-    private static String airportsFrom ="airports";
+    private static String folder =System.getProperty("user.dir")+"\\res\\";
+    private static String fileAirportsTo ="airportsITA";
+    private static String fileAirportsFrom ="airports";
+    private static String fileSaveTo ="saveTo";
+    private static String fileSaveFrom ="saveFrom";
+    private static String fileLoadTo ="saveTo";
+    private static String fileLoadFrom ="saveFrom";
     //Integer is for minimum amount days between DepartureTo and DepartureFrom
     private static int amountMin=6;
     //Integer is for maximum amount days between DepartureTo and DepartureFrom
@@ -33,7 +37,7 @@ public class Aggregator
     //Integer is for maximums days for search
     private static int theEndDate=60;
     //Integer is start day (count from now)
-    private static int missingDays=30;
+    private static int missingDays=50;
 
     public static void main(String[] args){
         try {
@@ -50,15 +54,19 @@ public class Aggregator
         log.info("Start program--" + start.getTime().toString());
         SleepThread sleepCall=new SleepThread();
         Thread sleepCallThread=new Thread(sleepCall);
+        sleepCallThread.setDaemon(true);
         sleepCallThread.start();
-        ExecutorThread executorThread=new ExecutorThread(ExecutorThread.TOANDFROM,threadsCount,folder+airportsTo,folder+airportsFrom,folder,amountMin,amountMax,dateMin,theEndDate,missingDays);
+        ExecutorThread executorThread=new ExecutorThread(
+                ExecutorThread.TOANDFROM,threadsCount,folder+fileAirportsTo,
+                folder+fileAirportsFrom,folder,amountMin,amountMax,dateMin,theEndDate,missingDays,
+                fileSaveFrom, fileSaveTo,fileLoadFrom,fileLoadTo);
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+start.getTime().toString());
         log.info("End program--"+end.getTime().toString());
-        long diff=start.getTimeInMillis()-end.getTimeInMillis();
+        long diff=end.getTimeInMillis()-start.getTimeInMillis();
         System.out.println("Program was working for - "+diff/1000+"sec.");
         log.info("Program was working for - " + diff / 1000 + "sec.");
-        sleepCall.shutdownThread();
         System.out.println("Exit MainThread");
+
     }
 }

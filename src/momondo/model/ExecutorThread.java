@@ -19,6 +19,10 @@ public class ExecutorThread
 
     //Boolean for sleep
     private String folder;
+    private String fileLoadTo;
+    private String fileLoadFrom;
+    private String fileSaveTo;
+    private String fileSaveFrom;
     private int amountDates=0;
     private int amountRoutes=0;
     private int amountRoutesFrom=0;
@@ -27,25 +31,34 @@ public class ExecutorThread
     private int threadsCount;
     private static Logger log = Logger.getLogger(ExecutorThread.class.getName());
     private Map<Calendar,LinkedHashSet<Calendar>> mapCalendar;
-    private Set<String> airports;
+    private Set<String> airportsTo;
     private Set<String> airportsFrom;
+    private Set<String> airportsFromLoad;
+    private Set<String> airportsToLoad;
+    private boolean isSaveExist=false;
+    private boolean isSaveExistNow=false;
     private int methodSearch;
 
 
     public ExecutorThread(int methodSearch,int threadsCount, String fileName, String fileNameFrom, String folder,
-                          int amountMin, int amountMax,int dateMin,int theEndDate,int missingDays) {
+                          int amountMin, int amountMax,int dateMin,int theEndDate,int missingDays,
+                          String fileSaveFrom,String fileSaveTo, String fileLoadFrom, String fileLoadTo) {
         this.methodSearch=methodSearch;
         this.threadsCount=threadsCount;
         this.folder=folder;
+        this.fileLoadTo=fileLoadTo;
+        this.fileLoadFrom=fileLoadFrom;
+        this.fileSaveTo=fileSaveTo;
+        this.fileSaveFrom=fileSaveFrom;
         mapCalendar=new Dates(amountMin,amountMax,dateMin,theEndDate,missingDays).getMapCalendarStatic();
-        airports= new Airports().getAirports(fileName);
+        airportsTo = new Airports().getAirports(fileName);
         airportsFrom=new Airports().getAirports(fileNameFrom);
-        if (airports.size()>0 && mapCalendar.size()>0 && airportsFrom.size()>0) {
+        if (airportsTo.size()>0 && mapCalendar.size()>0 && airportsFrom.size()>0) {
             userDateSelectEmulationMethod();
         }
         else{
-            if (airports.size()==0 || airportsFrom.size()==0){
-                System.out.println("Size airports is 0");
+            if (airportsTo.size()==0 || airportsFrom.size()==0){
+                System.out.println("Size airportsTo is 0");
             }
 
             if (mapCalendar.size()==0){
@@ -58,7 +71,7 @@ public class ExecutorThread
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>>  pair:mapCalendar.entrySet()){
             amountDates+=pair.getValue().size();
         }
-        amountRoutes=airports.size();
+        amountRoutes= airportsTo.size();
         amountRoutesFrom=airportsFrom.size();
 
         SingltonAliveAndSleep.getInstance().setAmountQuery(amountRoutesFrom*amountRoutes*amountDates);
@@ -69,10 +82,10 @@ public class ExecutorThread
         log.info("Total dates-" + amountDates);
         log.info("Total routes-" + amountRoutes*amountRoutesFrom);
         log.info("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
-
+        isSaveExist=checkExistSaveRout();
         Collection<Future<?>> futures = new LinkedList<Future<?>>();
         for (String y:airportsFrom) {
-            for (String x : airports) {
+            for (String x : airportsTo) {
                 if (y.equals(x)){
                     SingltonAliveAndSleep.getInstance().setAmountQuery(
                             SingltonAliveAndSleep.getInstance().getAmountQuery()-amountDates);
@@ -80,7 +93,24 @@ public class ExecutorThread
                     amountFinishedRoutes++;
                     continue;
                 }
-                futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder)));
+                if (isSaveExist){
+                    for (String yTemp:airportsFromLoad){
+                        for (String xTemp:airportsToLoad){
+                            if (y.equals(yTemp) && x.equals(xTemp)){
+                                isSaveExistNow=true;
+                                break;
+                            }
+                        }
+                        if (isSaveExistNow){
+                            break;
+                        }
+                    }
+                }
+                if (isSaveExistNow){
+                    isSaveExistNow=false;
+                    continue;
+                }
+                futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder,fileSaveFrom,fileSaveTo)));
             }
         }
         for (Future<?> x : futures) {
@@ -107,5 +137,10 @@ public class ExecutorThread
         }
         System.out.println("Exit end!");
     }
-
+    public boolean checkExistSaveRout(){
+        SaveAndLoad.load(folder+fileLoadFrom,folder+fileLoadTo);
+        airportsFromLoad=SaveAndLoad.getAirportsFromLoad();
+        airportsToLoad=SaveAndLoad.getAirportsToLoad();
+        return airportsFromLoad.size()>0 && airportsToLoad.size()>0?true:false;
+    }
 }

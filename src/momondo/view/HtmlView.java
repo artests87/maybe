@@ -4,6 +4,7 @@ import momondo.Aggregator;
 import momondo.model.ExecutorThread;
 import momondo.model.MMStrategy;
 
+import momondo.model.SaveAndLoad;
 import momondo.model.SingltonAliveAndSleep;
 import momondo.vo.Flight;
 import org.jsoup.Jsoup;
@@ -29,15 +30,20 @@ public class HtmlView implements View,Callable<Boolean>{
     private String filePathStart;
     private LinkedHashSet<Flight> linkedHashSetFlights=new LinkedHashSet<>();
     private int methodSearch;
+    private String fileSaveTo;
+    private String fileSaveFrom;
 
     private boolean isDocumentExist=false;
 
-    public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart,String fromStart,int methodSearch,String folder) {
+    public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart,String fromStart,int methodSearch,String folder,
+                    String fileSaveFrom,String fileSaveTo) {
         this.folder = folder;
         this.filePathStart=folder+"outHTML/flightsAll.html";
         this.toStart = toStart;
         this.fromEnd = toStart;
         this.fromStart=fromStart;
+        this.fileSaveTo=fileSaveTo;
+        this.fileSaveFrom=fileSaveFrom;
         this.mapCalendar = mapCalendar;
         this.methodSearch=methodSearch;
         if (methodSearch==ExecutorThread.TOANDFROM) {
@@ -89,6 +95,8 @@ public class HtmlView implements View,Callable<Boolean>{
                     }
                    timeToEnd(start);
                 }
+                SaveAndLoad.saveRout(fromStart,folder+fileSaveFrom);
+                SaveAndLoad.saveRout(toStart,folder+fileSaveTo);
             }
             catch (Exception e){
                 log.warning("Something wrong outer...Thread -------- " + fromStart +"----"+ toStart + "---" +pair.getKey()+"------"+e.getLocalizedMessage());
@@ -202,8 +210,6 @@ public class HtmlView implements View,Callable<Boolean>{
         } catch (Exception e) {
             log.warning("Some problem in updateFile -----"+e.getLocalizedMessage());
         }
-
-
     }
     protected Document getDocument(){
         File input=new File(filePath);

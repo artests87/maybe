@@ -26,7 +26,7 @@ public class ReaderFilesInFolder {
             myFile.createNewFile();
         } catch (IOException e) {
             log.warning("Cannot create File"+e.getLocalizedMessage());
-            System.out.println("File already exists");
+            System.out.println("Cannot create File"+e.getLocalizedMessage());
         }
 
         FileInputStream fileInputStream;
@@ -66,13 +66,13 @@ public class ReaderFilesInFolder {
         File F = new File(pathFolder);
 
         fList = F.listFiles();
-
-        for(int i=0; i<fList.length; i++)
-        {
-            //Нужны только папки в место isFile() пишим isDirectory()
-            if(fList[i].isFile()){
-                if (fList[i].getName().startsWith(prefix)) {
-                    listFiles.add(fList[i].getName());
+        if (fList!=null && fList.length>0) {
+            for (int i = 0; i < fList.length; i++) {
+                //Нужны только папки в место isFile() пишим isDirectory()
+                if (fList[i].isFile()) {
+                    if (fList[i].getName().startsWith(prefix)) {
+                        listFiles.add(fList[i].getName());
+                    }
                 }
             }
         }
