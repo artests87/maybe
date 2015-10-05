@@ -7,14 +7,14 @@ import java.util.logging.Logger;
 /**
  * Created by Cats on 27.09.2015.
  */
-public class ReaderFilesInFolder {
+public class FilesInFolder {
     private static Logger log = Logger.getLogger(ExecutorThread.class.getName());
     private List<String> listFiles=new LinkedList<>();
     private String pathFolder;
     private String pathFileTo;
-    private String prefix;
+    private String[] prefix;
 
-    public ReaderFilesInFolder(String pathFolder, String pathFileTo, String prefix) {
+    public FilesInFolder(String pathFolder, String pathFileTo, String[] prefix) {
         this.pathFolder = pathFolder;
         this.pathFileTo = pathFileTo;
         this.prefix = prefix;
@@ -67,14 +67,26 @@ public class ReaderFilesInFolder {
 
         fList = F.listFiles();
         if (fList!=null && fList.length>0) {
-            for (int i = 0; i < fList.length; i++) {
+            for (File aFList : fList) {
                 //Нужны только папки в место isFile() пишим isDirectory()
-                if (fList[i].isFile()) {
-                    if (fList[i].getName().startsWith(prefix)) {
-                        listFiles.add(fList[i].getName());
+                if (aFList.isFile()) {
+                    for (String pr:prefix) {
+                        if (aFList.getName().startsWith(pr)) {
+                            listFiles.add(aFList.getName());
+                        }
                     }
                 }
             }
+        }
+    }
+    public void deleteFilesInFolder(){
+        createListFilesInFolder();
+        delete();
+    }
+
+    private void delete() {
+        for (String x:listFiles){
+            System.out.println("File deleted--"+x+"--"+ new File(pathFolder + x).delete());
         }
     }
 

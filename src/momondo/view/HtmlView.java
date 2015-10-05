@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  * Created by Cats on 20.09.2015.
  */
 public class HtmlView implements View,Callable<Boolean>{
-    private static Logger log = Logger.getLogger(Aggregator.class.getName());
+    private Logger log = Logger.getLogger(Aggregator.class.getName());
     private String toStart;
     private String fromStart;
     private String fromEnd;
@@ -56,6 +56,7 @@ public class HtmlView implements View,Callable<Boolean>{
 
     @Override
     public Boolean call() throws Exception{
+        Thread.currentThread().setName(fromStart+fromEnd);
         if (!SingltonAliveAndSleep.getInstance().isAlive()){ return false;}
         switch (methodSearch){
             case (ExecutorThread.TO):

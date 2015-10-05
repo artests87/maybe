@@ -23,9 +23,9 @@ import java.util.logging.Logger;
  */
 public class MMStrategy implements Strategy
 {
-    private static Logger log = Logger.getLogger(Aggregator.class.getName());
-    private static final String URL_FORMAT_DOUBLE = "http://www.momondo.ru/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=%s&SD0=%s&SDP0=%s&SO1=%s&SD1=%s&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=2&SegNo=2&SO0=%s&SD0=%s&SDP0=%s&SO1=%s&SD1=%s&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false";
-    private static final String URL_FORMAT_SINGLE = "http://www.momondo.ru/flightsearch/?Search=true&TripType=1&SegNo=1&SO0=%s&SD0=%s&SDP0=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=1&SegNo=1&SO0=%s&SD0=%s&SDP0=%s&AD=2&TK=ECO&DO=false&NA=false";
+    private Logger log = Logger.getLogger(Aggregator.class.getName());
+    private final String URL_FORMAT_DOUBLE = "http://www.momondo.ru/flightsearch/?Search=true&TripType=2&SegNo=2&SO0=%s&SD0=%s&SDP0=%s&SO1=%s&SD1=%s&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=2&SegNo=2&SO0=%s&SD0=%s&SDP0=%s&SO1=%s&SD1=%s&SDP1=%s&AD=2&TK=ECO&DO=false&NA=false";
+    private final String URL_FORMAT_SINGLE = "http://www.momondo.ru/flightsearch/?Search=true&TripType=1&SegNo=1&SO0=%s&SD0=%s&SDP0=%s&AD=2&TK=ECO&DO=false&NA=false#Search=true&TripType=1&SegNo=1&SO0=%s&SD0=%s&SDP0=%s&AD=2&TK=ECO&DO=false&NA=false";
     private String tempHREF;
     private int methodSearch;
 
@@ -100,7 +100,7 @@ public class MMStrategy implements Strategy
         return vacancies;
     }
     protected Document getDocument(String toStart, String dateStart, String fromEnd, String dateEnd,String fromStart) throws IOException, InterruptedException {
-        File file = new File("C:/Program Files/phantomjs-2.0.0-windows/bin/phantomjs.exe");
+        File file = new File("C:/JAVA/maybe/dll/phantomjs.exe");
         System.setProperty("phantomjs.binary.path", file.getAbsolutePath());
         WebDriver driver = new PhantomJSDriver();
         switch (methodSearch){
@@ -120,8 +120,8 @@ public class MMStrategy implements Strategy
         String html_content;
         Document document=null;
         try {
-                (new WebDriverWait(driver, 30)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
-                (new WebDriverWait(driver, 100)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
+                (new WebDriverWait(driver, 20)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
+                (new WebDriverWait(driver, 60)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
                 html_content = driver.getPageSource();
                 document = Jsoup.parse(html_content);
                 Elements elements = document.getElementsByAttributeValue("title", "Ой! Ни один из результатов не совпадает с вашим запросом");

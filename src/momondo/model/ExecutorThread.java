@@ -1,5 +1,6 @@
 package momondo.model;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import momondo.view.Airports;
 import momondo.view.Dates;
 import momondo.view.HtmlView;
@@ -37,12 +38,16 @@ public class ExecutorThread
     private Set<String> airportsToLoad;
     private boolean isSaveExist=false;
     private boolean isSaveExistNow=false;
+    private boolean isLoad =false;
     private int methodSearch;
+    final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("Routes-%d")
+            .build();
 
 
     public ExecutorThread(int methodSearch,int threadsCount, String fileName, String fileNameFrom, String folder,
                           int amountMin, int amountMax,int dateMin,int theEndDate,int missingDays,
-                          String fileSaveFrom,String fileSaveTo, String fileLoadFrom, String fileLoadTo) {
+                          String fileSaveFrom,String fileSaveTo, String fileLoadFrom, String fileLoadTo,boolean isLoad) {
         this.methodSearch=methodSearch;
         this.threadsCount=threadsCount;
         this.folder=folder;
@@ -50,6 +55,7 @@ public class ExecutorThread
         this.fileLoadFrom=fileLoadFrom;
         this.fileSaveTo=fileSaveTo;
         this.fileSaveFrom=fileSaveFrom;
+        this.isLoad =isLoad;
         mapCalendar=new Dates(amountMin,amountMax,dateMin,theEndDate,missingDays).getMapCalendarStatic();
         airportsTo = new Airports().getAirports(fileName);
         airportsFrom=new Airports().getAirports(fileNameFrom);
@@ -66,8 +72,9 @@ public class ExecutorThread
             }
         }
     }
+
     public void userDateSelectEmulationMethod(){
-        ExecutorService service = Executors.newFixedThreadPool(threadsCount);
+        ExecutorService service = Executors.newFixedThreadPool(threadsCount,threadFactory);
         for (Map.Entry<Calendar,LinkedHashSet<Calendar>>  pair:mapCalendar.entrySet()){
             amountDates+=pair.getValue().size();
         }
@@ -106,13 +113,14 @@ public class ExecutorThread
                         }
                     }
                 }
-                if (isSaveExistNow){
+                if (isSaveExistNow && isLoad){
                     isSaveExistNow=false;
                     continue;
                 }
                 futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder,fileSaveFrom,fileSaveTo)));
             }
         }
+        service.shutdown();
         for (Future<?> x : futures) {
             try {
                 synchronized (Thread.currentThread()){
@@ -124,12 +132,9 @@ public class ExecutorThread
                 amountFinishedRoutes++;
                 amountFinishedDates += amountDates;
                 System.out.println("Left routes - " + (amountRoutes - amountFinishedRoutes));
-                System.out.println("Left query - " + (SingltonAliveAndSleep.getInstance().getAmountQuery()));
-                if (!SingltonAliveAndSleep.getInstance().isAlive()){
+                if (!SingltonAliveAndSleep.getInstance().isAlive() && !service.isShutdown()){
                     service.shutdownNow();
                     System.out.println("Exit begin...");
-                    service.awaitTermination(10,TimeUnit.SECONDS);
-                    break;
                 }
             } catch (Exception e) {
                 log.warning("Something wrong with the Main Thread---"+e.getLocalizedMessage());
@@ -141,6 +146,7 @@ public class ExecutorThread
         SaveAndLoad.load(folder+fileLoadFrom,folder+fileLoadTo);
         airportsFromLoad=SaveAndLoad.getAirportsFromLoad();
         airportsToLoad=SaveAndLoad.getAirportsToLoad();
-        return airportsFromLoad.size()>0 && airportsToLoad.size()>0?true:false;
+        return airportsFromLoad.size() > 0 && airportsToLoad.size() > 0;
     }
+
 }
