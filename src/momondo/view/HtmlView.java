@@ -212,7 +212,7 @@ public class HtmlView implements View,Callable<Boolean>{
             log.warning("Some problem in updateFile -----"+e.getLocalizedMessage());
         }
     }
-    protected Document getDocument(){
+    public Document getDocument(){
         File input=new File(filePath);
         if (!isDocumentExist) {
             input = new File(filePathStart);

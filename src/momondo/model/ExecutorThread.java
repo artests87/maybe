@@ -96,7 +96,7 @@ public class ExecutorThread
                 if (y.equals(x)){
                     SingltonAliveAndSleep.getInstance().setAmountQuery(
                             SingltonAliveAndSleep.getInstance().getAmountQuery()-amountDates);
-                    amountFinishedDates += amountDates;
+                    amountFinishedDates+=amountDates;
                     amountFinishedRoutes++;
                     continue;
                 }
@@ -115,6 +115,8 @@ public class ExecutorThread
                 }
                 if (isSaveExistNow && isLoad){
                     isSaveExistNow=false;
+                    amountFinishedDates+=amountDates;
+                    amountFinishedRoutes++;
                     continue;
                 }
                 futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder,fileSaveFrom,fileSaveTo)));

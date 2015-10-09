@@ -105,35 +105,35 @@ public class MMStrategy implements Strategy
         WebDriver driver = new PhantomJSDriver();
         switch (methodSearch){
             case ExecutorThread.TO:
-                driver.get(String.format(URL_FORMAT_SINGLE,fromStart, toStart, dateStart, fromStart, toStart, dateStart));
                 tempHREF=String.format(URL_FORMAT_SINGLE,fromStart, toStart, dateStart, fromStart, toStart, dateStart);
+                driver.get(tempHREF);
                 break;
             case ExecutorThread.TOANDFROM:
-                driver.get(String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd));
                 tempHREF=String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd);
+                driver.get(tempHREF);
                 break;
             default:
-                driver.get(String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd));
                 tempHREF=String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd);
+                driver.get(tempHREF);
         }
         System.out.println(tempHREF);
         String html_content;
         Document document=null;
         try {
-                (new WebDriverWait(driver, 20)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
-                (new WebDriverWait(driver, 60)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
-                html_content = driver.getPageSource();
-                document = Jsoup.parse(html_content);
-                Elements elements = document.getElementsByAttributeValue("title", "Ой! Ни один из результатов не совпадает с вашим запросом");
-                if (elements.size() != 0) {
-                    log.warning("Nothing to find1 -------- " + fromStart + "--" + toStart + "---" + dateStart + "------" + dateEnd);
-                    return null;
-                }
-            } catch (Exception e) {
-                log.warning("Momondo has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd+"--"+e.getLocalizedMessage());
-            } finally {
-                driver.quit();
+            (new WebDriverWait(driver, 20)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
+            (new WebDriverWait(driver, 60)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
+            html_content = driver.getPageSource();
+            document = Jsoup.parse(html_content);
+            Elements elements = document.getElementsByAttributeValue("title", "Ой! Ни один из результатов не совпадает с вашим запросом");
+            if (elements.size() != 0) {
+                log.warning("Nothing to find1 -------- " + fromStart + "--" + toStart + "---" + dateStart + "------" + dateEnd);
+                return null;
             }
+        } catch (Exception e) {
+            log.warning("Momondo has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd+"--"+e.getLocalizedMessage());
+        } finally {
+            driver.quit();
+        }
 
         return document;
     }
