@@ -1,9 +1,6 @@
 package momondo.model;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import momondo.view.Airports;
-import momondo.view.Dates;
-import momondo.view.HtmlView;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -15,15 +12,15 @@ import java.util.logging.Logger;
 public class ExecutorThread
 {
     //CONSTANTS FOR METHOD SEARCH
-    public static final int TOANDFROM=0;
-    public static final int TO=1;
+    public static final int TOANDFROM=1;
+    public static final int TO=2;
 
     //Boolean for sleep
     private String folder;
-    private String fileLoadTo;
-    private String fileLoadFrom;
-    private String fileSaveTo;
-    private String fileSaveFrom;
+    //private String fileLoadTo;
+    private String fileLoad;
+    //private String fileSaveTo;
+    private String fileSave;
     private int amountDates=0;
     private int amountRoutes=0;
     private int amountRoutesFrom=0;
@@ -34,8 +31,9 @@ public class ExecutorThread
     private Map<Calendar,LinkedHashSet<Calendar>> mapCalendar;
     private Set<String> airportsTo;
     private Set<String> airportsFrom;
-    private Set<String> airportsFromLoad;
-    private Set<String> airportsToLoad;
+    private Set<String> airportsLoad;
+    private Set<String> airportsLoadFrom=new LinkedHashSet<>();
+    private Set<String> airportsLoadTo=new LinkedHashSet<>();;
     private boolean isSaveExist=false;
     private boolean isSaveExistNow=false;
     private boolean isLoad =false;
@@ -47,14 +45,12 @@ public class ExecutorThread
 
     public ExecutorThread(int methodSearch,int threadsCount, String fileName, String fileNameFrom, String folder,
                           int amountMin, int amountMax,int dateMin,int theEndDate,int missingDays,
-                          String fileSaveFrom,String fileSaveTo, String fileLoadFrom, String fileLoadTo,boolean isLoad) {
+                          String fileSave, String fileLoad, boolean isLoad) {
         this.methodSearch=methodSearch;
         this.threadsCount=threadsCount;
         this.folder=folder;
-        this.fileLoadTo=fileLoadTo;
-        this.fileLoadFrom=fileLoadFrom;
-        this.fileSaveTo=fileSaveTo;
-        this.fileSaveFrom=fileSaveFrom;
+        this.fileLoad = fileLoad;
+        this.fileSave = fileSave;
         this.isLoad =isLoad;
         mapCalendar=new Dates(amountMin,amountMax,dateMin,theEndDate,missingDays).getMapCalendarStatic();
         airportsTo = new Airports().getAirports(fileName);
@@ -81,14 +77,8 @@ public class ExecutorThread
         amountRoutes= airportsTo.size();
         amountRoutesFrom=airportsFrom.size();
 
-        SingltonAliveAndSleep.getInstance().setAmountQuery(amountRoutesFrom*amountRoutes*amountDates);
+        SingltonAliveAndSleep.getInstance().setAmountQuery(amountRoutesFrom*amountRoutes*amountDates*methodSearch);
 
-        System.out.println("Total dates-" + amountDates);
-        System.out.println("Total routes-" + amountRoutes*amountRoutesFrom);
-        System.out.println("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
-        log.info("Total dates-" + amountDates);
-        log.info("Total routes-" + amountRoutes*amountRoutesFrom);
-        log.info("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
         isSaveExist=checkExistSaveRout();
         Collection<Future<?>> futures = new LinkedList<Future<?>>();
         for (String y:airportsFrom) {
@@ -101,9 +91,18 @@ public class ExecutorThread
                     continue;
                 }
                 if (isSaveExist){
-                    for (String yTemp:airportsFromLoad){
-                        for (String xTemp:airportsToLoad){
+                    for (String xLoad:airportsLoad){
+                        String[] loadFromToSets=xLoad.split(SaveAndLoad.getSeparatorFromTo());
+                        if (loadFromToSets.length>1) {
+                            airportsLoadFrom.add(loadFromToSets[0]);
+                            airportsLoadTo.add(loadFromToSets[1]);
+                        }
+                    }
+                    for (String yTemp: airportsLoadFrom){
+                        for (String xTemp:airportsLoadTo){
+
                             if (y.equals(yTemp) && x.equals(xTemp)){
+
                                 isSaveExistNow=true;
                                 break;
                             }
@@ -119,9 +118,15 @@ public class ExecutorThread
                     amountFinishedRoutes++;
                     continue;
                 }
-                futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder,fileSaveFrom,fileSaveTo)));
+                futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder, fileSave)));
             }
         }
+        System.out.println("Total dates-" + amountDates);
+        System.out.println("Total routes-" + amountRoutes*amountRoutesFrom);
+        System.out.println("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
+        log.info("Total dates-" + amountDates);
+        log.info("Total routes-" + amountRoutes*amountRoutesFrom);
+        log.info("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
         service.shutdown();
         for (Future<?> x : futures) {
             try {
@@ -133,7 +138,7 @@ public class ExecutorThread
                 x.get();
                 amountFinishedRoutes++;
                 amountFinishedDates += amountDates;
-                System.out.println("Left routes - " + (amountRoutes - amountFinishedRoutes));
+                System.out.println("Left routes - " + (amountRoutes*amountRoutesFrom - amountFinishedRoutes));
                 if (!SingltonAliveAndSleep.getInstance().isAlive() && !service.isShutdown()){
                     service.shutdownNow();
                     System.out.println("Exit begin...");
@@ -145,10 +150,9 @@ public class ExecutorThread
         System.out.println("Exit end!");
     }
     public boolean checkExistSaveRout(){
-        SaveAndLoad.load(folder+fileLoadFrom,folder+fileLoadTo);
-        airportsFromLoad=SaveAndLoad.getAirportsFromLoad();
-        airportsToLoad=SaveAndLoad.getAirportsToLoad();
-        return airportsFromLoad.size() > 0 && airportsToLoad.size() > 0;
+        SaveAndLoad.load(folder+ fileLoad);
+        airportsLoad =SaveAndLoad.getAirportsLoad();
+        return airportsLoad.size() > 0;
     }
 
 }

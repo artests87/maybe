@@ -1,11 +1,7 @@
-package momondo.view;
+package momondo.model;
 
 import momondo.Aggregator;
-import momondo.model.ExecutorThread;
-import momondo.model.MMStrategy;
 
-import momondo.model.SaveAndLoad;
-import momondo.model.SingltonAliveAndSleep;
 import momondo.vo.Flight;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,20 +26,18 @@ public class HtmlView implements View,Callable<Boolean>{
     private String filePathStart;
     private LinkedHashSet<Flight> linkedHashSetFlights=new LinkedHashSet<>();
     private int methodSearch;
-    private String fileSaveTo;
-    private String fileSaveFrom;
+    private String fileSave;
 
     private boolean isDocumentExist=false;
 
     public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart,String fromStart,int methodSearch,String folder,
-                    String fileSaveFrom,String fileSaveTo) {
+                    String fileSave) {
         this.folder = folder;
         this.filePathStart=folder+"outHTML/flightsAll.html";
         this.toStart = toStart;
         this.fromEnd = toStart;
         this.fromStart=fromStart;
-        this.fileSaveTo=fileSaveTo;
-        this.fileSaveFrom=fileSaveFrom;
+        this.fileSave =fileSave;
         this.mapCalendar = mapCalendar;
         this.methodSearch=methodSearch;
         if (methodSearch==ExecutorThread.TOANDFROM) {
@@ -75,6 +69,7 @@ public class HtmlView implements View,Callable<Boolean>{
             try {
                 Calendar calendar = pair.getKey();
                 String dateDepartureTo = calendar.get(Calendar.DATE) + "-" + ((calendar.get(Calendar.MONTH)) + 1) + "-" + calendar.get(Calendar.YEAR);
+                String dateDepartureFrom=null;
                 for (Calendar x : pair.getValue()) {
                     Calendar start=Calendar.getInstance();
                     try {
@@ -83,7 +78,7 @@ public class HtmlView implements View,Callable<Boolean>{
                                 Thread.currentThread().wait(10000);
                             }
                         }
-                        String dateDepartureFrom = x.get(Calendar.DATE) + "-" + ((x.get(Calendar.MONTH)) + 1) + "-" + x.get(Calendar.YEAR);
+                        dateDepartureFrom = x.get(Calendar.DATE) + "-" + ((x.get(Calendar.MONTH)) + 1) + "-" + x.get(Calendar.YEAR);
                         linkedHashSetFlights = new MMStrategy(methodSearch).getFlights(toStart, dateDepartureTo, fromEnd, dateDepartureFrom, fromStart);
                         if (linkedHashSetFlights != null && linkedHashSetFlights.size() > 0) {
                             log.info(Thread.currentThread().getName() + "--Thread -------- " + fromStart +"----"+ toStart+"---" + dateDepartureTo + "------" + dateDepartureFrom + ". Size--" + linkedHashSetFlights.size());
@@ -96,8 +91,7 @@ public class HtmlView implements View,Callable<Boolean>{
                     }
                    timeToEnd(start);
                 }
-                SaveAndLoad.saveRout(fromStart,folder+fileSaveFrom);
-                SaveAndLoad.saveRout(toStart,folder+fileSaveTo);
+                SaveAndLoad.saveRout(fromStart,toStart,folder+fileSave);
             }
             catch (Exception e){
                 log.warning("Something wrong outer...Thread -------- " + fromStart +"----"+ toStart + "---" +pair.getKey()+"------"+e.getLocalizedMessage());
@@ -152,6 +146,8 @@ public class HtmlView implements View,Callable<Boolean>{
                     }
                     timeToEnd(start);
                 }
+                SaveAndLoad.saveRout(fromStart,toStart,folder+fileSave);
+                SaveAndLoad.saveRout(toStart,fromStart,folder+fileSave);
             }
             catch (Exception e){
                 log.warning("SINGLE - Something wrong outer...Thread -------- " + fromStart +"----"+ toStart + "---" +pair.getKey()+"------"+e.getLocalizedMessage());

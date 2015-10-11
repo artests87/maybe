@@ -1,4 +1,4 @@
-package momondo.model;
+package momondo.utilits;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.hyperic.sigar.ProcCpu;

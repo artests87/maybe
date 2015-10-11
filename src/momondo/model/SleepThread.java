@@ -2,15 +2,11 @@ package momondo.model;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.Callable;
 
 /**
  * Created by Cats on 24.09.2015.
  */
 public class SleepThread implements Runnable {
-    //public Socket clientSocket;
     private String readLine;
 
 
@@ -27,8 +23,6 @@ public class SleepThread implements Runnable {
     @Override
     public void run() {
         try {
-            //clientSocket = new Socket("localhost",61882);
-            //BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(System.in));
             while (SingltonAliveAndSleep.getInstance().isAlive() ) {
                 readLine=bufferedReader.readLine().toLowerCase();

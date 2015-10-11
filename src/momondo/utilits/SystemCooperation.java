@@ -1,4 +1,4 @@
-package momondo.view;
+package momondo.utilits;
 
 import com.sun.management.OperatingSystemMXBean;
 
@@ -114,7 +114,6 @@ public class SystemCooperation {
         System.out.println("");
         System.out.println("user.dir--" + System.getProperty("user.dir"));
         System.out.println("user.home--" + System.getProperty("user.home"));
-        System.out.println("user.name--" + System.getProperty("user.name"));
         System.out.println("user.name--" + System.getProperty("user.name"));
         System.out.println("Available processors: " + Runtime.getRuntime().availableProcessors());
     }

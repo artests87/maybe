@@ -1,4 +1,4 @@
-package momondo.view;
+package momondo.model;
 
 import java.io.*;
 import java.util.ArrayList;
