@@ -64,7 +64,7 @@ public class Converter {
             }
             mapHtml.put(mapCount++, listTd);
         }
-        document=null;
+        //document=null;
         //elements=null;
         return mapHtml;
     }
@@ -95,6 +95,7 @@ public class Converter {
             }
             ArrayList<String> tempList=pair.getValue();
             Row row=sheet.createRow(incX);
+            //System.out.println("row-" + row.getRowNum());
             for (String aTempSet : tempList) {
                 if (aTempSet.startsWith("http")) {
                     Cell cell = row.getCell(incY - 1);
@@ -108,7 +109,8 @@ public class Converter {
                 }
             }
             incY=0;
-            //System.out.println(incX++);
+            incX++;
+            //System.out.println();
             if(pair.getKey()>maxRow){
                 isNeedToSheet=true;
                 maxRow+=maxRowCount;
@@ -118,7 +120,7 @@ public class Converter {
                 }
             }
         }
-        mapHtml=null;
+        //mapHtml=null;
         if (isWeakComp) {
             saveToExcel(workbooks);
             workbooks = null;
