@@ -19,31 +19,51 @@ import java.util.logging.Logger;
  */
 public class Aggregator
 {
+    //For loging
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
+    //Amount availeble processors
     private static final int THREADS_COUNT =Runtime.getRuntime().availableProcessors();
-    private static final boolean ISLOAD =true;
-    private static String folder =System.getProperty("user.dir")+"\\res\\";
-    private static String folderFiles =System.getProperty("user.dir")+"\\res\\outHTML\\";
-    private static String folderFilesDelete =System.getProperty("user.dir");
-    private static String resultsFileNameHTML ="results10102015SCANDITASINGLE.html";
-    private static String[] prefixCreate ={"flight"};
-    private static String[] prefixDelete ={"application","phantomjsdriver"};
-    private static String fileAirportsTo ="airportsITA";
-    private static String fileAirportsFrom ="airportsSCAND";
-    private static String fileSave ="save";
-    private static String fileLoad ="save";
-    private static String[] nameTaskKill={"phantomjs.exe"};
-    private static int maxRow=40000;
+    //Need to load?
+    private static final boolean ISLOAD =false;
+    //System user dir
+    private static String mUserDir =System.getProperty("user.dir");
+    //Common program's folder
+    private static String mFolder =mUserDir+"\\res\\";
+    //Program's folder for out files
+    private static String mFolderFiles =mUserDir+"\\res\\outHTML\\";
+    //Folder have files for delete
+    private static String mFolderFilesDelete =mUserDir;
+    //File's name for resilts html
+    //Present Calendar - start program
+    private static Calendar mPresentCalendarStartProgram= Calendar.getInstance();
+    //Array for prefix for double file search(for create generalizing)
+    private static String[] mPrefixCreateDouble ={"flight"};
+    //Array for prefix for single file search (for create generalizing)
+    private static String[] mPrefixCreateSingle ={"single"};
+    //Array for prefix for name file (for delete)
+    private static String[] mPrefixDelete ={"application","phantomjsdriver"};
+    //File's name for to route
+    private static String mFileAirportsTo ="airportsITA";
+    //File's name for from route
+    private static String mFileAirportsFrom ="airportsSCAND";
+    //File's name for save
+    private static String mFileSave ="save";
+    //File's name for load
+    private static String mFileLoad ="save";
+    //Array task's name for kill
+    private static String[] mNameTaskKill ={"phantomjs.exe"};
+    //Max row in one sheet
+    private static int mMaxRow =40000;
     //Integer is for minimum amount days between DepartureTo and DepartureFrom
-    private static int amountMin=6;
+    private static int mAmountMin =10;
     //Integer is for maximum amount days between DepartureTo and DepartureFrom
-    private static int amountMax=16;
+    private static int mAmountMax =17;
     //Integer is for minimum date from DepartureTo
-    private static int dateMin=6;
+    private static int mDateMin =7;
     //Integer is for maximums days for search
-    private static int theEndDate=54;
+    private static int mTheEndDate =53;
     //Integer is start day (count from now)
-    private static int missingDays=43;
+    private static int mMissingDays =26;
 
     public static void main(String[] args){
         try {
@@ -53,40 +73,55 @@ public class Aggregator
             System.err.println("Could not setup logger configuration: " + e.toString());
         }
         //new SystemCooperation().getAllSystemProperties();
-        new FilesInFolder(folderFilesDelete,null,prefixDelete).deleteFilesInFolder();
-        Calendar start=Calendar.getInstance();
+        new FilesInFolder(mFolderFilesDelete,null, mPrefixDelete).deleteFilesInFolder();
+
+        //new SystemCooperation().memo();
+        //new SystemCooperation().proccesor();
+        //new SystemCooperation().getAllSystemProperties();
+
+        //new Converter(mFolderFiles,resultsFileNameHTML,mMaxRow,true).fromHTMLFileToXLSXFile();
+
+
+        //new SystemCooperation().shutDownSystem();
+        //findSCANDToAndFrom();
+        //findSCANDTo();
+
+        //new SystemCooperation().shutDownSystem();
+        findRouts(ExecutorThread.TOANDFROM,mFolder,mFileAirportsTo,mFileAirportsFrom,mAmountMin,mAmountMax,mDateMin,mTheEndDate,
+                mMissingDays,mFileSave,mFileLoad,ISLOAD,mPrefixCreateDouble,mFolderFiles,mNameTaskKill);
+    }
+
+    private static void findRouts(int methodForSearch , String folder, String fileAirportsTo,
+                                  String fileAirportsFrom, int amountMin, int amountMax, int dateMin,
+                                  int theEndDate,int missingDays,String fileSave,String fileLoad, boolean isLoad,
+                                  String[] prefixCreate, String folderFiles, String[] nameTaskKill){
+        Calendar startFindRouteCalendar=Calendar.getInstance();
+        //Present Calendar to String's format
+        String presentDateString=(startFindRouteCalendar.get(Calendar.DATE))+
+                "_"+(startFindRouteCalendar.get(Calendar.MONTH))+
+                "_"+(startFindRouteCalendar.get(Calendar.YEAR));
+        String partNameForFileMethodSearch=methodForSearch==ExecutorThread.TO?"SINGLE":"DOUBLE";
+        String resultsFileNameHTML ="results"+presentDateString+partNameForFileMethodSearch+".html";
         SingltonAliveAndSleep.getInstance().setCountThread(THREADS_COUNT);
-        log.info("Start program--" + start.getTime().toString());
+        log.info("Start program--" + startFindRouteCalendar.getTime().toString());
         SleepThread sleepCall=new SleepThread();
         Thread sleepCallThread=new Thread(sleepCall);
         sleepCallThread.setDaemon(true);
         sleepCallThread.start();
         ExecutorThread executorThread=new ExecutorThread(
-                ExecutorThread.TO,THREADS_COUNT,folder+fileAirportsTo,
-                folder+fileAirportsFrom,folder,amountMin,amountMax,dateMin,theEndDate,missingDays,
-                fileSave, fileLoad, ISLOAD);
+                methodForSearch,THREADS_COUNT, folder + fileAirportsTo,
+                folder + fileAirportsFrom, folder, amountMin, amountMax, dateMin, theEndDate, missingDays,
+                fileSave, fileLoad, isLoad);
         Calendar end=Calendar.getInstance();
-        log.info("Start program--"+start.getTime().toString());
+        log.info("Start program--"+startFindRouteCalendar.getTime().toString());
         log.info("End program--"+end.getTime().toString());
-        long diff=end.getTimeInMillis()-start.getTimeInMillis();
-
+        long diff=end.getTimeInMillis()-startFindRouteCalendar.getTimeInMillis();
         System.out.println("Program was working for - "+diff/1000+"sec.");
         log.info("Program was working for - " + diff / 1000 + "sec.");
-
         sleepCallThread.interrupt();
         System.out.println("Exit MainThread");
-
         FilesInFolder readerFilesInFolder=new FilesInFolder(folderFiles,resultsFileNameHTML,prefixCreate);
         readerFilesInFolder.create();
-
         new SystemCooperation().killTask(nameTaskKill);
-        new SystemCooperation().memo();
-        new SystemCooperation().proccesor();
-        new SystemCooperation().getAllSystemProperties();
-
-        //new Converter(folderFiles,resultsFileNameHTML,maxRow,true).fromHTMLFileToXLSXFile();
-
-
-        //new SystemCooperation().shutDownSystem();
     }
 }

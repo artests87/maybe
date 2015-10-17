@@ -63,7 +63,7 @@ public class SystemCooperation {
             String[] commands = { "shutdown", "-s" };
             String[] commands2 = { "notepad" };
             try {
-            //Runtime.getRuntime().exec(commands);
+            Runtime.getRuntime().exec(commands);
 
                 Runtime.getRuntime().exec(commands2);
             } catch (IOException e) {
