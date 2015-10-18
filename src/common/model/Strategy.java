@@ -1,9 +1,8 @@
-package momondo.model;
+package common.model;
 
 
-import momondo.vo.Flight;
+import common.vo.Flight;
 
-import java.util.List;
 import java.util.Set;
 
 /**

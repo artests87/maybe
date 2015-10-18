@@ -1,4 +1,4 @@
-package momondo.vo;
+package common.vo;
 
 /**
  * Created by artests on 13.08.2015.

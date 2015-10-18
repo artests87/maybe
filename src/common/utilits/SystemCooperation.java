@@ -1,4 +1,4 @@
-package momondo.utilits;
+package common.utilits;
 
 import com.sun.management.OperatingSystemMXBean;
 

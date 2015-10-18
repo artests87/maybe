@@ -1,11 +1,11 @@
-package momondo;
+package common;
 
 
-import momondo.model.ExecutorThread;
-import momondo.model.FilesInFolder;
-import momondo.model.SingltonAliveAndSleep;
-import momondo.model.SleepThread;
-import momondo.utilits.SystemCooperation;
+import common.model.ExecutorThread;
+import common.model.FilesInFolder;
+import common.model.SingltonAliveAndSleep;
+import common.model.SleepThread;
+import common.utilits.SystemCooperation;
 
 
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class Aggregator
     private static int mTheEndDate =53;
     //Integer is start day (count from now)
     private static int mMissingDays =26;
-
+/*
     public static void main(String[] args){
         try {
             LogManager.getLogManager().readConfiguration(
@@ -89,7 +89,7 @@ public class Aggregator
         //new SystemCooperation().shutDownSystem();
         findRouts(ExecutorThread.TOANDFROM,mFolder,mFileAirportsTo,mFileAirportsFrom,mAmountMin,mAmountMax,mDateMin,mTheEndDate,
                 mMissingDays,mFileSave,mFileLoad,ISLOAD,mPrefixCreateDouble,mFolderFiles,mNameTaskKill);
-    }
+    }*/
 
     private static void findRouts(int methodForSearch , String folder, String fileAirportsTo,
                                   String fileAirportsFrom, int amountMin, int amountMax, int dateMin,

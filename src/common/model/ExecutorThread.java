@@ -1,4 +1,4 @@
-package momondo.model;
+package common.model;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 

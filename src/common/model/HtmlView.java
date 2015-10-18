@@ -1,8 +1,8 @@
-package momondo.model;
+package common.model;
 
-import momondo.Aggregator;
+import common.Aggregator;
 
-import momondo.vo.Flight;
+import common.vo.Flight;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

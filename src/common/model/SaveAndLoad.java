@@ -1,6 +1,6 @@
-package momondo.model;
+package common.model;
 
-import momondo.Aggregator;
+import common.Aggregator;
 
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;

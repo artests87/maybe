@@ -1,4 +1,4 @@
-package momondo.model;
+package common.model;
 
 /**
  * Created by Cats on 24.09.2015.

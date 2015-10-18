@@ -1,9 +1,7 @@
-package momondo.model;
+package common.model;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 /**

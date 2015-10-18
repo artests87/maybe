@@ -1,4 +1,4 @@
-package momondo.model;
+package common.model;
 
 import java.util.Calendar;
 import java.util.LinkedHashMap;

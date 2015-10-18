@@ -1,4 +1,4 @@
-package momondo.model;
+package common.model;
 
 import java.io.*;
 import java.util.LinkedList;
