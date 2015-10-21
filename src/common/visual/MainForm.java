@@ -3,6 +3,8 @@ package common.visual;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
@@ -11,7 +13,7 @@ import java.util.ResourceBundle;
 /**
  * Created by Cats on 17.10.2015.
  */
-public class MainForm {
+public class MainForm extends JFrame implements ActionListener {
     private JPanel first;
     private JRadioButton radioButton1;
     private JPanel panelForGridButton;
@@ -25,21 +27,19 @@ public class MainForm {
     private Image scaledTitleImage;
     private static Image icon;
     private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-
+    static JFrame frame;
+    static JFrame frameFlightSettings;
+    static ResourceBundle myResources = ResourceBundle.getBundle("common\\stringgui",
+            Locale.ENGLISH);
     public MainForm() {
         createPanels();
         createButtons();
         createImages();
-
-        //first.setLayout(null);
-
+        onCLickListenerMain();
     }
-
     public static void main(String[] args) {
-
         //Get screen resolution
-        JFrame frame = new JFrame("MainForm");
+        frame = new JFrame(myResources.getString("mainFrame"));
         frame.setMinimumSize(new Dimension(640,480));
         MainForm mainForm=new MainForm();
         frame.setContentPane(mainForm.first);
@@ -48,10 +48,8 @@ public class MainForm {
         //Set icon to program
         frame.setIconImage(icon);
         frame.setSize((int)screenSize.getWidth()-100,(int)screenSize.getHeight()-100);
-
         frame.setVisible(true);
     }
-
     private void createImages(){
         //Load image to program
         icon=new ImageIcon("C:\\JAVA\\maybe\\guiResourses\\icon.jpg").getImage();
@@ -145,8 +143,6 @@ public class MainForm {
         roomButton.setPressedIcon(new ImageIcon(resizedImageRF));
     }
     private void createButtons(){
-        ResourceBundle myResources = ResourceBundle.getBundle("common\\stringgui",
-                Locale.ENGLISH);
         Font font=new Font("Arial",Font.BOLD,20);
         flightButton=new JButton();
         trainButton=new JButton();
@@ -158,12 +154,20 @@ public class MainForm {
         //flightButton.setBorderPainted(false);
         //flightButton.setFocusPainted(false);
         //flightButton.setContentAreaFilled(false);
-        trainButton.setText(myResources.getString("trainButton"));
-        trainButton.setFont(font);
-        busButton.setText(myResources.getString("busButton"));
-        busButton.setFont(font);
-        roomButton.setText(myResources.getString("roomButton"));
-        roomButton.setFont(font);
+        //trainButton.setText(myResources.getString("trainButton"));
+        //trainButton.setFont(font);
+        flightButton.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        flightButton.setToolTipText(myResources.getString("flightButton"));
+        trainButton.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        trainButton.setToolTipText(myResources.getString("trainButton"));
+        //busButton.setText(myResources.getString("busButton"));
+        //busButton.setFont(font);
+        busButton.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        busButton.setToolTipText(myResources.getString("busButton"));
+        //roomButton.setText(myResources.getString("roomButton"));
+        //roomButton.setFont(font);
+        roomButton.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        roomButton.setToolTipText(myResources.getString("roomButton"));
         panelForGridButton.add(flightButton);
         panelForGridButton.add(trainButton);
         panelForGridButton.add(busButton);
@@ -173,7 +177,7 @@ public class MainForm {
         //first.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     }
     private void createPanels(){
-        first=new TitlePanel();
+        //first=new TitlePanel();
         panelForGridButton=new GriderPanel();
         panelForGridButton.setLayout(gridLayout);
         first.add(panelForGridButton,BorderLayout.CENTER);
@@ -182,9 +186,21 @@ public class MainForm {
         //panelForGridButton.setLocation((int)screenSize.getWidth()/2,(int)screenSize.getHeight()/2);
         panelForGridButton.setVisible(true);
     }
-
-
-
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource()==flightButton){
+            frame.setVisible(false);
+            int fHeight=frame.getHeight();
+            int fWidth=frame.getWidth();
+            frameFlightSettings=new FlightsSettings();
+            frameFlightSettings.setMinimumSize(new Dimension(800,600));
+            frameFlightSettings.setTitle(myResources.getString("flightSettingFrame"));
+            frameFlightSettings.setSize(fWidth,fHeight);
+            frameFlightSettings.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            ((FlightsSettings)frameFlightSettings).initiliazeEverything();
+            frameFlightSettings.setVisible(true);
+        }
+    }
     public class TitlePanel extends JPanel{
         TitlePanel(){
             try {
@@ -201,13 +217,14 @@ public class MainForm {
             g.drawImage(scaledTitleImage, 0, 0, null);
         }
     }
-
-
     public class GriderPanel extends JPanel{
         @Override
         protected void paintComponent(Graphics g){
             //super.paintComponent(g);
         }
+    }
+    public void onCLickListenerMain(){
+        flightButton.addActionListener(this);
     }
 
 }
