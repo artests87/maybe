@@ -16,7 +16,12 @@ import common.visual.modelVisual.*;
  * Created by Cats on 21.10.2015.
  */
 public class FlightsSettings extends JFrame implements ActionListener {
+    public static final int COUNTRIES=0;
+    public static final int AIRPORTS=1;
+    public static final int AIRPORTSCODE=2;
+    public static final int AIRPORTSANDCODE=3;
     JButton buttonMainMenu;
+    JButton buttonTestCHeckBox;
     JPanel firstPanel;
     JPanel buttomPanel;
     JPanel centerPanel;
@@ -35,6 +40,10 @@ public class FlightsSettings extends JFrame implements ActionListener {
     JLabel daysAmountMaxLabel;
     JLabel dateMinLabel;
     JLabel maxRowPerFileXSLXLabel;
+    JLabel countryFromLabel;
+    JLabel countryToLabel;
+    JLabel airportsFromLabel;
+    JLabel airportsToLabel;
     ButtonGroup buttonGroupMethodSearch;
     ButtonGroup buttonGroupExitType;
     JRadioButton jRadioButtonTo;
@@ -48,21 +57,82 @@ public class FlightsSettings extends JFrame implements ActionListener {
     CheckboxGroup checkboxGroupAirportFrom;
     CheckboxGroup checkboxGroupAirportTo;
     JList<CheckBoxListItem> jCheckBoxJListAirportFrom;
+    JList<CheckBoxListItem> jCheckBoxJListCountryFrom;
+    JList<CheckBoxListItem> jCheckBoxJListAirportTo;
+    JList<CheckBoxListItem> jCheckBoxJListCountryTo;
+    JScrollPane jScrollPaneAirportFrom;
+    JScrollPane jScrollPaneCountryFrom;
+    JScrollPane jScrollPaneAirportTo;
+    JScrollPane jScrollPaneCountryTo;
     ResourceBundle myResources = ResourceBundle.getBundle("common\\stringgui",
             Locale.ENGLISH);
+    String folderAndFileForAirports =System.getProperty("user.dir")+"\\res\\"+"airports_EUR";
 
     public FlightsSettings() throws HeadlessException {
 
     }
-    private void initializeAllCheckBoxes(){
-        jCheckBoxJListAirportFrom=initializeCheckBoxes(System.getProperty("user.dir")+"\\res\\"+"airportsITA");
+    private void initializeGridAndAllCheckBoxes(){
+        jCheckBoxJListCountryFrom=initializeCheckBoxes(folderAndFileForAirports,COUNTRIES);
+        jCheckBoxJListCountryFrom.setVisible(true);
+        jCheckBoxJListAirportFrom=initializeCheckBoxes(folderAndFileForAirports,AIRPORTSANDCODE);
         jCheckBoxJListAirportFrom.setVisible(true);
+        jCheckBoxJListCountryTo=initializeCheckBoxes(folderAndFileForAirports,COUNTRIES);
+        jCheckBoxJListCountryTo.setVisible(true);
+        jCheckBoxJListAirportTo=initializeCheckBoxes(folderAndFileForAirports,AIRPORTSANDCODE);
+        jCheckBoxJListAirportTo.setVisible(true);
+        jScrollPaneCountryFrom=new JScrollPane(jCheckBoxJListCountryFrom);
+        jScrollPaneAirportFrom=new JScrollPane(jCheckBoxJListAirportFrom);
+        jScrollPaneAirportFrom.setHorizontalScrollBar(new JScrollBar(JScrollBar.HORIZONTAL));
+        jScrollPaneAirportFrom.setPreferredSize(new Dimension(350,200));
+        jScrollPaneCountryTo=new JScrollPane(jCheckBoxJListCountryTo);
+        jScrollPaneAirportTo=new JScrollPane(jCheckBoxJListAirportTo);
+        jScrollPaneAirportTo.setHorizontalScrollBar(new JScrollBar(JScrollBar.HORIZONTAL));
+        jScrollPaneAirportTo.setPreferredSize(new Dimension(350,200));
+        airportsFromLabel=new JLabel(myResources.getString("airportsFromLabel"));
+        airportsToLabel=new JLabel(myResources.getString("airportsToLabel"));
+        countryFromLabel=new JLabel(myResources.getString("countryFromLabel"));
+        countryToLabel=new JLabel(myResources.getString("countryToLabel"));
         checkBoxesPanel =new JPanel();
-        checkBoxesPanel.add(jCheckBoxJListAirportFrom);
+        checkBoxesPanel.setLayout(new GridBagLayout());
+        constraints =new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor=GridBagConstraints.NORTHWEST;
+        constraints.weighty=1.0;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets=new Insets(0,0,0,20);
+        checkBoxesPanel.add(countryFromLabel,constraints);
+        constraints.gridy = 1;
+        checkBoxesPanel.add(jScrollPaneCountryFrom,constraints);
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        checkBoxesPanel.add(airportsFromLabel,constraints);
+        constraints.gridy = 1;
+        checkBoxesPanel.add(jScrollPaneAirportFrom,constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        checkBoxesPanel.add(countryToLabel,constraints);
+        constraints.gridy=3;
+        checkBoxesPanel.add(jScrollPaneCountryTo,constraints);
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        checkBoxesPanel.add(airportsToLabel,constraints);
+        constraints.gridy=3;
+        checkBoxesPanel.add(jScrollPaneAirportTo,constraints);
         checkBoxesPanel.setVisible(true);
     }
-    private JList<CheckBoxListItem> initializeCheckBoxes(String fileAndFolder){
-        Set<String> stringsAirports=new Airports().getAirports(fileAndFolder);
+    private JList<CheckBoxListItem> initializeCheckBoxes(String fileAndFolder,int method){
+        Set<String> stringsAirports;
+        Airports airports=new Airports();
+        switch (method){
+            case(0):stringsAirports=airports.getCountries(fileAndFolder);
+                break;
+            case (1):stringsAirports=airports.getAirports(fileAndFolder);
+                break;
+            case (3):stringsAirports=airports.getAirportsAndCode(fileAndFolder);
+                break;
+            default:stringsAirports=airports.getAirportsCode(fileAndFolder);
+        }
         CheckBoxListItem[] checkBoxListItems=new CheckBoxListItem[stringsAirports.size()];
         int i=0;
         for (String x:stringsAirports){
@@ -74,15 +144,15 @@ public class FlightsSettings extends JFrame implements ActionListener {
         jCheckBoxJList.setCellRenderer(new CheckBoxListRenderer());
         jCheckBoxJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         jCheckBoxJList.addMouseListener(new CheckBoxMouseAdapter());
-
         return jCheckBoxJList;
     }
     private void initializeButton(){
         Font font=new Font("Arial",Font.BOLD,20);
-        buttonMainMenu=new JButton();
+        buttonMainMenu=new JButton(myResources.getString("backButton"));
         buttonMainMenu.setFont(font);
-        buttonMainMenu.setText(myResources.getString("backButton"));
         buttonMainMenu.addActionListener(this);
+        buttonTestCHeckBox=new JButton(myResources.getString("testCB"));
+        buttonTestCHeckBox.addActionListener(this);
         //buttonMainMenu.setVisible(true);
     }
     private void initializeCalendares(){
@@ -142,7 +212,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
         initializeRadioGroupsAndButtons();
         initilizeGridForIntegerFields();
         initializeGridForCalendarAndFolderFields();
-        initializeAllCheckBoxes();
+        initializeGridAndAllCheckBoxes();
         initializeCenter();
         firstPanel.add(buttomPanel,BorderLayout.SOUTH);
         firstPanel.add(centerPanel,BorderLayout.CENTER);
@@ -164,6 +234,8 @@ public class FlightsSettings extends JFrame implements ActionListener {
         buttonGroupExitType.add(jRadioButtonHTML);
         buttonGroupExitType.add(jRadioButtonXLSX);
         buttonGroupExitType.add(jRadioButtonSQL);
+
+
     }
     private void initializeCenter(){
         centerPanel =new JPanel();
@@ -172,9 +244,12 @@ public class FlightsSettings extends JFrame implements ActionListener {
         constraints.anchor=GridBagConstraints.NORTHWEST;
         constraints.weighty=1.0;
         constraints.weightx=1.0;
-        constraints.insets=new Insets(20,20,20,20);
+        constraints.insets=new Insets(20,20,0,20);
+        //constraints.gridwidth=1;
         centerPanel.add(calendarAndFolderPanel,constraints);
+        constraints.insets=new Insets(20,0,20,0);
         centerPanel.add(integerPanel,constraints);
+        //constraints.gridwidth=4;
         centerPanel.add(checkBoxesPanel,constraints);
         centerPanel.setVisible(true);
     }
@@ -231,6 +306,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
     private void initializeButtom(){
         buttomPanel=new JPanel();
         buttomPanel.setLayout(new GridLayout(0,1));
+        buttomPanel.add(buttonTestCHeckBox);
         buttomPanel.add(buttonMainMenu);
         buttomPanel.setVisible(true);
     }
@@ -246,6 +322,14 @@ public class FlightsSettings extends JFrame implements ActionListener {
         if (e.getSource()==buttonMainMenu){
             MainForm.frameFlightSettings.setVisible(false);
             MainForm.frame.setVisible(true);
+        }
+        if (e.getSource()==buttonTestCHeckBox){
+            ListModel<CheckBoxListItem> listItemListModel=jCheckBoxJListAirportFrom.getModel();
+            for (int i=0;i<listItemListModel.getSize();i++) {
+                System.out.print(listItemListModel.getElementAt(i));
+                System.out.print("--");
+                System.out.println(listItemListModel.getElementAt(i).isSelected());
+            }
         }
     }
 }

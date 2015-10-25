@@ -8,7 +8,7 @@ import java.awt.*;
  */
 // Represents items in the list that can be selected
 
-public class CheckBoxListItem {
+public class CheckBoxListItem extends Component {
     private String label;
     private boolean isSelected = false;
 
