@@ -18,7 +18,7 @@ public class SaveAndLoad {
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
 
     public static void load(String fileLoad){
-        airportsLoad =new Airports().getAirports(fileLoad);
+        airportsLoad =new Airports().readFileAirports(fileLoad).getAirportsCode();
     }
 
     public static String getSeparatorFromTo() {
@@ -37,7 +37,7 @@ public class SaveAndLoad {
             PrintWriter pw = null;
             try {
                 boolean isRoutExist = false;
-                Set<String> airportsTempLoad = new Airports().getAirports(fileSave);
+                Set<String> airportsTempLoad = new Airports().readFileAirports(fileSave).getAirportsCode();
                 StringBuffer stringBuffer = new StringBuffer();
                 for (String x : airportsTempLoad) {
                     String[] tempLoad=x.split(separatorFromTo);

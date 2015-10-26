@@ -53,8 +53,8 @@ public class ExecutorThread
         this.fileSave = fileSave;
         this.isLoad =isLoad;
         mapCalendar=new Dates(amountMin,amountMax,dateMin,theEndDate,missingDays).getMapCalendarStatic();
-        airportsTo = new Airports().getAirports(fileName);
-        airportsFrom=new Airports().getAirports(fileNameFrom);
+        airportsTo = new Airports().readFileAirports(fileName).getAirportsCode();
+        airportsFrom=new Airports().readFileAirports(fileNameFrom).getAirportsCode();
         if (airportsTo.size()>0 && mapCalendar.size()>0 && airportsFrom.size()>0) {
             userDateSelectEmulationMethod();
         }

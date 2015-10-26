@@ -1,4 +1,4 @@
-package common.visual.modelVisual;
+package common.visual.modelVisual.checkBoxFirst;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +19,7 @@ public class CheckBoxListItem extends Component {
     public boolean isSelected() {
         return isSelected;
     }
+
 
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;

@@ -1,4 +1,4 @@
-package common.visual.modelVisual;
+package common.visual.modelVisual.checkBoxFirst;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,12 +15,14 @@ public class CheckBoxListRenderer extends JCheckBox implements
     public Component getListCellRendererComponent(
             JList<? extends CheckBoxListItem> list, CheckBoxListItem value,
             int index, boolean isSelected, boolean cellHasFocus) {
-        setEnabled(list.isEnabled());
-        setSelected(value.isSelected());
-        setFont(list.getFont());
-        setBackground(list.getBackground());
-        setForeground(list.getForeground());
-        setText(value.toString());
+        if (value!=null) {
+            setEnabled(list.isEnabled());
+            setSelected(value.isSelected());
+            setFont(list.getFont());
+            setBackground(list.getBackground());
+            setForeground(list.getForeground());
+            setText(value.toString());
+        }
         return this;
     }
 }
