@@ -197,7 +197,7 @@ public class MainForm extends JFrame implements ActionListener {
             frameFlightSettings.setTitle(myResources.getString("flightSettingFrame"));
             frameFlightSettings.setSize(fWidth,fHeight);
             frameFlightSettings.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            ((FlightsSettings)frameFlightSettings).initiliazeEverything();
+            ((FlightsSettings)frameFlightSettings).initializeEverything();
             frameFlightSettings.setVisible(true);
         }
     }

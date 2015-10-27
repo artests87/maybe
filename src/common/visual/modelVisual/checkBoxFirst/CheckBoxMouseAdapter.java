@@ -27,9 +27,9 @@ public class CheckBoxMouseAdapter extends MouseAdapter {
                     .getElementAt(index);
 
             // Toggle selected state
-if (item!=null) {
-    item.setSelected(!item.isSelected());
-}
+
+            item.setSelected(!item.isSelected());
+
             // Repaint cell
 
             list.repaint(list.getCellBounds(index, index));

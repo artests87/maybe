@@ -22,6 +22,7 @@ public class UtilitiesVisual {
         for (Object x:listEnter){
             if (x instanceof CheckBoxListItem) {
                 if (((CheckBoxListItem) x).isSelected()) {
+                    //System.out.println(x.toString());
                     list.add((CheckBoxListItem) x);
                 }
             }
@@ -31,6 +32,9 @@ public class UtilitiesVisual {
 
     public static String[] getStringsFromCheckBoxListItemsList(List<CheckBoxListItem> listEnter){
         String[] strings=new String[listEnter.size()];
+
+//        System.out.println(listEnter.size());
+//        System.out.println(strings.length);
         for (int i=0;i<strings.length;i++){
             strings[i]=listEnter.get(i).toString();
         }
@@ -40,8 +44,9 @@ public class UtilitiesVisual {
         CheckBoxListItem[] checkBoxListItems=new CheckBoxListItem[strings.length];
         for (int i=0;i<strings.length;i++){
             //System.out.println(strings[i]);
-            checkBoxListItems[i]=new CheckBoxListItem(strings[i]);
-            i++;
+            CheckBoxListItem checkBoxListItemTemp=new CheckBoxListItem(strings[i]);
+            checkBoxListItemTemp.setSelected(true);
+            checkBoxListItems[i]=checkBoxListItemTemp;
         }
         return checkBoxListItems;
     }

@@ -27,6 +27,7 @@ public class Airports {
             //bufferedReader = new BufferedReader(new FileReader(txtPath));
             while (bufferedReader.ready()) {
                 String theWholeString=bufferedReader.readLine();
+                airportsAndCodeAndCountries.add(theWholeString);
                 String[] strings=theWholeString.split(SEPARATOR);
                 if (strings.length>1) {
                     countries.add(strings[0]);
@@ -34,7 +35,6 @@ public class Airports {
                     towns.add(strings[2]);
                     airportsCode.add(strings[3]);
                     airportsAndCode.add(strings[2]+"-"+strings[3]+"-"+strings[1]);
-                    airportsAndCodeAndCountries.add(theWholeString);
                 }
                 else {
                     airports.add(strings[0]);
@@ -52,7 +52,7 @@ public class Airports {
             for (String y:airportsAndCodeAndCountries) {
                 String[] theWholeStringSplit=y.split(SEPARATOR);
                 if (x.equals(theWholeStringSplit[0])){
-                    stringSet.add(theWholeStringSplit[2]+"-"+theWholeStringSplit[3]+"-"+theWholeStringSplit[1]);
+                    stringSet.add(theWholeStringSplit[2] + "-" + theWholeStringSplit[3] + "-" + theWholeStringSplit[1]);
                 }
             }
         }

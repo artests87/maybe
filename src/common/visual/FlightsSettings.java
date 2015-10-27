@@ -90,32 +90,15 @@ public class FlightsSettings extends JFrame implements ActionListener {
         Set<String> stringSet=airports.getAirportsArraysLimit(strings);
         CheckBoxListItem[] checkBoxListItems=UtilitiesVisual.getCheckBoxListItemArraysFromStrings(
                 stringSet.toArray(new String[stringSet.size()]));
+
         switch (jList.getName()){
             case (J_CHECK_BOX_J_LIST_COUNTRY_FROM_INDEX):
-                //checkBoxesPanel.setVisible(false);
                 jCheckBoxJListAirportFrom.setListData(checkBoxListItems);
-                jCheckBoxJListAirportFrom.repaint();
-                jCheckBoxJListCountryFrom.repaint();
-                //checkBoxesPanel.setVisible(true);
-                //System.out.println("1");
-               /* jScrollPaneAirportFrom=new JScrollPane(jListNew);
-                jScrollPaneAirportFrom.setHorizontalScrollBar(new JScrollBar(JScrollBar.HORIZONTAL));
-                jScrollPaneAirportFrom.setPreferredSize(new Dimension(350,200));
-                constraints =new GridBagConstraints();
-                constraints.fill = GridBagConstraints.BOTH;
-                constraints.anchor=GridBagConstraints.NORTHWEST;
-                constraints.weighty=1.0;
-                constraints.insets=new Insets(0,0,0,20);
-                constraints.gridx = 1;
-                constraints.gridy = 1;
-                checkBoxesPanel.add(jScrollPaneAirportFrom,constraints);
-                */
+                //jCheckBoxJListAirportFrom.setListData(checkBoxListItems);
+                //jCheckBoxJListAirportFrom.repaint();
                 break;
             case (J_CHECK_BOX_J_LIST_COUNTRY_TO_INDEX):
-                //checkBoxesPanel.setVisible(false);
                 jCheckBoxJListAirportTo.setListData(checkBoxListItems);
-                //checkBoxesPanel.setVisible(true);
-                //System.out.println("2");
                 break;
         }
     }
@@ -211,6 +194,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
         JList<CheckBoxListItem> jCheckBoxJList=new JList<CheckBoxListItem>(checkBoxListItems);
         //DefaultListModel<JCheckBox> listModel=new DefaultListModel<JCheckBox>();
         jCheckBoxJList.setCellRenderer(new CheckBoxListRenderer());
+        //jCheckBoxJList.setCellRenderer(new DefaultListCellRenderer());
         jCheckBoxJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         jCheckBoxJList.addMouseListener(new CheckBoxMouseAdapter(this));
         return jCheckBoxJList;
@@ -283,7 +267,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
         initializeButtom();
         initializeLabels();
         initializeRadioGroupsAndButtons();
-        initilizeGridForIntegerFields();
+        initializeGridForIntegerFields();
         initializeGridForCalendarAndFolderFields();
         initializeGridAndAllCheckBoxes();
         initializeCenter();
@@ -326,7 +310,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
         centerPanel.add(checkBoxesPanel,constraints);
         centerPanel.setVisible(true);
     }
-    private void initilizeGridForIntegerFields(){
+    private void initializeGridForIntegerFields(){
         integerPanel=new JPanel();
         integerPanel.setLayout(new GridBagLayout());
         constraints =new GridBagConstraints();
@@ -383,7 +367,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
         buttomPanel.add(buttonMainMenu);
         buttomPanel.setVisible(true);
     }
-    public void initiliazeEverything(){
+    public void initializeEverything(){
         loadAirports(folderAndFileForAirports);
         initializeButton();
         initializeCalendares();
