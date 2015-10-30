@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
+import common.visual.modelVisual.PropertyChangeListenerJCalendar;
 import common.visual.modelVisual.UtilitiesVisual;
 import common.visual.modelVisual.checkBoxFirst.CheckBoxListItem;
 import common.visual.modelVisual.checkBoxFirst.CheckBoxListRenderer;
@@ -24,8 +25,14 @@ public class FlightsSettings extends JFrame implements ActionListener {
     public static final int AIRPORTS=1;
     public static final int AIRPORTSCODE=2;
     public static final int AIRPORTSANDCODE=3;
-    JButton buttonMainMenu;
-    JButton buttonTestCHeckBox;
+    public static JButton buttonMainMenu;
+    public static JButton buttonStartSearch;
+    public static JButton buttonCheckSettings;
+
+    public static final String J_CHECK_BOX_J_LIST_COUNTRY_FROM_INDEX ="1";
+    public static final String J_CHECK_BOX_J_LIST_COUNTRY_TO_INDEX ="2";
+    public static final String J_CHECK_BOX_J_LIST_AIRPORT_TO_INDEX ="22";
+    public static final String J_CHECK_BOX_J_LIST_AIRPORT_FROM_INDEX ="11";
     JPanel firstPanel;
     JPanel buttomPanel;
     JPanel centerPanel;
@@ -56,19 +63,10 @@ public class FlightsSettings extends JFrame implements ActionListener {
     JRadioButton jRadioButtonXLSX;
     JRadioButton jRadioButtonSQL;
     GridBagConstraints constraints;
-    /*CheckboxGroup checkboxGroupCountryFrom;
-    CheckboxGroup checkboxGroupCountryTo;
-    CheckboxGroup checkboxGroupAirportFrom;
-    CheckboxGroup checkboxGroupAirportTo;
-    */
     JList<CheckBoxListItem> jCheckBoxJListAirportFrom;
     JList<CheckBoxListItem> jCheckBoxJListCountryFrom;
     JList<CheckBoxListItem> jCheckBoxJListAirportTo;
     JList<CheckBoxListItem> jCheckBoxJListCountryTo;
-    private static final String J_CHECK_BOX_J_LIST_AIRPORT_FROM_INDEX ="11";
-    private static final String J_CHECK_BOX_J_LIST_COUNTRY_FROM_INDEX ="1";
-    private static final String J_CHECK_BOX_J_LIST_AIRPORT_TO_INDEX ="22";
-    private static final String J_CHECK_BOX_J_LIST_COUNTRY_TO_INDEX ="2";
     JScrollPane jScrollPaneAirportFrom;
     JScrollPane jScrollPaneCountryFrom;
     JScrollPane jScrollPaneAirportTo;
@@ -94,8 +92,6 @@ public class FlightsSettings extends JFrame implements ActionListener {
         switch (jList.getName()){
             case (J_CHECK_BOX_J_LIST_COUNTRY_FROM_INDEX):
                 jCheckBoxJListAirportFrom.setListData(checkBoxListItems);
-                //jCheckBoxJListAirportFrom.setListData(checkBoxListItems);
-                //jCheckBoxJListAirportFrom.repaint();
                 break;
             case (J_CHECK_BOX_J_LIST_COUNTRY_TO_INDEX):
                 jCheckBoxJListAirportTo.setListData(checkBoxListItems);
@@ -192,9 +188,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
             i++;
         }
         JList<CheckBoxListItem> jCheckBoxJList=new JList<CheckBoxListItem>(checkBoxListItems);
-        //DefaultListModel<JCheckBox> listModel=new DefaultListModel<JCheckBox>();
         jCheckBoxJList.setCellRenderer(new CheckBoxListRenderer());
-        //jCheckBoxJList.setCellRenderer(new DefaultListCellRenderer());
         jCheckBoxJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         jCheckBoxJList.addMouseListener(new CheckBoxMouseAdapter(this));
         return jCheckBoxJList;
@@ -204,13 +198,20 @@ public class FlightsSettings extends JFrame implements ActionListener {
         buttonMainMenu=new JButton(myResources.getString("backButton"));
         buttonMainMenu.setFont(font);
         buttonMainMenu.addActionListener(this);
-        buttonTestCHeckBox=new JButton(myResources.getString("testCB"));
-        buttonTestCHeckBox.addActionListener(this);
-        //buttonMainMenu.setVisible(true);
+        buttonMainMenu.setPreferredSize(new Dimension(100,100));
+        buttonCheckSettings=new JButton(myResources.getString("checkSearch"));
+        buttonCheckSettings.setFont(font);
+        buttonCheckSettings.addActionListener(this);
+        buttonStartSearch =new JButton(myResources.getString("startSearch"));
+        buttonStartSearch.setFont(font);
+        buttonStartSearch.addActionListener(this);
+        buttonStartSearch.setEnabled(false);
     }
     private void initializeCalendares(){
         calendarFrom=new JCalendar();
         calendarTo=new JCalendar();
+        calendarFrom.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
+        calendarTo.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
     }
     private void initializeGridForCalendarAndFolderFields(){
         calendarAndFolderPanel=new JPanel();
@@ -254,6 +255,10 @@ public class FlightsSettings extends JFrame implements ActionListener {
         daysAmountMax=new JFormattedTextField(numberFormatterForDaysCount);
         dateMin=new JFormattedTextField(numberFormatterForDate);
         maxRowPerFileXSLX=new JFormattedTextField(numberFormatterXSLXRow);
+        daysAmountMin.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
+        daysAmountMax.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
+        dateMin.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
+        maxRowPerFileXSLX.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
     }
     private void initializeLabels(){
         daysAmountMinLabel=new JLabel(myResources.getString("daysAmountMinLabel"));
@@ -274,9 +279,6 @@ public class FlightsSettings extends JFrame implements ActionListener {
         firstPanel.add(buttomPanel,BorderLayout.SOUTH);
         firstPanel.add(centerPanel,BorderLayout.CENTER);
         MainForm.frameFlightSettings.setContentPane(firstPanel);
-
-        //MainForm.mainFrame.pack();
-        //firstPanel.setVisible(true);
     }
     private void initializeRadioGroupsAndButtons(){
         buttonGroupMethodSearch=new ButtonGroup();
@@ -286,6 +288,11 @@ public class FlightsSettings extends JFrame implements ActionListener {
         jRadioButtonHTML=new JRadioButton(myResources.getString("jRadioButtonHTML"));
         jRadioButtonXLSX=new JRadioButton(myResources.getString("jRadioButtonXLSX"));
         jRadioButtonSQL=new JRadioButton(myResources.getString("jRadioButtonSQL"));
+        jRadioButtonTo.addActionListener(this);
+        jRadioButtonToAndFrom.addActionListener(this);
+        jRadioButtonHTML.addActionListener(this);
+        jRadioButtonXLSX.addActionListener(this);
+        jRadioButtonSQL.addActionListener(this);
         buttonGroupMethodSearch.add(jRadioButtonTo);
         buttonGroupMethodSearch.add(jRadioButtonToAndFrom);
         buttonGroupExitType.add(jRadioButtonHTML);
@@ -303,7 +310,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
         constraints.weightx=1.0;
         constraints.insets=new Insets(20,20,0,20);
         //constraints.gridwidth=1;
-        centerPanel.add(calendarAndFolderPanel,constraints);
+        centerPanel.add(calendarAndFolderPanel, constraints);
         constraints.insets=new Insets(20,0,20,0);
         centerPanel.add(integerPanel,constraints);
         //constraints.gridwidth=4;
@@ -362,9 +369,11 @@ public class FlightsSettings extends JFrame implements ActionListener {
     }
     private void initializeButtom(){
         buttomPanel=new JPanel();
-        buttomPanel.setLayout(new GridLayout(0,1));
-        buttomPanel.add(buttonTestCHeckBox);
+        buttomPanel.setLayout(new GridLayout(1, 0));
+        //buttomPanel.setMinimumSize(new Dimension(500,200));
         buttomPanel.add(buttonMainMenu);
+        buttomPanel.add(buttonCheckSettings);
+        buttomPanel.add(buttonStartSearch);
         buttomPanel.setVisible(true);
     }
     public void initializeEverything(){
@@ -378,17 +387,47 @@ public class FlightsSettings extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource()==buttonMainMenu){
-            MainForm.frameFlightSettings.setVisible(false);
-            MainForm.frame.setVisible(true);
-        }
-        if (e.getSource()==buttonTestCHeckBox){
-            ListModel<CheckBoxListItem> listItemListModel=jCheckBoxJListAirportFrom.getModel();
-            for (int i=0;i<listItemListModel.getSize();i++) {
-                System.out.print(listItemListModel.getElementAt(i));
-                System.out.print("--");
-                System.out.println(listItemListModel.getElementAt(i).isSelected());
+        Object objectEnter=e.getSource();
+        if (objectEnter instanceof JButton &&
+                ((objectEnter==buttonMainMenu))||
+                (objectEnter== buttonCheckSettings)||
+                (objectEnter== buttonStartSearch))
+        {
+            if (objectEnter == buttonMainMenu) {
+                buttonStartSearch.setEnabled(true);
+                goToMainMenu();
+            }
+            if (objectEnter == buttonCheckSettings) {
+                if (checkAllSettings()) {
+                    buttonStartSearch.setEnabled(true);
+                }
+                ;
+            }
+            if (objectEnter == buttonStartSearch) {
+                startSearch();
             }
         }
+        else {
+            buttonStartSearch.setEnabled(false);
+        }
+    }
+    private boolean checkAllSettings(){
+        return true;
+    }
+    private boolean checkSettingsCheckBoxListItems(JList<CheckBoxListItem> jList){
+        ListModel<CheckBoxListItem> listItemListModel=jList.getModel();
+        for (int i=0;i<listItemListModel.getSize();i++) {
+            System.out.print(listItemListModel.getElementAt(i));
+            System.out.print("--");
+            System.out.println(listItemListModel.getElementAt(i).isSelected());
+        }
+        return false;
+    }
+    private void startSearch(){
+
+    }
+    private void goToMainMenu(){
+        MainForm.frameFlightSettings.setVisible(false);
+        MainForm.frame.setVisible(true);
     }
 }

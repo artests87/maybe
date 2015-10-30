@@ -17,6 +17,8 @@ public class CheckBoxMouseAdapter extends MouseAdapter {
     }
 
     public void mouseClicked(MouseEvent event) {
+        flightsSettings.buttonStartSearch.setEnabled(false);
+        if (event.getSource() instanceof JList<?>) {
             JList<CheckBoxListItem> list =
                     (JList<CheckBoxListItem>) event.getSource();
 
@@ -35,6 +37,8 @@ public class CheckBoxMouseAdapter extends MouseAdapter {
             list.repaint(list.getCellBounds(index, index));
             flightsSettings.reloadAirports(list);
         }
+    }
+
 
 
 }
