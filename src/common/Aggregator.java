@@ -1,15 +1,13 @@
 package common;
 
 
-import common.model.ExecutorThread;
-import common.model.FilesInFolder;
-import common.model.SingltonAliveAndSleep;
-import common.model.SleepThread;
+import common.model.*;
 import common.utilits.SystemCooperation;
 
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -87,14 +85,21 @@ public class Aggregator
         //findSCANDTo();
 
         //new SystemCooperation().shutDownSystem();
-        findRouts(ExecutorThread.TOANDFROM,mFolder,mFileAirportsTo,mFileAirportsFrom,mAmountMin,mAmountMax,mDateMin,mTheEndDate,
+        findRouts(ExecutorThread.TOANDFROM,mFolder,null,null,mAmountMin,mAmountMax,mDateMin,mTheEndDate,
                 mMissingDays,mFileSave,mFileLoad,ISLOAD,mPrefixCreateDouble,mFolderFiles,mNameTaskKill);
     }*/
 
-    private static void findRouts(int methodForSearch , String folder, String fileAirportsTo,
-                                  String fileAirportsFrom, int amountMin, int amountMax, int dateMin,
+    public static void findRouts(int methodForSearch , String folder, Set<String> fileAirportsTo,
+                                 Set<String> fileAirportsFrom, int amountMin, int amountMax, int dateMin,
                                   int theEndDate,int missingDays,String fileSave,String fileLoad, boolean isLoad,
                                   String[] prefixCreate, String folderFiles, String[] nameTaskKill){
+        Set<String> airportsTo=fileAirportsTo;
+        Set<String> airportsFrom=fileAirportsFrom;
+        if (airportsTo==null || airportsFrom==null) {
+            airportsTo = new Airports().readFileAirports(mFileAirportsTo).getAirportsCode();
+            airportsFrom = new Airports().readFileAirports(mFileAirportsFrom).getAirportsCode();
+        }
+
         Calendar startFindRouteCalendar=Calendar.getInstance();
         //Present Calendar to String's format
         String presentDateString=(startFindRouteCalendar.get(Calendar.DATE))+
@@ -109,8 +114,8 @@ public class Aggregator
         sleepCallThread.setDaemon(true);
         sleepCallThread.start();
         ExecutorThread executorThread=new ExecutorThread(
-                methodForSearch,THREADS_COUNT, folder + fileAirportsTo,
-                folder + fileAirportsFrom, folder, amountMin, amountMax, dateMin, theEndDate, missingDays,
+                methodForSearch,THREADS_COUNT, airportsTo,
+                airportsFrom, folder, amountMin, amountMax, dateMin, theEndDate, missingDays,
                 fileSave, fileLoad, isLoad);
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+startFindRouteCalendar.getTime().toString());

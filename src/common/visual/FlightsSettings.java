@@ -1,6 +1,7 @@
 package common.visual;
 
 import com.toedter.calendar.JCalendar;
+import common.Aggregator;
 import common.model.Airports;
 
 import javax.swing.*;
@@ -8,8 +9,10 @@ import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import common.visual.modelVisual.Progress.ProgressMonitorFirst;
 import common.visual.modelVisual.PropertyChangeListenerJCalendar;
 import common.visual.modelVisual.UtilitiesVisual;
 import common.visual.modelVisual.checkBoxFirst.CheckBoxListItem;
@@ -76,9 +79,25 @@ public class FlightsSettings extends JFrame implements ActionListener {
     ResourceBundle myResources = ResourceBundle.getBundle("common\\stringgui",
             Locale.ENGLISH);
     String folderAndFileForAirports =System.getProperty("user.dir")+"\\res\\"+"airports_EUR";
+    String folderAndFileForSave;
+    private static final int MIN_DAYS_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM =5;
+    private static final int MAX_DAYS_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM =16;
+    private static final int MIN_DATE_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM =6;
+    private static final int MAX_ROWS_XLSX_START_SETTINGS_BETWEEN_TO_AND_FROM =30000;
+    private String fileOpenLoad;
+    private String fileOpenSave;
 
     public FlightsSettings() throws HeadlessException {
     }
+
+    public void setFileOpenLoad(String fileOpenLoad) {
+        this.fileOpenLoad = fileOpenLoad;
+    }
+
+    public void setFileOpenSave(String fileOpenSave) {
+        this.fileOpenSave = fileOpenSave;
+    }
+
     public void reloadAirports(JList jList){
         String[] strings=UtilitiesVisual.getStringsFromCheckBoxListItemsList(
                 UtilitiesVisual.getCheckBoxListItemsListFromObjectsListSelected(
@@ -101,7 +120,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
     private void initializeFileChooser(){
 
         UIManager.put("swing.boldMetal", Boolean.FALSE);
-        fileChooserFirst=new FileChooserFirst();
+        fileChooserFirst=new FileChooserFirst(this);
     }
     private void initializeGridAndAllCheckBoxes(){
         jCheckBoxJListCountryFrom=initializeCheckBoxes(COUNTRIES,null);
@@ -210,6 +229,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
     private void initializeCalendares(){
         calendarFrom=new JCalendar();
         calendarTo=new JCalendar();
+        calendarTo.setDate(Date.from(calendarFrom.getDate().toInstant().plus(MIN_DAYS_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM, ChronoUnit.DAYS)));
         calendarFrom.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
         calendarTo.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
     }
@@ -222,17 +242,17 @@ public class FlightsSettings extends JFrame implements ActionListener {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.insets=new Insets(0,0,0,20);
-        calendarAndFolderPanel.add(calendarToLabel,constraints);
+        calendarAndFolderPanel.add(calendarFromLabel,constraints);
         constraints.gridy = 1;
         //constraints.insets=new Insets(0,20,0,0);
-        calendarAndFolderPanel.add(calendarTo,constraints);
+        calendarAndFolderPanel.add(calendarFrom,constraints);
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.insets=new Insets(0,0,0,0);
-        calendarAndFolderPanel.add(calendarFromLabel,constraints);
+        calendarAndFolderPanel.add(calendarToLabel,constraints);
         constraints.gridy = 1;
         //constraints.insets=new Insets(0,0,0,20);
-        calendarAndFolderPanel.add(calendarFrom,constraints);
+        calendarAndFolderPanel.add(calendarTo,constraints);
         constraints.gridy=2;
         constraints.gridx=0;
         constraints.gridwidth=2;
@@ -255,6 +275,13 @@ public class FlightsSettings extends JFrame implements ActionListener {
         daysAmountMax=new JFormattedTextField(numberFormatterForDaysCount);
         dateMin=new JFormattedTextField(numberFormatterForDate);
         maxRowPerFileXSLX=new JFormattedTextField(numberFormatterXSLXRow);
+
+        daysAmountMin.setValue(MIN_DAYS_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM);
+        daysAmountMax.setValue(MAX_DAYS_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM);
+        dateMin.setValue(MIN_DATE_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM);
+        maxRowPerFileXSLX.setValue(MAX_ROWS_XLSX_START_SETTINGS_BETWEEN_TO_AND_FROM);
+
+        maxRowPerFileXSLX.setEnabled(false);
         daysAmountMin.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
         daysAmountMax.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
         dateMin.addPropertyChangeListener(new PropertyChangeListenerJCalendar(this));
@@ -285,11 +312,13 @@ public class FlightsSettings extends JFrame implements ActionListener {
         buttonGroupExitType=new ButtonGroup();
         jRadioButtonTo=new JRadioButton(myResources.getString("jRadioButtonTo"));
         jRadioButtonToAndFrom=new JRadioButton(myResources.getString("jRadioButtonToAndFrom"));
+        jRadioButtonToAndFrom.setSelected(true);
         jRadioButtonHTML=new JRadioButton(myResources.getString("jRadioButtonHTML"));
+        jRadioButtonHTML.setSelected(true);
         jRadioButtonXLSX=new JRadioButton(myResources.getString("jRadioButtonXLSX"));
         jRadioButtonSQL=new JRadioButton(myResources.getString("jRadioButtonSQL"));
-        jRadioButtonTo.addActionListener(this);
-        jRadioButtonToAndFrom.addActionListener(this);
+        //jRadioButtonTo.addActionListener(this);
+        //jRadioButtonToAndFrom.addActionListener(this);
         jRadioButtonHTML.addActionListener(this);
         jRadioButtonXLSX.addActionListener(this);
         jRadioButtonSQL.addActionListener(this);
@@ -388,43 +417,91 @@ public class FlightsSettings extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object objectEnter=e.getSource();
+        if (objectEnter==jRadioButtonXLSX){
+            maxRowPerFileXSLX.setEnabled(true);
+            return;
+        }
+        if (objectEnter==jRadioButtonHTML || objectEnter==jRadioButtonSQL){
+            maxRowPerFileXSLX.setEnabled(false);
+            return;
+        }
         if (objectEnter instanceof JButton &&
                 ((objectEnter==buttonMainMenu))||
                 (objectEnter== buttonCheckSettings)||
-                (objectEnter== buttonStartSearch))
-        {
+                (objectEnter== buttonStartSearch)){
             if (objectEnter == buttonMainMenu) {
                 buttonStartSearch.setEnabled(true);
                 goToMainMenu();
             }
             if (objectEnter == buttonCheckSettings) {
-                if (checkAllSettings()) {
+                if (checkAllSettings(calendarFrom,calendarTo,jCheckBoxJListAirportFrom,jCheckBoxJListAirportTo, fileOpenLoad, fileOpenSave)) {
                     buttonStartSearch.setEnabled(true);
                 }
-                ;
             }
             if (objectEnter == buttonStartSearch) {
-                startSearch();
+                //startSearch();
             }
         }
         else {
             buttonStartSearch.setEnabled(false);
         }
+
     }
-    private boolean checkAllSettings(){
+    private boolean checkAllSettings(JCalendar calendarFrom, JCalendar calendarTo,
+                                     JList jCheckBoxJListAirportFrom, JList jCheckBoxJListAirportTo,
+                                     String folderAndFileForOpen, String folderAndFileForSave)
+    {
+        if (!checkSettingsCheckBoxListItems(jCheckBoxJListAirportFrom)||
+            !checkSettingsCheckBoxListItems(jCheckBoxJListAirportTo)||
+            !checkSettingsCalendar(calendarFrom, calendarTo, Integer.parseInt(daysAmountMin.getValue().toString()))||
+            !checkSettingsFileExist(folderAndFileForOpen)||
+            !checkSettingsFolderExist(folderAndFileForSave)
+        ){
+            return false;
+        }
+        return true;
+    }
+    private boolean checkSettingsFileExist(String folderAndFileForOpen){
+        if (folderAndFileForOpen!=null){
+            return true;
+        }
+        return false;
+    }
+    private boolean checkSettingsFolderExist(String folderAndFileForSave){
+        if (folderAndFileForSave!=null){
+            return true;
+        }
+        return false;
+    }
+    private boolean checkSettingsCalendar(JCalendar calendarFrom, JCalendar calendarTo, int days){
+        if (calendarFrom.getDate().toInstant().plus(days, ChronoUnit.DAYS).isAfter(
+                        calendarTo.getDate().toInstant()
+                )
+           ) {
+            return false;
+        }
         return true;
     }
     private boolean checkSettingsCheckBoxListItems(JList<CheckBoxListItem> jList){
         ListModel<CheckBoxListItem> listItemListModel=jList.getModel();
         for (int i=0;i<listItemListModel.getSize();i++) {
-            System.out.print(listItemListModel.getElementAt(i));
-            System.out.print("--");
-            System.out.println(listItemListModel.getElementAt(i).isSelected());
+            if (listItemListModel.getElementAt(i).isSelected()) {
+                return true;
+            }
         }
         return false;
     }
-    private void startSearch(){
-
+    private void startSearch(JCalendar calendarFrom, JCalendar calendarTo,
+                             JList jCheckBoxJListAirportFrom, JList jCheckBoxJListAirportTo,
+                             String folderAndFileForSave,
+                             String folderAndFileForAirports
+                             ){
+        //Aggregator.findRouts();
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new ProgressMonitorFirst().createAndShowGUI();
+            }
+        });
     }
     private void goToMainMenu(){
         MainForm.frameFlightSettings.setVisible(false);

@@ -43,7 +43,7 @@ public class ExecutorThread
             .build();
 
 
-    public ExecutorThread(int methodSearch,int threadsCount, String fileName, String fileNameFrom, String folder,
+    public ExecutorThread(int methodSearch,int threadsCount, Set<String>  fileName, Set<String> fileNameFrom, String folder,
                           int amountMin, int amountMax,int dateMin,int theEndDate,int missingDays,
                           String fileSave, String fileLoad, boolean isLoad) {
         this.methodSearch=methodSearch;
@@ -53,8 +53,8 @@ public class ExecutorThread
         this.fileSave = fileSave;
         this.isLoad =isLoad;
         mapCalendar=new Dates(amountMin,amountMax,dateMin,theEndDate,missingDays).getMapCalendarStatic();
-        airportsTo = new Airports().readFileAirports(fileName).getAirportsCode();
-        airportsFrom=new Airports().readFileAirports(fileNameFrom).getAirportsCode();
+        airportsTo = fileName;
+        airportsFrom=fileNameFrom;
         if (airportsTo.size()>0 && mapCalendar.size()>0 && airportsFrom.size()>0) {
             userDateSelectEmulationMethod();
         }
