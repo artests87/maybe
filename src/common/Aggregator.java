@@ -35,9 +35,9 @@ public class Aggregator
     //Present Calendar - start program
     private static Calendar mPresentCalendarStartProgram= Calendar.getInstance();
     //Array for prefix for double file search(for create generalizing)
-    private static String[] mPrefixCreateDouble ={"flight"};
+    private static String mPrefixCreateDouble ="flight";
     //Array for prefix for single file search (for create generalizing)
-    private static String[] mPrefixCreateSingle ={"single"};
+    private static String mPrefixCreateSingle ="single";
     //Array for prefix for name file (for delete)
     private static String[] mPrefixDelete ={"application","phantomjsdriver"};
     //File's name for to route
@@ -89,10 +89,11 @@ public class Aggregator
                 mMissingDays,mFileSave,mFileLoad,ISLOAD,mPrefixCreateDouble,mFolderFiles,mNameTaskKill);
     }*/
 
-    public static void findRouts(int methodForSearch , String folder, Set<String> fileAirportsTo,
-                                 Set<String> fileAirportsFrom, int amountMin, int amountMax, int dateMin,
+    public static void findRouts(int methodForSearch , String folder, Set<String> fileAirportsFrom, Set<String> fileAirportsTo,
+                                  int amountMin, int amountMax, int dateMin,
                                   int theEndDate,int missingDays,String fileSave,String fileLoad, boolean isLoad,
-                                  String[] prefixCreate, String folderFiles, String[] nameTaskKill){
+                                   String folderFiles, String[] nameTaskKill){
+        String prefixCreate=methodForSearch==ExecutorThread.TO?mPrefixCreateSingle:mPrefixCreateDouble;
         Set<String> airportsTo=fileAirportsTo;
         Set<String> airportsFrom=fileAirportsFrom;
         if (airportsTo==null || airportsFrom==null) {
@@ -127,6 +128,6 @@ public class Aggregator
         System.out.println("Exit MainThread");
         FilesInFolder readerFilesInFolder=new FilesInFolder(folderFiles,resultsFileNameHTML,prefixCreate);
         readerFilesInFolder.create();
-        new SystemCooperation().killTask(nameTaskKill);
+        new SystemCooperation().killTask(nameTaskKill==null?mNameTaskKill:nameTaskKill);
     }
 }

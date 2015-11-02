@@ -11,7 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
+import common.model.ExecutorThread;
 import common.visual.modelVisual.Progress.ProgressMonitorFirst;
 import common.visual.modelVisual.PropertyChangeListenerJCalendar;
 import common.visual.modelVisual.UtilitiesVisual;
@@ -85,7 +87,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
     private static final int MIN_DATE_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM =6;
     private static final int MAX_ROWS_XLSX_START_SETTINGS_BETWEEN_TO_AND_FROM =30000;
     private String fileOpenLoad;
-    private String fileOpenSave;
+    private String folderOpenSave;
 
     public FlightsSettings() throws HeadlessException {
     }
@@ -94,8 +96,8 @@ public class FlightsSettings extends JFrame implements ActionListener {
         this.fileOpenLoad = fileOpenLoad;
     }
 
-    public void setFileOpenSave(String fileOpenSave) {
-        this.fileOpenSave = fileOpenSave;
+    public void setFolderOpenSave(String folderOpenSave) {
+        this.folderOpenSave = folderOpenSave;
     }
 
     public void reloadAirports(JList jList){
@@ -434,12 +436,13 @@ public class FlightsSettings extends JFrame implements ActionListener {
                 goToMainMenu();
             }
             if (objectEnter == buttonCheckSettings) {
-                if (checkAllSettings(calendarFrom,calendarTo,jCheckBoxJListAirportFrom,jCheckBoxJListAirportTo, fileOpenLoad, fileOpenSave)) {
+                if (checkAllSettings(calendarFrom,calendarTo,jCheckBoxJListAirportFrom,jCheckBoxJListAirportTo, fileOpenLoad, folderOpenSave)) {
                     buttonStartSearch.setEnabled(true);
                 }
             }
             if (objectEnter == buttonStartSearch) {
-                //startSearch();
+                startSearch(calendarFrom,calendarTo,jCheckBoxJListAirportFrom,jCheckBoxJListAirportTo,fileOpenLoad,folderOpenSave,
+                        daysAmountMin,daysAmountMax,dateMin);
             }
         }
         else {
@@ -476,7 +479,8 @@ public class FlightsSettings extends JFrame implements ActionListener {
     private boolean checkSettingsCalendar(JCalendar calendarFrom, JCalendar calendarTo, int days){
         if (calendarFrom.getDate().toInstant().plus(days, ChronoUnit.DAYS).isAfter(
                         calendarTo.getDate().toInstant()
-                )
+                )||
+                calendarFrom.getDate().before(new Date())
            ) {
             return false;
         }
@@ -494,9 +498,27 @@ public class FlightsSettings extends JFrame implements ActionListener {
     private void startSearch(JCalendar calendarFrom, JCalendar calendarTo,
                              JList jCheckBoxJListAirportFrom, JList jCheckBoxJListAirportTo,
                              String folderAndFileForSave,
-                             String folderAndFileForAirports
-                             ){
-        //Aggregator.findRouts();
+                             String folderAndFileForAirports,
+                             JFormattedTextField daysAmountMin,
+                             JFormattedTextField daysAmountMax,
+                             JFormattedTextField dateMin
+                             )
+    {
+        int methodSearch=jRadioButtonTo.isSelected()? ExecutorThread.TO:ExecutorThread.TOANDFROM;
+        int daysAmountMinInt=Integer.parseInt(daysAmountMin.getText());
+        int daysAmountMaxInt=Integer.parseInt(daysAmountMax.getText());
+        int dateMinInt=Integer.parseInt(dateMin.getText());
+        int missingDays=(int)UtilitiesVisual.getDateDiff(new Date(),calendarFrom.getDate(), TimeUnit.DAYS);
+        int theEndDate=(int)UtilitiesVisual.getDateDiff(new Date(),calendarTo.getDate(), TimeUnit.DAYS);
+        System.out.println(daysAmountMinInt);
+        System.out.println(daysAmountMaxInt);
+        System.out.println(dateMinInt);
+        System.out.println(theEndDate);
+        System.out.println(missingDays);
+        Set<String> stringSetFrom=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportFrom);
+        Set<String> stringSetTo=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportTo);
+        Aggregator.findRouts(methodSearch, folderOpenSave,stringSetFrom,stringSetTo,daysAmountMinInt,daysAmountMaxInt,dateMinInt,
+                theEndDate,missingDays,fileOpenLoad,fileOpenLoad,true,folderOpenSave,null);
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 new ProgressMonitorFirst().createAndShowGUI();

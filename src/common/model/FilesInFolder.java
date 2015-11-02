@@ -12,9 +12,9 @@ public class FilesInFolder {
     private List<String> listFiles=new LinkedList<>();
     private String pathFolder;
     private String pathFileTo;
-    private String[] prefix;
+    private String prefix;
 
-    public FilesInFolder(String pathFolder, String pathFileTo, String[] prefix) {
+    public FilesInFolder(String pathFolder, String pathFileTo, String prefix) {
         this.pathFolder = pathFolder;
         this.pathFileTo = pathFileTo;
         this.prefix = prefix;
@@ -70,11 +70,9 @@ public class FilesInFolder {
             for (File aFList : fList) {
                 //Нужны только папки в место isFile() пишим isDirectory()
                 if (aFList.isFile()) {
-                    for (String pr:prefix) {
-                        if (aFList.getName().startsWith(pr)) {
+                    if (aFList.getName().startsWith(prefix)) {
                             listFiles.add(aFList.getName());
                         }
-                    }
                 }
             }
         }
