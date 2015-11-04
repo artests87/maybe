@@ -33,7 +33,7 @@ public class HtmlView implements View,Callable<Boolean>{
     public HtmlView(Map<Calendar,LinkedHashSet<Calendar>> mapCalendar, String toStart,String fromStart,int methodSearch,String folder,
                     String fileSave) {
         this.folder = folder;
-        this.filePathStart=folder+"outHTML/flightsAll.html";
+        this.filePathStart=System.getProperty("user.dir")+"\\res\\"+"flightsAll.html";
         this.toStart = toStart;
         this.fromEnd = toStart;
         this.fromStart=fromStart;
@@ -41,10 +41,10 @@ public class HtmlView implements View,Callable<Boolean>{
         this.mapCalendar = mapCalendar;
         this.methodSearch=methodSearch;
         if (methodSearch==ExecutorThread.TOANDFROM) {
-            filePath = folder+"outHTML" + "/flights" +fromStart+toStart + ".html";
+            filePath = folder + "/flights" +fromStart+toStart + ".html";
         }
         else{
-            filePath = folder+"outHTML" + "/singleFlights" +fromStart+toStart + ".html";
+            filePath = folder+ "/singleFlights" +fromStart+toStart + ".html";
         }
     }
 
@@ -91,7 +91,7 @@ public class HtmlView implements View,Callable<Boolean>{
                     }
                    timeToEnd(start);
                 }
-                SaveAndLoad.saveRout(fromStart,toStart,folder+fileSave);
+                SaveAndLoad.saveRout(fromStart,toStart,fileSave);
             }
             catch (Exception e){
                 log.warning("Something wrong outer...Thread -------- " + fromStart +"----"+ toStart + "---" +pair.getKey()+"------"+e.getLocalizedMessage());
@@ -146,8 +146,8 @@ public class HtmlView implements View,Callable<Boolean>{
                     }
                     timeToEnd(start);
                 }
-                SaveAndLoad.saveRout(fromStart,toStart,folder+fileSave);
-                SaveAndLoad.saveRout(toStart,fromStart,folder+fileSave);
+                SaveAndLoad.saveRout(fromStart,toStart,fileSave);
+                SaveAndLoad.saveRout(toStart,fromStart,fileSave);
             }
             catch (Exception e){
                 log.warning("SINGLE - Something wrong outer...Thread -------- " + fromStart +"----"+ toStart + "---" +pair.getKey()+"------"+e.getLocalizedMessage());

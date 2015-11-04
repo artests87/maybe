@@ -22,7 +22,7 @@ public class Aggregator
     //Amount availeble processors
     private static final int THREADS_COUNT =Runtime.getRuntime().availableProcessors();
     //Need to load?
-    private static final boolean ISLOAD =false;
+    private static final boolean ISLOAD =true;
     //System user dir
     private static String mUserDir =System.getProperty("user.dir");
     //Common program's folder
@@ -41,9 +41,9 @@ public class Aggregator
     //Array for prefix for name file (for delete)
     private static String[] mPrefixDelete ={"application","phantomjsdriver"};
     //File's name for to route
-    private static String mFileAirportsTo ="airportsITA";
+    private static String mFileAirportsTo ="airports_EUR";
     //File's name for from route
-    private static String mFileAirportsFrom ="airportsSCAND";
+    private static String mFileAirportsFrom ="airports_EUR";
     //File's name for save
     private static String mFileSave ="save";
     //File's name for load
@@ -59,10 +59,10 @@ public class Aggregator
     //Integer is for minimum date from DepartureTo
     private static int mDateMin =7;
     //Integer is for maximums days for search
-    private static int mTheEndDate =53;
+    private static int mTheEndDate =30;
     //Integer is start day (count from now)
-    private static int mMissingDays =26;
-/*
+    private static int mMissingDays =15;
+
     public static void main(String[] args){
         try {
             LogManager.getLogManager().readConfiguration(
@@ -71,7 +71,7 @@ public class Aggregator
             System.err.println("Could not setup logger configuration: " + e.toString());
         }
         //new SystemCooperation().getAllSystemProperties();
-        new FilesInFolder(mFolderFilesDelete,null, mPrefixDelete).deleteFilesInFolder();
+        //new FilesInFolder(mFolderFilesDelete,null, mPrefixDelete).deleteFilesInFolder();
 
         //new SystemCooperation().memo();
         //new SystemCooperation().proccesor();
@@ -85,14 +85,23 @@ public class Aggregator
         //findSCANDTo();
 
         //new SystemCooperation().shutDownSystem();
-        findRouts(ExecutorThread.TOANDFROM,mFolder,null,null,mAmountMin,mAmountMax,mDateMin,mTheEndDate,
-                mMissingDays,mFileSave,mFileLoad,ISLOAD,mPrefixCreateDouble,mFolderFiles,mNameTaskKill);
-    }*/
+        Set<String> airportsTo=new Airports().readFileAirports(mFolder+mFileAirportsTo).getAirportsCode();
+        System.out.println(mFolderFiles+mFileSave);
+        System.out.println(mFolderFiles+mFileLoad);
+        findRouts(ExecutorThread.TOANDFROM, mFolder, airportsTo, airportsTo, mAmountMin, mAmountMax, mDateMin, mTheEndDate,
+                mMissingDays, mFolderFiles + mFileSave, mFolderFiles + mFileLoad, ISLOAD, mFolderFiles,mNameTaskKill);
+    }
 
     public static void findRouts(int methodForSearch , String folder, Set<String> fileAirportsFrom, Set<String> fileAirportsTo,
                                   int amountMin, int amountMax, int dateMin,
                                   int theEndDate,int missingDays,String fileSave,String fileLoad, boolean isLoad,
                                    String folderFiles, String[] nameTaskKill){
+        try {
+            LogManager.getLogManager().readConfiguration(
+                    Aggregator.class.getResourceAsStream("logging.properties"));
+        } catch (IOException e) {
+            System.err.println("Could not setup logger configuration: " + e.toString());
+        }
         String prefixCreate=methodForSearch==ExecutorThread.TO?mPrefixCreateSingle:mPrefixCreateDouble;
         Set<String> airportsTo=fileAirportsTo;
         Set<String> airportsFrom=fileAirportsFrom;
@@ -116,7 +125,7 @@ public class Aggregator
         sleepCallThread.start();
         ExecutorThread executorThread=new ExecutorThread(
                 methodForSearch,THREADS_COUNT, airportsTo,
-                airportsFrom, folder, amountMin, amountMax, dateMin, theEndDate, missingDays,
+                airportsFrom, folderFiles, amountMin, amountMax, dateMin, theEndDate, missingDays,
                 fileSave, fileLoad, isLoad);
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+startFindRouteCalendar.getTime().toString());

@@ -1,6 +1,7 @@
 package common.visual;
 
 import com.toedter.calendar.JCalendar;
+import common.Adapter;
 import common.Aggregator;
 import common.model.Airports;
 
@@ -11,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import common.model.ExecutorThread;
@@ -510,20 +513,18 @@ public class FlightsSettings extends JFrame implements ActionListener {
         int dateMinInt=Integer.parseInt(dateMin.getText());
         int missingDays=(int)UtilitiesVisual.getDateDiff(new Date(),calendarFrom.getDate(), TimeUnit.DAYS);
         int theEndDate=(int)UtilitiesVisual.getDateDiff(new Date(),calendarTo.getDate(), TimeUnit.DAYS);
-        System.out.println(daysAmountMinInt);
-        System.out.println(daysAmountMaxInt);
-        System.out.println(dateMinInt);
-        System.out.println(theEndDate);
-        System.out.println(missingDays);
+        folderAndFileForSave=folderAndFileForSave.substring(0,folderAndFileForSave.lastIndexOf("."));
         Set<String> stringSetFrom=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportFrom);
         Set<String> stringSetTo=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportTo);
-        Aggregator.findRouts(methodSearch, folderOpenSave,stringSetFrom,stringSetTo,daysAmountMinInt,daysAmountMaxInt,dateMinInt,
-                theEndDate,missingDays,fileOpenLoad,fileOpenLoad,true,folderOpenSave,null);
+        ExecutorService service = Executors.newFixedThreadPool(4);
+        service.submit(new Adapter(methodSearch, folderOpenSave,stringSetFrom,stringSetTo,daysAmountMinInt,daysAmountMaxInt,dateMinInt,
+                theEndDate,missingDays,folderAndFileForSave,folderAndFileForSave,true,folderAndFileForAirports,null));
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 new ProgressMonitorFirst().createAndShowGUI();
             }
         });
+        service.shutdown();
     }
     private void goToMainMenu(){
         MainForm.frameFlightSettings.setVisible(false);

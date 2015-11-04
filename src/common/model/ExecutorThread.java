@@ -60,7 +60,7 @@ public class ExecutorThread
         }
         else{
             if (airportsTo.size()==0 || airportsFrom.size()==0){
-                System.out.println("Size airportsTo is 0");
+                System.out.println("Size airports is 0");
             }
 
             if (mapCalendar.size()==0){
@@ -150,7 +150,7 @@ public class ExecutorThread
         System.out.println("Exit end!");
     }
     public boolean checkExistSaveRout(){
-        SaveAndLoad.load(folder+ fileLoad);
+        SaveAndLoad.load(fileLoad);
         airportsLoad =SaveAndLoad.getAirportsLoad();
         return airportsLoad.size() > 0;
     }
