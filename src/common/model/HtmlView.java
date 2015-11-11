@@ -104,7 +104,7 @@ public class HtmlView implements View,Callable<Boolean>{
         SingltonAliveAndSleep.getInstance().decrementAmountQuery();
         long secToEnd=SingltonAliveAndSleep.getInstance().getAmountQuery()*(diff/1000)/SingltonAliveAndSleep.getInstance().getCountThread();
         System.out.println("Left query-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
-        System.out.println("Left time (at moment)-" + secToEnd/60+"min "+secToEnd%60+"sec.");
+        System.out.println("Left time (at the moment)-" + secToEnd/60+"min "+secToEnd%60+"sec.");
         System.out.println("Left time (at average)-" + timeToEndAverage(diff/1000)*SingltonAliveAndSleep.getInstance().getAmountQuery()/60/
                 SingltonAliveAndSleep.getInstance().getCountThread()+"min");
     }

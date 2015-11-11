@@ -1,6 +1,7 @@
 package common.model;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import common.Adapter;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -24,6 +25,8 @@ public class ExecutorThread
     private int amountDates=0;
     private int amountRoutes=0;
     private int amountRoutesFrom=0;
+    private int amountQuery=0;
+    private int totalRoutes=0;
     private int amountFinishedRoutes=0;
     private int amountFinishedDates=0;
     private int threadsCount;
@@ -38,6 +41,7 @@ public class ExecutorThread
     private boolean isSaveExistNow=false;
     private boolean isLoad =false;
     private int methodSearch;
+    private Adapter adapter;
     final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("Routes-%d")
             .build();
@@ -45,7 +49,7 @@ public class ExecutorThread
 
     public ExecutorThread(int methodSearch,int threadsCount, Set<String>  fileName, Set<String> fileNameFrom, String folder,
                           int amountMin, int amountMax,int dateMin,int theEndDate,int missingDays,
-                          String fileSave, String fileLoad, boolean isLoad) {
+                          String fileSave, String fileLoad, boolean isLoad, Adapter adapter) {
         this.methodSearch=methodSearch;
         this.threadsCount=threadsCount;
         this.folder=folder;
@@ -55,6 +59,7 @@ public class ExecutorThread
         mapCalendar=new Dates(amountMin,amountMax,dateMin,theEndDate,missingDays).getMapCalendarStatic();
         airportsTo = fileName;
         airportsFrom=fileNameFrom;
+        this.adapter=adapter;
         if (airportsTo.size()>0 && mapCalendar.size()>0 && airportsFrom.size()>0) {
             userDateSelectEmulationMethod();
         }
@@ -121,9 +126,11 @@ public class ExecutorThread
                 futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder, fileSave)));
             }
         }
+        totalRoutes=amountRoutes*amountRoutesFrom;
         System.out.println("Total dates-" + amountDates);
-        System.out.println("Total routes-" + amountRoutes*amountRoutesFrom);
+        System.out.println("Total routes-" + totalRoutes);
         System.out.println("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
+        amountQuery=SingltonAliveAndSleep.getInstance().getAmountQuery();
         log.info("Total dates-" + amountDates);
         log.info("Total routes-" + amountRoutes*amountRoutesFrom);
         log.info("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
@@ -138,7 +145,8 @@ public class ExecutorThread
                 x.get();
                 amountFinishedRoutes++;
                 amountFinishedDates += amountDates;
-                System.out.println("Left routes - " + (amountRoutes*amountRoutesFrom - amountFinishedRoutes));
+                System.out.println("Left routes - " + (totalRoutes - amountFinishedRoutes));
+                adapter.setPercentCompleted(setPercentCompleted());
                 if (!SingltonAliveAndSleep.getInstance().isAlive() && !service.isShutdown()){
                     service.shutdownNow();
                     System.out.println("Exit begin...");
@@ -155,4 +163,20 @@ public class ExecutorThread
         return airportsLoad.size() > 0;
     }
 
+    public int getAmountFinishedRoutes() {
+        return amountFinishedRoutes;
+    }
+
+    public int getAmountRoutes() {
+        return amountRoutes;
+    }
+    public float setPercentCompleted(){
+        float percent;
+        float onePercent=(amountQuery/100)>0?(amountQuery/100)
+                :Float.parseFloat("0."+(amountQuery % 100));
+        percent=SingltonAliveAndSleep.getInstance().getAmountQuery()>onePercent
+                ?SingltonAliveAndSleep.getInstance().getAmountQuery()/onePercent:0;
+        //System.out.println(percent);
+        return 100-percent;
+    }
 }

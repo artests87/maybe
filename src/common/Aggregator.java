@@ -63,6 +63,8 @@ public class Aggregator
     //Integer is start day (count from now)
     private static int mMissingDays =15;
 
+    public static ExecutorThread executorThread;
+
     public static void main(String[] args){
         try {
             LogManager.getLogManager().readConfiguration(
@@ -89,13 +91,13 @@ public class Aggregator
         System.out.println(mFolderFiles+mFileSave);
         System.out.println(mFolderFiles+mFileLoad);
         findRouts(ExecutorThread.TOANDFROM, mFolder, airportsTo, airportsTo, mAmountMin, mAmountMax, mDateMin, mTheEndDate,
-                mMissingDays, mFolderFiles + mFileSave, mFolderFiles + mFileLoad, ISLOAD, mFolderFiles,mNameTaskKill);
+                mMissingDays, mFolderFiles + mFileSave, mFolderFiles + mFileLoad, ISLOAD, mFolderFiles,mNameTaskKill,null);
     }
 
     public static void findRouts(int methodForSearch , String folder, Set<String> fileAirportsFrom, Set<String> fileAirportsTo,
                                   int amountMin, int amountMax, int dateMin,
                                   int theEndDate,int missingDays,String fileSave,String fileLoad, boolean isLoad,
-                                   String folderFiles, String[] nameTaskKill){
+                                   String folderFiles, String[] nameTaskKill, Adapter adapter){
         try {
             LogManager.getLogManager().readConfiguration(
                     Aggregator.class.getResourceAsStream("logging.properties"));
@@ -123,10 +125,10 @@ public class Aggregator
         Thread sleepCallThread=new Thread(sleepCall);
         sleepCallThread.setDaemon(true);
         sleepCallThread.start();
-        ExecutorThread executorThread=new ExecutorThread(
+        executorThread=new ExecutorThread(
                 methodForSearch,THREADS_COUNT, airportsTo,
                 airportsFrom, folderFiles, amountMin, amountMax, dateMin, theEndDate, missingDays,
-                fileSave, fileLoad, isLoad);
+                fileSave, fileLoad, isLoad,adapter);
         Calendar end=Calendar.getInstance();
         log.info("Start program--"+startFindRouteCalendar.getTime().toString());
         log.info("End program--"+end.getTime().toString());

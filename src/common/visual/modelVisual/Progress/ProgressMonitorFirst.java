@@ -1,5 +1,8 @@
 package common.visual.modelVisual.Progress;
 
+import common.Adapter;
+import common.Aggregator;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -18,8 +21,28 @@ public class ProgressMonitorFirst extends JPanel
         private JButton startButton;
         private JTextArea taskOutput;
         private Task task;
+       private Adapter adapter;
 
-        class Task extends SwingWorker<Void, Void> {
+       public ProgressMonitorFirst(Adapter adapter) {
+           super(new BorderLayout());
+           this.adapter=adapter;
+
+           //Create the demo's UI.
+           startButton = new JButton("Start");
+           startButton.setActionCommand("start");
+           startButton.addActionListener(this);
+
+           taskOutput = new JTextArea(5, 20);
+           taskOutput.setMargin(new Insets(5,5,5,5));
+           taskOutput.setEditable(false);
+
+           add(startButton, BorderLayout.PAGE_START);
+           add(new JScrollPane(taskOutput), BorderLayout.CENTER);
+           setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+       }
+
+       class Task extends SwingWorker<Void, Void> {
             @Override
             public Void doInBackground() {
                 Random random = new Random();
@@ -27,14 +50,20 @@ public class ProgressMonitorFirst extends JPanel
                 setProgress(0);
                 try {
                     Thread.sleep(1000);
-                    while (progress < 100 && !isCancelled()) {
+                    while (progress < 100000 && !isCancelled()) {
                         //Sleep for up to one second.
-                        Thread.sleep(random.nextInt(1000));
+                        //Thread.sleep(random.nextInt(1000));
+                        Thread.sleep(1000);
                         //Make random progress.
-                        progress += random.nextInt(10);
+                        //progress += random.nextInt(10);
+                        progress = adapter.getPercentCompleted();
+                        //System.out.println(progress);
                         setProgress(Math.min(progress, 100));
+
                     }
-                } catch (InterruptedException ignore) {}
+                } catch (InterruptedException ignore) {
+                    System.out.println(ignore.getLocalizedMessage()+"--------------------------");
+                }
                 return null;
             }
 
@@ -109,10 +138,10 @@ public class ProgressMonitorFirst extends JPanel
          * this method should be invoked from the
          * event-dispatching thread.
          */
-        public static void createAndShowGUI() {
-            //Create and set up the window.
+        public void createAndShowGUI() {
+            /*//Create and set up the window.
             JFrame frame = new JFrame("ProgressMonitorDemo");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             //Create and set up the content pane.
             JComponent newContentPane = new ProgressMonitorFirst();
@@ -121,7 +150,16 @@ public class ProgressMonitorFirst extends JPanel
 
             //Display the window.
             frame.pack();
-            frame.setVisible(true);
+            frame.setVisible(true);*/
+            progressMonitor = new ProgressMonitor(ProgressMonitorFirst.this,
+                    "Running a Long Task",
+                    "", 0, 100);
+            progressMonitor.setProgress(0);
+            task = new Task();
+            task.addPropertyChangeListener(this);
+            task.execute();
+            startButton.setEnabled(false);
+
         }
 
 

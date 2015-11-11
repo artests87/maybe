@@ -1,5 +1,7 @@
 package common;
 
+import common.model.SingltonAliveAndSleep;
+
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -21,6 +23,7 @@ public class Adapter implements Callable<Boolean>{
     boolean isLoad;
     String folderFiles;
     String[] nameTaskKill;
+    int percent=0;
 
     public Adapter(int methodForSearch,
             String folder,
@@ -55,7 +58,13 @@ public class Adapter implements Callable<Boolean>{
     @Override
     public Boolean call() throws Exception {
         Aggregator.findRouts(methodForSearch, folder,fileAirportsFrom,fileAirportsTo,amountMin,amountMax,dateMin,
-                theEndDate,missingDays,fileSave,fileLoad,isLoad,folderFiles,nameTaskKill);
+                theEndDate,missingDays,fileSave,fileLoad,isLoad,folderFiles,nameTaskKill,this);
         return true;
+    }
+    public void setPercentCompleted(float percentCompleted){
+        percent=(int)percentCompleted;
+    }
+    public int getPercentCompleted(){
+        return percent;
     }
 }

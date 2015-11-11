@@ -517,15 +517,17 @@ public class FlightsSettings extends JFrame implements ActionListener {
         Set<String> stringSetFrom=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportFrom);
         Set<String> stringSetTo=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportTo);
         ExecutorService service = Executors.newFixedThreadPool(4);
-        service.submit(new Adapter(methodSearch, folderOpenSave,stringSetFrom,stringSetTo,daysAmountMinInt,daysAmountMaxInt,dateMinInt,
-                theEndDate,missingDays,folderAndFileForSave,folderAndFileForSave,true,folderAndFileForAirports,null));
+        Adapter adapter=new Adapter(methodSearch, folderOpenSave,stringSetFrom,stringSetTo,daysAmountMinInt,daysAmountMaxInt,dateMinInt,
+                theEndDate,missingDays,folderAndFileForSave,folderAndFileForSave,true,folderAndFileForAirports,null);
+        service.submit(adapter);
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new ProgressMonitorFirst().createAndShowGUI();
+                new ProgressMonitorFirst(adapter).createAndShowGUI();
             }
         });
         service.shutdown();
     }
+
     private void goToMainMenu(){
         MainForm.frameFlightSettings.setVisible(false);
         MainForm.frame.setVisible(true);

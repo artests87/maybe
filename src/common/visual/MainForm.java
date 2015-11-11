@@ -1,5 +1,7 @@
 package common.visual;
 
+import common.visual.modelVisual.Progress.ProgressMonitorFirst;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
