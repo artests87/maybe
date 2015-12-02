@@ -9,12 +9,15 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 
@@ -102,7 +105,16 @@ public class MMStrategy implements Strategy
     protected Document getDocument(String toStart, String dateStart, String fromEnd, String dateEnd,String fromStart) throws IOException, InterruptedException {
         File file = new File("C:/JAVA/maybe/dll/phantomjs.exe");
         System.setProperty("phantomjs.binary.path", file.getAbsolutePath());
-        WebDriver driver = new PhantomJSDriver();
+        //WebDriver driver = new PhantomJSDriver();
+        DesiredCapabilities cap = DesiredCapabilities.phantomjs();
+        String USER_AGENT="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36";
+        cap.setCapability(PhantomJSDriverService.PHANTOMJS_PAGE_SETTINGS_PREFIX + "userAgent", USER_AGENT);
+        cap.setCapability(PhantomJSDriverService.PHANTOMJS_PAGE_SETTINGS_PREFIX + "loadImages", false);
+        cap.setCapability(PhantomJSDriverService.PHANTOMJS_PAGE_SETTINGS_PREFIX + "javascriptEnabled", true);
+        cap.setBrowserName("Chrome");
+        cap.setVersion("42");
+        WebDriver driver = new PhantomJSDriver(cap);
+
         switch (methodSearch){
             case ExecutorThread.TO:
                 tempHREF=String.format(URL_FORMAT_SINGLE,fromStart, toStart, dateStart, fromStart, toStart, dateStart);
@@ -111,17 +123,19 @@ public class MMStrategy implements Strategy
             case ExecutorThread.TOANDFROM:
                 tempHREF=String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd);
                 driver.get(tempHREF);
+                //driver.get("http://browser-info.ru/");
                 break;
             default:
                 tempHREF=String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd, fromStart, toStart, dateStart, fromEnd, fromStart, dateEnd);
                 driver.get(tempHREF);
         }
         System.out.println(tempHREF);
+        //System.out.println(driver.getPageSource());
         String html_content;
         Document document=null;
         try {
-            (new WebDriverWait(driver, 20)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
-            (new WebDriverWait(driver, 60)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
+            (new WebDriverWait(driver, 60)).until(ExpectedConditions.visibilityOfElementLocated(By.id("searchProgressText")));
+            (new WebDriverWait(driver, 100)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
             html_content = driver.getPageSource();
             document = Jsoup.parse(html_content);
             Elements elements = document.getElementsByAttributeValue("title", "Ой! Ни один из результатов не совпадает с вашим запросом");
@@ -131,6 +145,7 @@ public class MMStrategy implements Strategy
             }
         } catch (Exception e) {
             log.warning("Momondo has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd+"--"+e.getLocalizedMessage());
+            System.out.println("Momondo has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd+"--"+e.getLocalizedMessage());
         } finally {
             driver.quit();
         }
