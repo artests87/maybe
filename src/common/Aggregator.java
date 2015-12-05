@@ -53,15 +53,15 @@ public class Aggregator
     //Max row in one sheet
     private static int mMaxRow =40000;
     //Integer is for minimum amount days between DepartureTo and DepartureFrom
-    private static int mAmountMin =10;
+    private static int mAmountMin =3;
     //Integer is for maximum amount days between DepartureTo and DepartureFrom
-    private static int mAmountMax =17;
+    private static int mAmountMax =16;
     //Integer is for minimum date from DepartureTo
-    private static int mDateMin =7;
+    private static int mDateMin =6;
     //Integer is for maximums days for search
-    private static int mTheEndDate =30;
+    private static int mTheEndDate =43;
     //Integer is start day (count from now)
-    private static int mMissingDays =15;
+    private static int mMissingDays =28;
 
     public static ExecutorThread executorThread;
 

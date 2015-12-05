@@ -93,7 +93,8 @@ public class Dates {
             //Search for dates DepartureFrom
             while (innerCycle){
                 //Check. If Calendar after exit or Calendar's Date before dateMin - continue
-                if (innerCalendar.after(calendarExitInner)||innerCalendar.get(Calendar.DATE)<dateMin){
+                if (innerCalendar.after(calendarExitInner)||innerCalendar.get(Calendar.DATE)<dateMin||
+                        innerCalendar.after(theEndDateCalendar)){
                     innerCycle=false;
                     continue;
                 }

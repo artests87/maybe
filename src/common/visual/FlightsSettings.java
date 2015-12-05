@@ -91,18 +91,14 @@ public class FlightsSettings extends JFrame implements ActionListener {
     private static final int MAX_ROWS_XLSX_START_SETTINGS_BETWEEN_TO_AND_FROM =30000;
     private String fileOpenLoad;
     private String folderOpenSave;
-
     public FlightsSettings() throws HeadlessException {
     }
-
     public void setFileOpenLoad(String fileOpenLoad) {
         this.fileOpenLoad = fileOpenLoad;
     }
-
     public void setFolderOpenSave(String folderOpenSave) {
         this.folderOpenSave = folderOpenSave;
     }
-
     public void reloadAirports(JList jList){
         String[] strings=UtilitiesVisual.getStringsFromCheckBoxListItemsList(
                 UtilitiesVisual.getCheckBoxListItemsListFromObjectsListSelected(
@@ -455,8 +451,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
     }
     private boolean checkAllSettings(JCalendar calendarFrom, JCalendar calendarTo,
                                      JList jCheckBoxJListAirportFrom, JList jCheckBoxJListAirportTo,
-                                     String folderAndFileForOpen, String folderAndFileForSave)
-    {
+                                     String folderAndFileForOpen, String folderAndFileForSave){
         if (!checkSettingsCheckBoxListItems(jCheckBoxJListAirportFrom)||
             !checkSettingsCheckBoxListItems(jCheckBoxJListAirportTo)||
             !checkSettingsCalendar(calendarFrom, calendarTo, Integer.parseInt(daysAmountMin.getValue().toString()))||
@@ -512,7 +507,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
         int daysAmountMaxInt=Integer.parseInt(daysAmountMax.getText());
         int dateMinInt=Integer.parseInt(dateMin.getText());
         int missingDays=(int)UtilitiesVisual.getDateDiff(new Date(),calendarFrom.getDate(), TimeUnit.DAYS);
-        int theEndDate=(int)UtilitiesVisual.getDateDiff(new Date(),calendarTo.getDate(), TimeUnit.DAYS);
+        int theEndDate=(int)UtilitiesVisual.getDateDiff(new Date(),calendarTo.getDate(), TimeUnit.DAYS)+1;
         folderAndFileForSave=folderAndFileForSave.substring(0,folderAndFileForSave.lastIndexOf("."));
         Set<String> stringSetFrom=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportFrom);
         Set<String> stringSetTo=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportTo);
