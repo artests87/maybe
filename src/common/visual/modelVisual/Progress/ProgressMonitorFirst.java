@@ -61,9 +61,9 @@ public class ProgressMonitorFirst extends JPanel
             @Override
             public Void doInBackground() {
                 //Random random = new Random();
-                int progress = 0;
+                int progress = 10;
                 setProgress(progress);
-                setProgress(progress+1);
+                //setProgress(progress+1);
                 try {
                     while (progress < 100 && !isCancelled()) {
                         //Sleep for up to one second.
@@ -74,7 +74,6 @@ public class ProgressMonitorFirst extends JPanel
                         //System.out.println(progress);
                         setProgress(Math.min(progress, 100));
                         Thread.sleep(1000);
-
                     }
                     Thread.sleep(5000);
                 } catch (InterruptedException ignore) {
@@ -101,6 +100,7 @@ public class ProgressMonitorFirst extends JPanel
             task = new Task();
             task.addPropertyChangeListener(this);
             task.execute();
+            //progressMonitor.setProgress(1);
             startButton.setEnabled(false);
             String message =
                     String.format("Start search! \n");

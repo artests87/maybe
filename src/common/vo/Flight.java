@@ -196,4 +196,27 @@ public class Flight
         result = 31 * result + (fromCode != null ? fromCode.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Flight{" +
+                "coast='" + coast + '\'' +
+                ", title='" + title + '\'' +
+                ", fromStart='" + fromStart + '\'' +
+                ", toStart='" + toStart + '\'' +
+                ", dateStart='" + dateStart + '\'' +
+                ", fromEnd='" + fromEnd + '\'' +
+                ", toEnd='" + toEnd + '\'' +
+                ", dateEnd='" + dateEnd + '\'' +
+                ", HREF='" + HREF + '\'' +
+                ", toCode='" + toCode + '\'' +
+                ", fromCode='" + fromCode + '\'' +
+                ", toTimeArrival='" + toTimeArrival + '\'' +
+                ", toTimeDepartment='" + toTimeDepartment + '\'' +
+                ", toDuration='" + toDuration + '\'' +
+                ", fromTimeArrival='" + fromTimeArrival + '\'' +
+                ", fromTimeDepartment='" + fromTimeDepartment + '\'' +
+                ", fromDuration='" + fromDuration + '\'' +
+                '}';
+    }
 }

@@ -2,6 +2,8 @@ package common;
 
 
 import common.model.*;
+import common.proxy.Proxy;
+import common.utilits.Converter;
 import common.utilits.SystemCooperation;
 
 
@@ -20,7 +22,7 @@ public class Aggregator
     //For loging
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
     //Amount availeble processors
-    private static final int THREADS_COUNT =Runtime.getRuntime().availableProcessors();
+    private static final int THREADS_COUNT =4;//Runtime.getRuntime().availableProcessors();
     //Need to load?
     private static final boolean ISLOAD =true;
     //System user dir
@@ -51,7 +53,7 @@ public class Aggregator
     //Array task's name for kill
     private static String[] mNameTaskKill ={"phantomjs.exe"};
     //Max row in one sheet
-    private static int mMaxRow =40000;
+    private static int mMaxRow =70000;
     //Integer is for minimum amount days between DepartureTo and DepartureFrom
     private static int mAmountMin =3;
     //Integer is for maximum amount days between DepartureTo and DepartureFrom
@@ -72,14 +74,16 @@ public class Aggregator
         } catch (IOException e) {
             System.err.println("Could not setup logger configuration: " + e.toString());
         }
-        //new SystemCooperation().getAllSystemProperties();
+
         //new FilesInFolder(mFolderFilesDelete,null, mPrefixDelete).deleteFilesInFolder();
 
         //new SystemCooperation().memo();
         //new SystemCooperation().proccesor();
         //new SystemCooperation().getAllSystemProperties();
+        FilesInFolder readerFilesInFolder=new FilesInFolder(mFolderFiles,"results29_1_2016SINGLE_MOS1.html",mPrefixCreateSingle);
+        //readerFilesInFolder.create();
 
-        //new Converter(mFolderFiles,resultsFileNameHTML,mMaxRow,true).fromHTMLFileToXLSXFile();
+        new Converter(mFolderFiles,"results29_1_2016SINGLE_MOS1.html",mMaxRow,true).fromHTMLFileToXLSXFile();
 
 
         //new SystemCooperation().shutDownSystem();
@@ -88,10 +92,8 @@ public class Aggregator
 
         //new SystemCooperation().shutDownSystem();
         Set<String> airportsTo=new Airports().readFileAirports(mFolder+mFileAirportsTo).getAirportsCode();
-        System.out.println(mFolderFiles+mFileSave);
-        System.out.println(mFolderFiles+mFileLoad);
-        findRouts(ExecutorThread.TOANDFROM, mFolder, airportsTo, airportsTo, mAmountMin, mAmountMax, mDateMin, mTheEndDate,
-                mMissingDays, mFolderFiles + mFileSave, mFolderFiles + mFileLoad, ISLOAD, mFolderFiles,mNameTaskKill,null);
+        //findRouts(ExecutorThread.TO, mFolder, airportsTo, airportsTo, mAmountMin, mAmountMax, mDateMin, mTheEndDate,
+        //        mMissingDays, mFolderFiles + mFileSave, mFolderFiles + mFileLoad, ISLOAD, mFolderFiles,mNameTaskKill,null);
     }
 
     public static void findRouts(int methodForSearch , String folder, Set<String> fileAirportsFrom, Set<String> fileAirportsTo,
@@ -140,5 +142,8 @@ public class Aggregator
         FilesInFolder readerFilesInFolder=new FilesInFolder(folderFiles,resultsFileNameHTML,prefixCreate);
         readerFilesInFolder.create();
         new SystemCooperation().killTask(nameTaskKill==null?mNameTaskKill:nameTaskKill);
+        new Converter(mFolderFiles,"results17_11_2015SINGLEMOS1.html",mMaxRow,true).fromHTMLFileToXLSXFile();
+        //new Converter(mFolderFiles,"results17_12_2015DOUBLE.html",mMaxRow,true).fromHTMLFileToXLSXFile();
+        new SystemCooperation().shutDownSystem();
     }
 }

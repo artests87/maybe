@@ -123,7 +123,7 @@ public class ExecutorThread
                     amountFinishedRoutes++;
                     continue;
                 }
-                futures.add(service.submit(new HtmlView(mapCalendar, x, y, methodSearch,folder, fileSave)));
+                futures.add(service.submit(new HtmlViewSinbad(mapCalendar, x, y, methodSearch,folder, fileSave)));
             }
         }
         totalRoutes=amountRoutes*amountRoutesFrom;

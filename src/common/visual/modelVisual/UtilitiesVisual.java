@@ -18,8 +18,13 @@ public class UtilitiesVisual {
         Set<String> stringSet=new LinkedHashSet<>();
         for(int i=0;i<jList.getModel().getSize();i++) {
             Object object=jList.getModel().getElementAt(i);
-            String[] strings=object.toString().split("-");
-            stringSet.add(strings[1]);
+            if (object instanceof CheckBoxListItem){
+                CheckBoxListItem checkBoxListItemTemp=(CheckBoxListItem)object;
+                if (checkBoxListItemTemp.isSelected()){
+                    String[] strings=object.toString().split("-");
+                    stringSet.add(strings[1]);
+                }
+            }
             }
         return stringSet;
     }

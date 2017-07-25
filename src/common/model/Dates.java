@@ -1,9 +1,6 @@
 package common.model;
 
-import java.util.Calendar;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Created by Cats on 20.09.2015.
@@ -106,7 +103,6 @@ public class Dates {
             dateStart.add(Calendar.DATE,1);
             innerCycle=true;
         }
-
         return mapCalendar;
 
     }
