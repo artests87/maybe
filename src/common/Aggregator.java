@@ -22,7 +22,7 @@ public class Aggregator
     //For loging
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
     //Amount availeble processors
-    private static final int THREADS_COUNT =4;//Runtime.getRuntime().availableProcessors();
+    private static final int THREADS_COUNT =1;//Runtime.getRuntime().availableProcessors();
     //Need to load?
     private static final boolean ISLOAD =true;
     //System user dir
@@ -83,7 +83,7 @@ public class Aggregator
         FilesInFolder readerFilesInFolder=new FilesInFolder(mFolderFiles,"results29_1_2016SINGLE_MOS1.html",mPrefixCreateSingle);
         //readerFilesInFolder.create();
 
-        new Converter(mFolderFiles,"results29_1_2016SINGLE_MOS1.html",mMaxRow,true).fromHTMLFileToXLSXFile();
+        //new Converter(mFolderFiles,"results29_1_2016SINGLE_MOS1.html",mMaxRow,true).fromHTMLFileToXLSXFile();
 
 
         //new SystemCooperation().shutDownSystem();
@@ -92,8 +92,8 @@ public class Aggregator
 
         //new SystemCooperation().shutDownSystem();
         Set<String> airportsTo=new Airports().readFileAirports(mFolder+mFileAirportsTo).getAirportsCode();
-        //findRouts(ExecutorThread.TO, mFolder, airportsTo, airportsTo, mAmountMin, mAmountMax, mDateMin, mTheEndDate,
-        //        mMissingDays, mFolderFiles + mFileSave, mFolderFiles + mFileLoad, ISLOAD, mFolderFiles,mNameTaskKill,null);
+        findRouts(ExecutorThread.TO, mFolder, airportsTo, airportsTo, mAmountMin, mAmountMax, mDateMin, mTheEndDate,
+                mMissingDays, mFolderFiles + mFileSave, mFolderFiles + mFileLoad, ISLOAD, mFolderFiles,mNameTaskKill,null);
     }
 
     public static void findRouts(int methodForSearch , String folder, Set<String> fileAirportsFrom, Set<String> fileAirportsTo,

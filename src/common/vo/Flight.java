@@ -22,6 +22,8 @@ public class Flight
     private String fromTimeArrival;
     private String fromTimeDepartment;
     private String fromDuration;
+    private String fromName;
+    private String toName;
 
     public void setTitle(String title)
     {
@@ -202,8 +204,8 @@ public class Flight
         return "Flight{" +
                 "coast='" + coast + '\'' +
                 ", title='" + title + '\'' +
-                ", fromStart='" + fromStart + '\'' +
-                ", toStart='" + toStart + '\'' +
+                ", fromStart='" + fromName+" ("+fromStart+")" + '\'' +
+                ", toStart='" + toName+" ("+toStart+")" + '\'' +
                 ", dateStart='" + dateStart + '\'' +
                 ", fromEnd='" + fromEnd + '\'' +
                 ", toEnd='" + toEnd + '\'' +
@@ -218,5 +220,12 @@ public class Flight
                 ", fromTimeDepartment='" + fromTimeDepartment + '\'' +
                 ", fromDuration='" + fromDuration + '\'' +
                 '}';
+    }
+
+    public void setFromName(String fromName) {
+        this.fromName = fromName;
+    }
+    public void setToName(String toName) {
+        this.toName = toName;
     }
 }

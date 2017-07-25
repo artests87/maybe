@@ -17,7 +17,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="jsoup-1.8.3-javadoc" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -29,7 +28,9 @@
     </orderEntry>
     <orderEntry type="library" name="poi-3.13-20150929" level="project" />
     <orderEntry type="library" name="Calendare" level="project" />
-    <orderEntry type="library" name="phantomjsdriver-1.2.1" level="project" />
     <orderEntry type="library" name="selenium-2.52" level="project" />
+    <orderEntry type="library" name="phantomjsdriver-1.4.3" level="project" />
+    <orderEntry type="library" name="jsoup-1.10.3-javadoc" level="project" />
+    <orderEntry type="library" name="log4j-1.2.17" level="project" />
   </component>
 </module>

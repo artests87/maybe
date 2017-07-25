@@ -48,14 +48,13 @@ public class SinbadStrategy implements Strategy
         System.out.println("---0");
         try {
             document = getDocument(toStart, dateStart, fromEnd, dateEnd , fromStart);
-            System.out.println("---00");
             if (document == null) {
-                System.out.println("---01");
+                System.out.println("Документ пустой");
                 return null;
             }
             Elements elements;
             System.out.println("---02");
-            elements = document.getElementsByAttributeValue("class","trip js-trip");
+            elements = document.getElementsByAttributeValue("class","js-trips-collection");
             //log.info(document.getAllElements().toString());
             if (elements.isEmpty()) {
                 System.out.println("---03");
@@ -73,8 +72,10 @@ public class SinbadStrategy implements Strategy
                         flight.setDateStart(dateStart);
                         flight.setTitle(x.getElementsByAttributeValue("class", "trip-header__airline-name").get(0).text());
                         flight.setCoast(x.getElementsByAttributeValue("class", "trip-worth__price").get(0).text());
-                        flight.setToTimeDepartment(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__time trip-summary__time-start").get(0).text());
-                        flight.setToTimeArrival(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
+                        flight.setToTimeDepartment(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__departure").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
+                        flight.setToTimeArrival(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__arrival").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
+                        flight.setFromName(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__departure").get(0).getElementsByAttributeValue("class", "trip-summary__location").get(0).text());
+                        flight.setToName(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__arrival").get(0).getElementsByAttributeValue("class", "trip-summary__location").get(0).text());
                         flight.setToDuration("---");
                         if (methodSearch==ExecutorThread.TOANDFROM){
                             flight.setFromEnd(toStart);
@@ -115,7 +116,7 @@ public class SinbadStrategy implements Strategy
         /*Proxy proxy = new Proxy();
         proxy.setSslProxy(common.proxy.Proxy.getRandomProxyAndPort());
         cap.setCapability("proxy", proxy);*/
-        String USER_AGENT="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36";
+        String USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";
         cap.setCapability(PhantomJSDriverService.PHANTOMJS_PAGE_SETTINGS_PREFIX + "userAgent", USER_AGENT);
         cap.setCapability(PhantomJSDriverService.PHANTOMJS_PAGE_SETTINGS_PREFIX + "loadImages", true);
         cap.setCapability(PhantomJSDriverService.PHANTOMJS_PAGE_SETTINGS_PREFIX + "javascriptEnabled", true);
@@ -140,13 +141,12 @@ public class SinbadStrategy implements Strategy
         cap.setCapability("cssSelectorsEnabled",true);
         cap.setCapability("webStorageEnabled",true);*/
         cap.setBrowserName("Chrome");
-        cap.setVersion("48.0.2564.116");
-        cap.setPlatform(Platform.VISTA);
+        cap.setVersion("59.0.3071.115");
+        cap.setPlatform(Platform.WIN10);
         System.out.println("----10");
         WebDriver driver = new PhantomJSDriver(cap);
-        //WebDriver driver = new ChromeDriver(cap);
 
-        System.out.println(cap.getCapability("proxy"));
+        System.out.println("proxy "+cap.getCapability("proxy"));
         switch (methodSearch){
             case ExecutorThread.TO:
                 tempHREF=String.format(URL_FORMAT_SINGLE,fromStart, toStart, dateStart);
@@ -164,7 +164,7 @@ public class SinbadStrategy implements Strategy
                 tempHREF=String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart,dateEnd);
                 driver.get(tempHREF);
         }
-        System.out.println(tempHREF);
+        System.out.println("tempHREF "+tempHREF);
         //System.out.println(driver.getPageSource());
         String html_content;
         Document document=null;
@@ -172,7 +172,7 @@ public class SinbadStrategy implements Strategy
         //System.out.println("----------------"+html_content);
         try {
             //(new WebDriverWait(driver, 30)).until(ExpectedConditions.visibilityOfElementLocated(By.id("content")));
-            (new WebDriverWait(driver, 20)).until(ExpectedConditions.invisibilityOfElementLocated(By.className("wait")));
+            (new WebDriverWait(driver, 20)).until(ExpectedConditions.visibilityOfElementLocated(By.className("footer")));
             //(new WebDriverWait(driver, 100)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
             System.out.println("----12");
             html_content = driver.getPageSource();
@@ -187,8 +187,8 @@ public class SinbadStrategy implements Strategy
             }
             System.out.println("------------------Ends of read a site");
         } catch (Exception e) {
-            log.warning("OneTwoTrip has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd+"--"+e.getLocalizedMessage());
-            System.out.println("OneTwoTrip has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd+"--"+e.getLocalizedMessage());
+            log.warning("Sinbad has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd+"--"+e.getLocalizedMessage());
+            System.out.println("Sinbad has problems--------" + fromStart + "--" + toStart + "--" + dateStart + "--" + dateEnd+"--"+e.getLocalizedMessage());
         } finally {
             driver.quit();
         }
