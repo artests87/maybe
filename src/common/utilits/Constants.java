@@ -5,7 +5,8 @@ package common.utilits;
  */
 public class Constants {
     //public static final String PATH_TO_AIRPORT_FILES="C://JAVA/maybe/res/airports_EUR.txt";
-    public static final String PATH_TO_AIRPORT_FILES =System.getProperty("user.dir")+"\\res\\"+"saveAir";
-    public static final String PATH_TO_OUTPUT_FILES =System.getProperty("user.dir")+"\\res\\outHTML\\";
     public static final String PATH_TO_FOLDER =System.getProperty("user.dir")+"\\";
+    public static final String PATH_TO_AIRPORT_FILES =PATH_TO_FOLDER+"res\\"+"airports_EUR";
+    public static final String PATH_TO_OUTPUT_FILES =PATH_TO_FOLDER+"res\\outHTML\\";
+    public static final String PATH_TO_SAVE_FILE =PATH_TO_OUTPUT_FILES+"saveAir";
 }

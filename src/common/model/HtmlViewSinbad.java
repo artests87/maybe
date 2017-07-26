@@ -41,10 +41,10 @@ public class HtmlViewSinbad implements View,Callable<Boolean>{
         this.mapCalendar = mapCalendar;
         this.methodSearch=methodSearch;
         if (methodSearch==ExecutorThread.TOANDFROM) {
-            filePath = folder + "/flights" +fromStart+toStart + ".html";
+            filePath = folder + "\\doubleflights" +fromStart+toStart + ".html";
         }
         else{
-            filePath = folder+ "/singleFlights" +fromStart+toStart + ".html";
+            filePath = folder+ "\\singleFlights" +fromStart+toStart + ".html";
         }
     }
 
@@ -149,7 +149,7 @@ public class HtmlViewSinbad implements View,Callable<Boolean>{
                         linkedHashSetFlights = new SinbadStrategy(methodSearch).getFlights(fromStart, dateDepartureTo,null, null,toStart);
                         if (linkedHashSetFlights != null && linkedHashSetFlights.size() > 0) {
                             log.info(Thread.currentThread().getName() + "--Thread -------- " + toStart + fromStart +"----"+ "---" + dateDepartureTo + "------" + ". Size--" + linkedHashSetFlights.size());
-                            update((linkedHashSetFlights), filePath);
+                            update(linkedHashSetFlights, filePath);
                         } else {
                             log.warning("SINGLE - The size if 0... Inner Thread -------- " + toStart + fromStart +"----"+ "---" + dateDepartureTo + "------");
                         }
@@ -173,40 +173,46 @@ public class HtmlViewSinbad implements View,Callable<Boolean>{
             log.warning("Some exception occurred---" + e.getLocalizedMessage());
         }
     }
-    private String getUpdatedFileContent(LinkedHashSet<Flight> list) throws IOException{
-        Document document=getDocument();
-        Element element=document.getElementsByClass("template").first();
-        Element elementCopy=element.clone();
-        elementCopy.removeAttr("style");
-        elementCopy.removeClass("template");
-        //document.select("tr[class=vacancy]").remove();
-        updateFile(document.html());
-
-        for(Flight x:list){
-            if (x.getFromStart()==null){
-                continue;
+    private String getUpdatedFileContent(LinkedHashSet<Flight> list){
+        Document document = getDocument();
+        try {
+            Element element = document.getElementsByClass("template").first();
+            Element elementCopy = element.clone();
+            elementCopy.removeAttr("style");
+            elementCopy.removeClass("template");
+            //document.select("tr[class=vacancy]").remove();
+            updateFile(document.html());
+            for (Flight x : list) {
+                if (x.getFromStart() == null) {
+                    continue;
+                }
+                Element elementCopyTemp = elementCopy.clone();
+                elementCopyTemp.getElementsByClass("title").first().text(x.getTitle());
+                elementCopyTemp.getElementsByClass("FromStart").first().text(x.getFromName());
+                elementCopyTemp.getElementsByClass("ToStart").first().text(x.getToName());
+                elementCopyTemp.getElementsByClass("DateStart").first().text(x.getDateStart());
+                if (methodSearch == ExecutorThread.TOANDFROM) {
+                    elementCopyTemp.getElementsByClass("FromEnd").first().text(x.getFromEnd());
+                    elementCopyTemp.getElementsByClass("ToEnd").first().text(x.getToEnd());
+                    elementCopyTemp.getElementsByClass("DateEnd").first().text(x.getDateEnd());
+                }
+                elementCopyTemp.getElementsByClass("Coast").first().text(x.getCoast());
+                elementCopyTemp.getElementsByClass("toTimeDeparture").first().text(x.getToTimeDepartment());
+                elementCopyTemp.getElementsByClass("toTimeArrival").first().text(x.getToTimeArrival());
+                elementCopyTemp.getElementsByClass("toDuration").first().text(x.getToDuration());
+                elementCopyTemp.getElementsByClass("hrefa").first().attr("href", x.getHREF());
+                elementCopyTemp.getElementsByClass("hrefa").first().text(x.getFromCode() + "--" + x.getToCode());
+                if (methodSearch == ExecutorThread.TOANDFROM) {
+                    elementCopyTemp.getElementsByClass("fromTimeDeparture").first().text(x.getFromTimeDepartment());
+                    elementCopyTemp.getElementsByClass("fromTimeArrival").first().text(x.getFromTimeArrival());
+                    elementCopyTemp.getElementsByClass("fromDuration").first().text(x.getFromDuration());
+                }
+                element.before(elementCopyTemp.outerHtml());
             }
-            Element elementCopyTemp=elementCopy.clone();
-            elementCopyTemp.getElementsByClass("FromStart").first().text(x.getFromName());
-            elementCopyTemp.getElementsByClass("ToStart").first().text(x.getToName());
-            elementCopyTemp.getElementsByClass("DateStart").first().text(x.getDateStart());
-            if (methodSearch==ExecutorThread.TOANDFROM) {
-                elementCopyTemp.getElementsByClass("FromEnd").first().text(x.getFromEnd());
-                elementCopyTemp.getElementsByClass("ToEnd").first().text(x.getToEnd());
-                elementCopyTemp.getElementsByClass("DateEnd").first().text(x.getDateEnd());
-                elementCopyTemp.getElementsByClass("fromTimeDeparture").first().text(x.getFromTimeDepartment());
-                elementCopyTemp.getElementsByClass("fromTimeArrival").first().text(x.getFromTimeArrival());
-                elementCopyTemp.getElementsByClass("fromDuration").first().text(x.getFromDuration());
-            }
-            elementCopyTemp.getElementsByClass("Coast").first().text(x.getCoast());
-            elementCopyTemp.getElementsByClass("title").first().text(x.getTitle());
-            elementCopyTemp.getElementsByClass("hrefa").first().attr("href", x.getHREF());
-            elementCopyTemp.getElementsByClass("hrefa").first().text(x.getFromCode()+"--"+x.getToCode());
-            elementCopyTemp.getElementsByClass("toTimeDeparture").first().text(x.getToTimeDepartment());
-            elementCopyTemp.getElementsByClass("toTimeArrival").first().text(x.getToTimeArrival());
-            elementCopyTemp.getElementsByClass("toDuration").first().text(x.getToDuration());
+        }
+        catch (Exception e){
+            System.out.println("WAW" + e.getMessage());
 
-            element.before(elementCopyTemp.outerHtml());
         }
         return document.html();
     }

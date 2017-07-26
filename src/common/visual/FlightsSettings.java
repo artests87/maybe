@@ -29,6 +29,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import static common.utilits.Constants.PATH_TO_AIRPORT_FILES;
 import static common.utilits.Constants.PATH_TO_OUTPUT_FILES;
+import static common.utilits.Constants.PATH_TO_SAVE_FILE;
 
 /**
  * Created by Cats on 21.10.2015.
@@ -93,7 +94,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
     private static final int MAX_DAYS_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM =16;
     private static final int MIN_DATE_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM =6;
     private static final int MAX_ROWS_XLSX_START_SETTINGS_BETWEEN_TO_AND_FROM =30000;
-    private String fileOpenLoad=PATH_TO_AIRPORT_FILES;
+    private String fileOpenLoad=PATH_TO_SAVE_FILE;
     private String folderOpenSave=PATH_TO_OUTPUT_FILES;
     public FlightsSettings() throws HeadlessException {
     }
@@ -249,14 +250,12 @@ public class FlightsSettings extends JFrame implements ActionListener {
         constraints.insets=new Insets(0,0,0,20);
         calendarAndFolderPanel.add(calendarFromLabel,constraints);
         constraints.gridy = 1;
-        //constraints.insets=new Insets(0,20,0,0);
         calendarAndFolderPanel.add(calendarFrom,constraints);
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.insets=new Insets(0,0,0,0);
         calendarAndFolderPanel.add(calendarToLabel,constraints);
         constraints.gridy = 1;
-        //constraints.insets=new Insets(0,0,0,20);
         calendarAndFolderPanel.add(calendarTo,constraints);
         constraints.gridy=2;
         constraints.gridx=0;
@@ -322,8 +321,6 @@ public class FlightsSettings extends JFrame implements ActionListener {
         jRadioButtonHTML.setSelected(true);
         jRadioButtonXLSX=new JRadioButton(myResources.getString("jRadioButtonXLSX"));
         jRadioButtonSQL=new JRadioButton(myResources.getString("jRadioButtonSQL"));
-        //jRadioButtonTo.addActionListener(this);
-        //jRadioButtonToAndFrom.addActionListener(this);
         jRadioButtonHTML.addActionListener(this);
         jRadioButtonXLSX.addActionListener(this);
         jRadioButtonSQL.addActionListener(this);
@@ -343,11 +340,9 @@ public class FlightsSettings extends JFrame implements ActionListener {
         constraints.weighty=1.0;
         constraints.weightx=1.0;
         constraints.insets=new Insets(20,20,0,20);
-        //constraints.gridwidth=1;
         centerPanel.add(calendarAndFolderPanel, constraints);
         constraints.insets=new Insets(20,0,20,0);
         centerPanel.add(integerPanel,constraints);
-        //constraints.gridwidth=4;
         centerPanel.add(checkBoxesPanel,constraints);
         centerPanel.setVisible(true);
     }

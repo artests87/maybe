@@ -80,10 +80,10 @@ public class Aggregator
         //new SystemCooperation().memo();
         //new SystemCooperation().proccesor();
         //new SystemCooperation().getAllSystemProperties();
-        FilesInFolder readerFilesInFolder=new FilesInFolder(mFolderFiles,"results29_1_2016SINGLE_MOS1.html",mPrefixCreateSingle);
+        //FilesInFolder readerFilesInFolder=new FilesInFolder(mFolderFiles,"results29_1_2016SINGLE_MOS1.html",mPrefixCreateSingle);
         //readerFilesInFolder.create();
 
-        //new Converter(mFolderFiles,"results29_1_2016SINGLE_MOS1.html",mMaxRow,true).fromHTMLFileToXLSXFile();
+        //new Converter(mFolderFiles,"results25_6_2017SINGLEq.html",mMaxRow,true).fromHTMLFileToXLSXFile();
 
 
         //new SystemCooperation().shutDownSystem();
@@ -92,7 +92,8 @@ public class Aggregator
 
         //new SystemCooperation().shutDownSystem();
         Set<String> airportsTo=new Airports().readFileAirports(mFolder+mFileAirportsTo).getAirportsCode();
-        findRouts(ExecutorThread.TO, mFolder, airportsTo, airportsTo, mAmountMin, mAmountMax, mDateMin, mTheEndDate,
+        Set<String> airportsFrom=new Airports().readFileAirports(mFolder+mFileAirportsFrom).getAirportsCode();
+        findRouts(ExecutorThread.TOANDFROM, mFolder, airportsTo, airportsFrom, mAmountMin, mAmountMax, mDateMin, mTheEndDate,
                 mMissingDays, mFolderFiles + mFileSave, mFolderFiles + mFileLoad, ISLOAD, mFolderFiles,mNameTaskKill,null);
     }
 
@@ -132,7 +133,6 @@ public class Aggregator
                 airportsFrom, folderFiles, amountMin, amountMax, dateMin, theEndDate, missingDays,
                 fileSave, fileLoad, isLoad,adapter);
         Calendar end=Calendar.getInstance();
-        log.info("Start program--"+startFindRouteCalendar.getTime().toString());
         log.info("End program--"+end.getTime().toString());
         long diff=end.getTimeInMillis()-startFindRouteCalendar.getTimeInMillis();
         System.out.println("Program was working for - "+diff/1000+"sec.");
@@ -144,6 +144,6 @@ public class Aggregator
         new SystemCooperation().killTask(nameTaskKill==null?mNameTaskKill:nameTaskKill);
         new Converter(mFolderFiles,resultsFileNameHTML,mMaxRow,true).fromHTMLFileToXLSXFile();
         //new Converter(mFolderFiles,"results17_12_2015DOUBLE.html",mMaxRow,true).fromHTMLFileToXLSXFile();
-        new SystemCooperation().shutDownSystem();
+        //new SystemCooperation().shutDownSystem();
     }
 }

@@ -44,11 +44,11 @@ public class Converter {
     public static Map<Integer,ArrayList<String>> HTMLtoMap() throws IOException {
         System.out.println("Getting_document...");
         Document document = getDocumentHTML();
-        Elements elements = document.getElementsByClass("vacancy");
+        Elements elements = document.getElementsByClass("flights");
         System.out.println(file.substring(0, file.length() - 5));
         long elementsSize = elements.size();
-        System.out.println(elementsSize);
-        System.out.println(elements.first().children().size());
+        //System.out.println("elementsSize "+elementsSize);
+        //System.out.println("elements.first().children().size()"+elements.first().children().size());
         int mapCount = 0;
 
         for (Element x : elements) {

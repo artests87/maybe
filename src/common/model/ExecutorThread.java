@@ -127,13 +127,13 @@ public class ExecutorThread
             }
         }
         totalRoutes=amountRoutes*amountRoutesFrom;
+        amountQuery=SingltonAliveAndSleep.getInstance().getAmountQuery();
         System.out.println("Total dates-" + amountDates);
         System.out.println("Total routes-" + totalRoutes);
-        System.out.println("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
-        amountQuery=SingltonAliveAndSleep.getInstance().getAmountQuery();
+        System.out.println("Total search-" + amountQuery);
         log.info("Total dates-" + amountDates);
         log.info("Total routes-" + amountRoutes*amountRoutesFrom);
-        log.info("Total search-" + SingltonAliveAndSleep.getInstance().getAmountQuery());
+        log.info("Total search-" + amountQuery);
         service.shutdown();
         for (Future<?> x : futures) {
             try {

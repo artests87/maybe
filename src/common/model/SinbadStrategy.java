@@ -1,6 +1,7 @@
 package common.model;
 
 import common.Aggregator;
+import common.utilits.JSWaiter;
 import common.vo.Flight;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -44,8 +45,7 @@ public class SinbadStrategy implements Strategy
     @Override
     public LinkedHashSet<Flight> getFlights(String toStart, String dateStart, String fromEnd, String dateEnd, String fromStart) {
         Document document=null;
-        LinkedHashSet<Flight> vacancies=new LinkedHashSet<>();
-        System.out.println("---0");
+        LinkedHashSet<Flight> flights=new LinkedHashSet<>();
         try {
             document = getDocument(toStart, dateStart, fromEnd, dateEnd , fromStart);
             if (document == null) {
@@ -53,11 +53,10 @@ public class SinbadStrategy implements Strategy
                 return null;
             }
             Elements elements;
-            System.out.println("---02");
             elements = document.getElementsByAttributeValue("class","js-trips-collection");
-            //log.info(document.getAllElements().toString());
+            log.info(document.getAllElements().toString());
             if (elements.isEmpty()) {
-                System.out.println("---03");
+                System.out.println("elements.isEmpty");
                 log.warning("Nothing to find -------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd);
 
             } else {
@@ -66,7 +65,7 @@ public class SinbadStrategy implements Strategy
                     try {
                         System.out.println("---2");
                         Flight flight = new Flight();
-                        vacancies.add(flight);
+                        flights.add(flight);
                         flight.setFromStart(fromStart);
                         flight.setToStart(toStart);
                         flight.setDateStart(dateStart);
@@ -81,18 +80,16 @@ public class SinbadStrategy implements Strategy
                             flight.setFromEnd(toStart);
                             flight.setToEnd(fromStart);
                             flight.setDateEnd(dateEnd);
-                            flight.setToTimeDepartment(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__departure").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
-                            flight.setToTimeArrival(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__arrival").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
+                            flight.setFromTimeDepartment(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__departure").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
+                            flight.setFromTimeArrival(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__arrival").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
                             flight.setFromDuration("---");
                         }
                         flight.setHREF(tempHREF);
                         flight.setToCode(toStart);
                         flight.setFromCode(fromStart);
-                        System.out.println("---3");
-                        System.out.println(flight.toString());
+                        //System.out.println("---3--"+flight.toString());
                     }
                     catch (Exception e){
-                        System.out.println("---4");
                         System.out.println("Some problems with parsing element in-------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd+"--"+e.getLocalizedMessage());
                         log.warning("Some problems with parsing element in-------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd+"--"+e.getLocalizedMessage());
                     }
@@ -101,10 +98,10 @@ public class SinbadStrategy implements Strategy
         }
         catch (IOException | InterruptedException e)
         {
-            System.out.println("---5");
+            System.out.println("Some problems with parsing in");
             log.warning("Some problems with parsing in-------- "+fromStart+"--"+toStart + "---" + dateStart + "------" + dateEnd+"--"+e.getLocalizedMessage());
         }
-        return vacancies;
+        return flights;
     }
     protected Document getDocument(String toStart, String dateStart, String fromEnd, String dateEnd,String fromStart) throws IOException, InterruptedException {
         File file = new File("C:/JAVA/maybe/dll/phantomjs.exe");
@@ -143,9 +140,7 @@ public class SinbadStrategy implements Strategy
         cap.setBrowserName("Chrome");
         cap.setVersion("59.0.3071.115");
         cap.setPlatform(Platform.WIN10);
-        System.out.println("----10");
         WebDriver driver = new PhantomJSDriver(cap);
-
         System.out.println("proxy "+cap.getCapability("proxy"));
         switch (methodSearch){
             case ExecutorThread.TO:
@@ -154,7 +149,7 @@ public class SinbadStrategy implements Strategy
                 break;
             case ExecutorThread.TOANDFROM:
                 tempHREF=String.format(URL_FORMAT_DOUBLE, fromStart, toStart, dateStart,dateEnd);
-                System.out.println("----111");
+                //System.out.println("----111");
                 driver.get(tempHREF);
                 //driver.get("https://www.onetwotrip.com/ru/#?deals_from=LED&deals_to=ANYWHERE&deals_when=CHEAPEST&deals_stay=ANY_STAY");
                 //driver.get("https://www.onetwotrip.com/ru/");
@@ -172,11 +167,17 @@ public class SinbadStrategy implements Strategy
         //System.out.println("----------------"+html_content);
         try {
             //(new WebDriverWait(driver, 30)).until(ExpectedConditions.visibilityOfElementLocated(By.id("content")));
-            (new WebDriverWait(driver, 20)).until(ExpectedConditions.visibilityOfElementLocated(By.className("footer")));
+            //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            (new WebDriverWait(driver, 20)).until(ExpectedConditions.invisibilityOfElementLocated(By.className("body_hidden")));
+            (new WebDriverWait(driver, 20)).until(ExpectedConditions.invisibilityOfElementLocated(By.className("body_wait")));
+            //JSWaiter.setDriver(driver);
+            //JSWaiter.waitJQueryAngular();
+            //(new WebDriverWait(driver, 20)).until(ExpectedConditions.invisibilityOfElementLocated(By.className("wait wait_loop")));
+            //(new WebDriverWait(driver, 20)).until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".wait wait_loop")));
             //(new WebDriverWait(driver, 100)).until(ExpectedConditions.textToBePresentInElement(driver.findElement(By.id("searchProgressText")), "Поиск завершен"));
-            System.out.println("----12");
+            //System.out.println("----12");
             html_content = driver.getPageSource();
-            System.out.println("----13");
+            //System.out.println("----13");
             //System.out.println("----------------"+html_content);
             document = Jsoup.parse(html_content);
             Elements elements = document.getElementsByAttributeValue("title", "Ой! Ни один из результатов не совпадает с вашим запросом");
@@ -195,5 +196,4 @@ public class SinbadStrategy implements Strategy
         //Thread.currentThread().wait(5000);
         return document;
     }
-
 }
