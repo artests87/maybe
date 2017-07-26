@@ -187,8 +187,8 @@ public class HtmlViewSinbad implements View,Callable<Boolean>{
                 continue;
             }
             Element elementCopyTemp=elementCopy.clone();
-            elementCopyTemp.getElementsByClass("FromStart").first().text(x.getFromStart());
-            elementCopyTemp.getElementsByClass("ToStart").first().text(x.getToStart());
+            elementCopyTemp.getElementsByClass("FromStart").first().text(x.getFromName());
+            elementCopyTemp.getElementsByClass("ToStart").first().text(x.getToName());
             elementCopyTemp.getElementsByClass("DateStart").first().text(x.getDateStart());
             if (methodSearch==ExecutorThread.TOANDFROM) {
                 elementCopyTemp.getElementsByClass("FromEnd").first().text(x.getFromEnd());

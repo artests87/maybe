@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import static common.utilits.Constants.PATH_TO_FOLDER;
+
 /**
  * Created by Cats on 17.10.2015.
  */
@@ -54,12 +56,12 @@ public class MainForm extends JFrame implements ActionListener {
     }
     private void createImages(){
         //Load image to program
-        icon=new ImageIcon("C:\\JAVA\\maybe\\guiResourses\\icon.jpg").getImage();
+        icon=new ImageIcon(PATH_TO_FOLDER+"guiResourses\\icon.jpg").getImage();
         /*
         Image resizedImage=null;
         try {
             resizedImage =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\Gold_Button_009.png"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\Gold_Button_009.png"))
                             .getScaledInstance(100, 50, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,40 +86,40 @@ public class MainForm extends JFrame implements ActionListener {
         Image resizedImageRF=null;
         try {
             resizedImageF =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonFlight.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonFlight.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);
             resizedImageFP =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonFlightP.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonFlightP.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);
             resizedImageFF =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonFlightF.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonFlightF.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);
             resizedImageT =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonTrain.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonTrain.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);
             /*resizedImageTP =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonTrainP.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonTrainP.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);*/
             resizedImageTF =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonTrainF.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonTrainF.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);
             resizedImageB =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonBus.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonBus.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);
             /*resizedImageBP =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonBusP.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonBusP.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);*/
             resizedImageBF =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonBusF.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonBusF.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);
             resizedImageR =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonRoom.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonRoom.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);
             /*resizedImageRP =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonRoomP.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonRoomP.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);*/
             resizedImageRF =
-                    ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\buttonRoomF.jpg"))
+                    ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\buttonRoomF.jpg"))
                             .getScaledInstance(900,500, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             e.printStackTrace();
@@ -206,7 +208,7 @@ public class MainForm extends JFrame implements ActionListener {
     public class TitlePanel extends JPanel{
         TitlePanel(){
             try {
-                image = ImageIO.read(new File("C:\\JAVA\\maybe\\guiResourses\\worl_ph1.jpg"));
+                image = ImageIO.read(new File(PATH_TO_FOLDER+"guiResourses\\worl_ph1.jpg"));
                 scaledTitleImage = image.getScaledInstance((int) screenSize.getWidth(), (int) screenSize.getHeight(), Image.SCALE_SMOOTH);
                 setLayout(new BorderLayout());
             } catch (IOException e) {

@@ -10,6 +10,7 @@ import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +25,10 @@ import common.visual.modelVisual.checkBoxFirst.CheckBoxListItem;
 import common.visual.modelVisual.checkBoxFirst.CheckBoxListRenderer;
 import common.visual.modelVisual.checkBoxFirst.CheckBoxMouseAdapter;
 import common.visual.modelVisual.fileChooser.*;
+import org.apache.commons.lang3.time.DateUtils;
+
+import static common.utilits.Constants.PATH_TO_AIRPORT_FILES;
+import static common.utilits.Constants.PATH_TO_OUTPUT_FILES;
 
 /**
  * Created by Cats on 21.10.2015.
@@ -41,6 +46,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
     public static final String J_CHECK_BOX_J_LIST_COUNTRY_TO_INDEX ="2";
     public static final String J_CHECK_BOX_J_LIST_AIRPORT_TO_INDEX ="22";
     public static final String J_CHECK_BOX_J_LIST_AIRPORT_FROM_INDEX ="11";
+    static private final String newline = System.getProperty("line.separator");
     JPanel firstPanel;
     JPanel buttomPanel;
     JPanel centerPanel;
@@ -83,14 +89,12 @@ public class FlightsSettings extends JFrame implements ActionListener {
     Airports airports;
     ResourceBundle myResources = ResourceBundle.getBundle("common\\stringgui",
             Locale.ENGLISH);
-    String folderAndFileForAirports =System.getProperty("user.dir")+"\\res\\"+"airports_EUR";
-    String folderAndFileForSave;
     private static final int MIN_DAYS_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM =5;
     private static final int MAX_DAYS_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM =16;
     private static final int MIN_DATE_FOR_START_SETTINGS_BETWEEN_TO_AND_FROM =6;
     private static final int MAX_ROWS_XLSX_START_SETTINGS_BETWEEN_TO_AND_FROM =30000;
-    private String fileOpenLoad;
-    private String folderOpenSave;
+    private String fileOpenLoad=PATH_TO_AIRPORT_FILES;
+    private String folderOpenSave=PATH_TO_OUTPUT_FILES;
     public FlightsSettings() throws HeadlessException {
     }
     public void setFileOpenLoad(String fileOpenLoad) {
@@ -407,7 +411,7 @@ public class FlightsSettings extends JFrame implements ActionListener {
         buttomPanel.setVisible(true);
     }
     public void initializeEverything(){
-        loadAirports(folderAndFileForAirports);
+        loadAirports(PATH_TO_AIRPORT_FILES);
         initializeButton();
         initializeCalendares();
         initializeFileChooser();
@@ -458,8 +462,26 @@ public class FlightsSettings extends JFrame implements ActionListener {
             !checkSettingsFileExist(folderAndFileForOpen)||
             !checkSettingsFolderExist(folderAndFileForSave)
         ){
+            fileChooserFirst.log.setText("");
+            if (!checkSettingsCheckBoxListItems(jCheckBoxJListAirportFrom)) {
+                fileChooserFirst.log.append("Choose airports departure"+ newline);
+            }
+            if (!checkSettingsCheckBoxListItems(jCheckBoxJListAirportTo)) {
+                fileChooserFirst.log.append("Choose airports arrival"+ newline);
+            }
+            if (!checkSettingsCalendar(calendarFrom, calendarTo, Integer.parseInt(daysAmountMin.getValue().toString()))) {
+                fileChooserFirst.log.append("Please, check dates"+ newline);
+            }
+            if (!checkSettingsFileExist(folderAndFileForOpen)) {
+                fileChooserFirst.log.append("Please, check the file with airports"+ newline);
+            }
+            if (!checkSettingsFolderExist(folderAndFileForSave)) {
+                fileChooserFirst.log.append("Please, check the folder where you want to save results"+ newline);
+            }
             return false;
         }
+        fileChooserFirst.log.setText("");
+        fileChooserFirst.log.append("You can start search"+ newline);
         return true;
     }
     private boolean checkSettingsFileExist(String folderAndFileForOpen){
@@ -475,10 +497,10 @@ public class FlightsSettings extends JFrame implements ActionListener {
         return false;
     }
     private boolean checkSettingsCalendar(JCalendar calendarFrom, JCalendar calendarTo, int days){
-        if (calendarFrom.getDate().toInstant().plus(days, ChronoUnit.DAYS).isAfter(
-                        calendarTo.getDate().toInstant()
+        if (DateUtils.truncate(calendarFrom.getDate(), Calendar.DATE).toInstant().plus(days-1, ChronoUnit.DAYS).isAfter(
+                DateUtils.truncate(calendarTo.getDate(), Calendar.DATE).toInstant()
                 )||
-                calendarFrom.getDate().before(new Date())
+                calendarFrom.getDate().before(DateUtils.truncate(new Date(), Calendar.DATE))
            ) {
             return false;
         }
@@ -506,9 +528,9 @@ public class FlightsSettings extends JFrame implements ActionListener {
         int daysAmountMinInt=Integer.parseInt(daysAmountMin.getText());
         int daysAmountMaxInt=Integer.parseInt(daysAmountMax.getText());
         int dateMinInt=Integer.parseInt(dateMin.getText());
-        int missingDays=(int)UtilitiesVisual.getDateDiff(new Date(),calendarFrom.getDate(), TimeUnit.DAYS);
-        int theEndDate=(int)UtilitiesVisual.getDateDiff(new Date(),calendarTo.getDate(), TimeUnit.DAYS)+1;
-        folderAndFileForSave=folderAndFileForSave.substring(0,folderAndFileForSave.lastIndexOf("."));
+        int missingDays=(int)UtilitiesVisual.getDateDiff(DateUtils.truncate(new Date(), Calendar.DATE),calendarFrom.getDate(), TimeUnit.DAYS);
+        int theEndDate=(int)UtilitiesVisual.getDateDiff(DateUtils.truncate(new Date(), Calendar.DATE),calendarTo.getDate(), TimeUnit.DAYS)+1;
+        //folderAndFileForSave=folderAndFileForSave.substring(0,folderAndFileForSave.lastIndexOf("."));
         Set<String> stringSetFrom=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportFrom);
         Set<String> stringSetTo=UtilitiesVisual.getStringFromJListCheckBoxListItems(jCheckBoxJListAirportTo);
         ExecutorService service = Executors.newFixedThreadPool(4);

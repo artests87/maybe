@@ -98,6 +98,14 @@ public class Flight
         return fromTimeDepartment;
     }
 
+    public String getFromName() {
+        return fromName;
+    }
+
+    public String getToName() {
+        return toName;
+    }
+
     public void setCoast(String coast) {
         this.coast = coast;
     }

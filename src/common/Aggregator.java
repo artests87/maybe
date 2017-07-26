@@ -22,7 +22,7 @@ public class Aggregator
     //For loging
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
     //Amount availeble processors
-    private static final int THREADS_COUNT =1;//Runtime.getRuntime().availableProcessors();
+    private static final int THREADS_COUNT =2;//Runtime.getRuntime().availableProcessors();
     //Need to load?
     private static final boolean ISLOAD =true;
     //System user dir
@@ -116,11 +116,11 @@ public class Aggregator
 
         Calendar startFindRouteCalendar=Calendar.getInstance();
         //Present Calendar to String's format
-        String presentDateString=(startFindRouteCalendar.get(Calendar.DATE))+
-                "_"+(startFindRouteCalendar.get(Calendar.MONTH))+
-                "_"+(startFindRouteCalendar.get(Calendar.YEAR));
+        String presentDateString=(startFindRouteCalendar.get(Calendar.YEAR))+
+                "_"+(startFindRouteCalendar.get(Calendar.MONTH)+1)+
+                "_"+(startFindRouteCalendar.get(Calendar.DATE))+"_";
         String partNameForFileMethodSearch=methodForSearch==ExecutorThread.TO?"SINGLE":"DOUBLE";
-        String resultsFileNameHTML ="results"+presentDateString+partNameForFileMethodSearch+".html";
+        String resultsFileNameHTML ="results_"+presentDateString+partNameForFileMethodSearch+".html";
         SingltonAliveAndSleep.getInstance().setCountThread(THREADS_COUNT);
         log.info("Start program--" + startFindRouteCalendar.getTime().toString());
         SleepThread sleepCall=new SleepThread();
@@ -142,7 +142,7 @@ public class Aggregator
         FilesInFolder readerFilesInFolder=new FilesInFolder(folderFiles,resultsFileNameHTML,prefixCreate);
         readerFilesInFolder.create();
         new SystemCooperation().killTask(nameTaskKill==null?mNameTaskKill:nameTaskKill);
-        new Converter(mFolderFiles,"results17_11_2015SINGLEMOS1.html",mMaxRow,true).fromHTMLFileToXLSXFile();
+        new Converter(mFolderFiles,resultsFileNameHTML,mMaxRow,true).fromHTMLFileToXLSXFile();
         //new Converter(mFolderFiles,"results17_12_2015DOUBLE.html",mMaxRow,true).fromHTMLFileToXLSXFile();
         new SystemCooperation().shutDownSystem();
     }

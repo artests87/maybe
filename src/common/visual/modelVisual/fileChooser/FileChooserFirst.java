@@ -38,6 +38,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import static common.utilits.Constants.PATH_TO_AIRPORT_FILES;
+import static common.utilits.Constants.PATH_TO_OUTPUT_FILES;
+
 /*
  * FileChooserDemo.java uses these files:
  *   images/Open16.gif
@@ -47,7 +50,7 @@ public class FileChooserFirst extends JPanel
                              implements ActionListener {
     static private final String newline = System.getProperty("line.separator");
     JButton openButton, saveButton;
-    JTextArea log;
+    public JTextArea log;
     JFileChooser fc;
     FlightsSettings flightsSettings;
 
@@ -89,7 +92,7 @@ public class FileChooserFirst extends JPanel
 
         //For layout purposes, put the buttons in a separate panel
         JPanel buttonPanel = new JPanel(); //use FlowLayout
-        buttonPanel.add(openButton);
+        //buttonPanel.add(openButton);
         buttonPanel.add(saveButton);
 
         //Add the buttons and the log to this panel.
@@ -98,11 +101,12 @@ public class FileChooserFirst extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-
         //Handle open button action.
         if (e.getSource() == openButton) {
+            if (fc.getSelectedFile()==null) {
+                fc.setSelectedFile(new File(PATH_TO_AIRPORT_FILES));
+            }
             int returnVal = fc.showOpenDialog(FileChooserFirst.this);
-
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
                 //This is where a real application would open the file.
@@ -113,12 +117,15 @@ public class FileChooserFirst extends JPanel
                 log.append("Open command cancelled by user." + newline);
             }
             log.setCaretPosition(log.getDocument().getLength());
-
         //Handle save button action.
         } else if (e.getSource() == saveButton) {
+            if (fc.getSelectedFile()==null) {
+                fc.setSelectedFile(new File(PATH_TO_OUTPUT_FILES));
+            }
+            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int returnVal = fc.showSaveDialog(FileChooserFirst.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fc.getSelectedFile();
+                File file = fc.getCurrentDirectory();
                 //This is where a real application would save the file.
                 log.append(file.getParent()+ newline);
                 log.append("Saving: " + file.getName() + "." + newline);

@@ -81,8 +81,8 @@ public class SinbadStrategy implements Strategy
                             flight.setFromEnd(toStart);
                             flight.setToEnd(fromStart);
                             flight.setDateEnd(dateEnd);
-                            flight.setFromTimeDepartment(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__time trip-summary__time-start").get(0).text());
-                            flight.setFromTimeArrival(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
+                            flight.setToTimeDepartment(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__departure").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
+                            flight.setToTimeArrival(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__arrival").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
                             flight.setFromDuration("---");
                         }
                         flight.setHREF(tempHREF);
