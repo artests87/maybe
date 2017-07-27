@@ -75,14 +75,16 @@ public class SinbadStrategy implements Strategy
                         flight.setToTimeArrival(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__arrival").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
                         flight.setFromName(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__departure").get(0).getElementsByAttributeValue("class", "trip-summary__location").get(0).text());
                         flight.setToName(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__arrival").get(0).getElementsByAttributeValue("class", "trip-summary__location").get(0).text());
-                        flight.setToDuration("---");
+                        //flight.setToDuration("---");
+                        flight.setToDuration(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_src trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__info").get(0).text());
                         if (methodSearch==ExecutorThread.TOANDFROM){
                             flight.setFromEnd(toStart);
                             flight.setToEnd(fromStart);
                             flight.setDateEnd(dateEnd);
                             flight.setFromTimeDepartment(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__departure").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
                             flight.setFromTimeArrival(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__arrival").get(0).getElementsByAttributeValue("class", "trip-summary__time").get(0).text());
-                            flight.setFromDuration("---");
+                            //flight.setFromDuration("---");
+                            flight.setFromDuration(x.getElementsByAttributeValue("class", "trip-summary__route trip-summary__route_dst trip-summary__route_time").get(0).getElementsByAttributeValue("class", "trip-summary__info").get(0).text());
                         }
                         flight.setHREF(tempHREF);
                         flight.setToCode(toStart);

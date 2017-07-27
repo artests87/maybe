@@ -22,7 +22,7 @@ public class Aggregator
     //For loging
     private static Logger log = Logger.getLogger(Aggregator.class.getName());
     //Amount availeble processors
-    private static final int THREADS_COUNT =2;//Runtime.getRuntime().availableProcessors();
+    private static final int THREADS_COUNT =4;//Runtime.getRuntime().availableProcessors();
     //Need to load?
     private static final boolean ISLOAD =true;
     //System user dir
@@ -37,7 +37,7 @@ public class Aggregator
     //Present Calendar - start program
     private static Calendar mPresentCalendarStartProgram= Calendar.getInstance();
     //Array for prefix for double file search(for create generalizing)
-    private static String mPrefixCreateDouble ="flight";
+    private static String mPrefixCreateDouble ="double";
     //Array for prefix for single file search (for create generalizing)
     private static String mPrefixCreateSingle ="single";
     //Array for prefix for name file (for delete)
